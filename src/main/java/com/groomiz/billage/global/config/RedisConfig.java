@@ -1,4 +1,4 @@
-package com.groomiz.billage.auth.config;
+package com.groomiz.billage.global.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
