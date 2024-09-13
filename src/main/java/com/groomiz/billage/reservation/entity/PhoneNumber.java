@@ -13,7 +13,7 @@ public class PhoneNumber {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long phoneNumberId;
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reservation_id", nullable = false)

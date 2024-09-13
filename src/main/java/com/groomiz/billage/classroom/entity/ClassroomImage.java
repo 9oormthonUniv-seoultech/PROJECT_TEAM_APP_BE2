@@ -13,7 +13,7 @@ public class ClassroomImage extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long imageId;
+    private Long id;
 
     @Column(nullable = false)
     private String imageUrl;

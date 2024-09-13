@@ -16,7 +16,7 @@ public class Reservation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reservationId;
+    private Long id;
 
     @Column(nullable = false)
     private LocalDate applyDate;

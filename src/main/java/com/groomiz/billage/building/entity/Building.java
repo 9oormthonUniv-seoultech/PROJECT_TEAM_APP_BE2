@@ -13,7 +13,7 @@ public class Building extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long buildingId;
+    private Long id;
 
     @Column(nullable = false)
     private String name;

@@ -15,7 +15,7 @@ public class ReservationStatus extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long reservationStatusId;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
