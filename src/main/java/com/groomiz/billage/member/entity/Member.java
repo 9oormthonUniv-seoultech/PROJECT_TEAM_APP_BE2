@@ -39,7 +39,7 @@ public class Member extends BaseEntity {
     private Integer studentNumber;
 
     @Column(nullable = false)
-    private Integer phoneNumber;
+    private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
     private College college;
@@ -52,7 +52,7 @@ public class Member extends BaseEntity {
     private Integer verificationCode;
 
     @Builder
-    public Member(String username, String password, Role role, boolean isAdmin, boolean isValid, Integer studentNumber, Integer phoneNumber, boolean agreedToTerms) {
+    public Member(String username, String password, Role role, boolean isAdmin, boolean isValid, Integer studentNumber, String phoneNumber, boolean agreedToTerms) {
         this.username = username;
         this.password = password;
         this.role = role;
