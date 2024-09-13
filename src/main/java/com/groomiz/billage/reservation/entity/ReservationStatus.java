@@ -21,6 +21,7 @@ public class ReservationStatus extends BaseEntity {
     @Column(nullable = false)
     private ReservationStatusType status = ReservationStatusType.PENDING;
 
+    @Column(name = "rejection_reason")
     private String rejectionReason;
 
     @ManyToOne(fetch = FetchType.LAZY)

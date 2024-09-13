@@ -19,6 +19,6 @@ public class PhoneNumber {
     @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 
-    @Column(nullable = false)
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 }

@@ -26,19 +26,20 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
-    @Column(nullable = false)
+    @Column(name = "is_admin", nullable = false)
     private boolean isAdmin;
 
     @Builder.Default
-    @Column(nullable = false)
+    @Column(name = "is_valid", nullable = false)
     private boolean isValid = false;
 
-    @Column(nullable = false)
+    @Column(name = "agreed_to_terms", nullable = false)
     private boolean agreedToTerms;  // 약관 동의 여부
 
+    @Column(name = "student_number")
     private Integer studentNumber;
 
-    @Column(nullable = false)
+    @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
@@ -47,8 +48,10 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Major major;
 
+    @Column(name = "student_email")
     private String studentEmail;
 
+    @Column(name = "verification_code")
     private Integer verificationCode;
 
     @Builder

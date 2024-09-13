@@ -18,16 +18,16 @@ public class Reservation extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "apply_date", nullable = false)
     private LocalDate applyDate;
 
     @Column(nullable = false)
     private Integer headcount;
 
-    @Column(nullable = false)
+    @Column(name = "start_time", nullable = false)
     private Integer startTime;
 
-    @Column(nullable = false)
+    @Column(name = "end_time", nullable = false)
     private Integer endTime;
 
     @Enumerated(EnumType.STRING)

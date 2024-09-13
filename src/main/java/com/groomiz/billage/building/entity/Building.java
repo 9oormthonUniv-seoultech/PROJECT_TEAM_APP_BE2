@@ -21,5 +21,6 @@ public class Building extends BaseEntity {
     @Column(nullable = false)
     private String number;
 
+    @Column(name = "image_url")
     private String imageUrl;
 }
