@@ -42,6 +42,8 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+	//mysql docker compose 에서 필요.
+	implementation 'mysql:mysql-connector-java:8.0.28'
 
 }
 
