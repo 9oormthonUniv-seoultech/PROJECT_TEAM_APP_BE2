@@ -1,5 +1,8 @@
 package com.groomiz.billage.auth.config;
 
+import java.util.Arrays;
+import java.util.List;
+
 import com.groomiz.billage.auth.jwt.JwtFilter;
 import com.groomiz.billage.auth.jwt.JwtUtil;
 import org.springframework.context.annotation.Bean;
@@ -8,20 +11,28 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final SecurityProperties securityProperties;
     private final JwtUtil jwtUtil;
 
-    public SecurityConfig(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -36,32 +47,31 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        // CSRF 설정 비활성화
-        http.csrf(csrf -> csrf.disable());
 
-        // H2 Console 설정
-        http.headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
-
-        // Form 로그인 비활성화
-        http.formLogin(formLogin -> formLogin.disable());
-
-        // HTTP Basic 인증 비활성화
-        http.httpBasic(httpBasic -> httpBasic.disable());
-
-        // URL별 접근 권한 설정
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/login", "/api/auth/logout", "/api/join", "/hello", "/api/auth/refresh-token").permitAll()
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/h2-console/**").permitAll()
-                .anyRequest().authenticated());
-
-        // JWT 필터 추가
-        http.addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
-
-        // 세션 관리 설정 (Stateless로 설정)
-        http.sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
+        http
+            .csrf(CsrfConfigurer::disable) // CSRF 설정 비활성화
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 관리 설정 (Stateless로 설정)
+            .formLogin(FormLoginConfigurer::disable) // Form 로그인 비활성화
+            .httpBasic(HttpBasicConfigurer::disable) // HTTP Basic 인증 비활성화
+            .headers(headers->headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))  // H2 Console 설정
+            .addFilterBefore(new JwtFilter(securityProperties.getWhitelist(),jwtUtil), UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
         return http.build();
+    }
+
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE"));
+        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L); // 필요에 따라 조정
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
