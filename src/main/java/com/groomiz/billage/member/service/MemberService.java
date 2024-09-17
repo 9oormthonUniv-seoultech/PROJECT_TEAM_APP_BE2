@@ -18,6 +18,7 @@ public class MemberService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    //TODO: Join할 때 phone number도 받아야 함
     public void register(JoinRequest joinRequest) {
         String encodedPassword = passwordEncoder.encode(joinRequest.getPassword());
         Member member = Member.builder()
