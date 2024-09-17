@@ -9,21 +9,30 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.stream.Collectors;
 
+@Component
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
+    private final List<String> whiteList;
     private final JwtUtil jwtUtil;
-
-    public JwtFilter(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -42,48 +51,46 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             // 토큰 만료 여부 확인 및 만료된 경우 예외 처리
-            jwtUtil.isExpired(accessToken);
+            if (checkAuthRequired(request)) {
+                jwtUtil.isExpired(accessToken);
 
-            // 토큰이 AccessToken인지 확인 (발급시 페이로드에 명시)
-            String category = jwtUtil.getCategory(accessToken);
+                // 토큰이 AccessToken인지 확인 (발급시 페이로드에 명시)
+                String category = jwtUtil.getCategory(accessToken);
 
-            if (category == null || !category.equals("AccessToken")) {
-                sendErrorResponse(response, "Invalid access token", HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
+                if (category == null || !category.equals("AccessToken")) {
+                    sendErrorResponse(response, "Invalid access token", HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
 
-            // username, role 값을 획득
-            String username = jwtUtil.getUsername(accessToken);
-            String role = jwtUtil.getRole(accessToken);
+                // username, role 값을 획득
+                String username = jwtUtil.getUsername(accessToken);
+                String role = jwtUtil.getRole(accessToken);
 
-            if (username == null || role == null) {
-                sendErrorResponse(response, "Invalid token claims", HttpServletResponse.SC_UNAUTHORIZED);
-                return;
-            }
+                if (username == null || role == null) {
+                    sendErrorResponse(response, "Invalid token claims", HttpServletResponse.SC_UNAUTHORIZED);
+                    return;
+                }
 
-            // SecurityContext에 인증 정보 설정
-            Member member = Member.builder()
+                // SecurityContext에 인증 정보 설정
+                Member member = Member.builder()
                     .username(username)
                     .role(Role.valueOf(role))
                     .build();
 
-            CustomUserDetails customUserDetails = new CustomUserDetails(member);
+                CustomUserDetails customUserDetails = new CustomUserDetails(member);
 
-            Authentication authToken = new UsernamePasswordAuthenticationToken(
+                Authentication authToken = new UsernamePasswordAuthenticationToken(
                     customUserDetails, null, customUserDetails.getAuthorities());
 
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+            }
+            // 다음 필터로 넘김
+            filterChain.doFilter(request, response);
         } catch (ExpiredJwtException e) {
             sendErrorResponse(response, "Access token expired", HttpServletResponse.SC_UNAUTHORIZED);
-            return;
         } catch (JwtException e) {
             sendErrorResponse(response, "JWT processing failed", HttpServletResponse.SC_UNAUTHORIZED);
-            return;
         }
-
-        // 다음 필터로 넘김
-        filterChain.doFilter(request, response);
     }
 
     private void sendErrorResponse(HttpServletResponse response, String message, int status) throws IOException {
@@ -91,5 +98,12 @@ public class JwtFilter extends OncePerRequestFilter {
         PrintWriter writer = response.getWriter();
         writer.print(message);
         writer.flush();
+    }
+    private boolean checkAuthRequired(HttpServletRequest request) {
+        RequestMatcher rm = new NegatedRequestMatcher(new OrRequestMatcher(
+            whiteList.stream()
+                .map(AntPathRequestMatcher::new)
+                .collect(Collectors.toList())));
+        return rm.matcher(request).isMatch();
     }
 }
