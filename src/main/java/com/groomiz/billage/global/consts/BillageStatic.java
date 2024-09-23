@@ -16,15 +16,8 @@ public class BillageStatic {
 	public static final int INTERNAL_SERVER = 500;
 
 	public static final Long NO_START_NUMBER = 1000000L;
-	public static final Long MINIMUM_PAYMENT_WON = 1000L;
 	public static final Long ZERO = 0L;
 
-	public static final String KAKAO_OAUTH_QUERY_STRING =
-		"/oauth/authorize?client_id=%s&redirect_uri=%s&response_type=code";
-
-	public static final String[] SwaggerPatterns = {
-		"/swagger-resources/**", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs",
-	};
 }
 
 
