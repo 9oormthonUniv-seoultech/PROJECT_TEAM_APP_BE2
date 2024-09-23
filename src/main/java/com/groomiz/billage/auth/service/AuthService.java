@@ -9,6 +9,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import com.groomiz.billage.auth.dto.LoginRequest;
+import com.groomiz.billage.auth.exception.AuthErrorCode;
+import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.auth.jwt.JwtTokenProvider;
 import com.groomiz.billage.auth.jwt.JwtUtil;
 
@@ -48,7 +50,7 @@ public class AuthService {
 		// 헤더에서 RefreshToken 가져오기
 		String refreshToken = request.getHeader("RefreshToken");
 		if (refreshToken == null || !refreshToken.startsWith("Bearer ")) {
-			throw new IllegalArgumentException("Invalid refresh token format");
+			throw new AuthException(AuthErrorCode.ACCESS_TOKEN_NOT_EXIST);
 		}
 
 		// Bearer 접두사 제거
@@ -56,14 +58,14 @@ public class AuthService {
 
 		// RefreshToken 만료 확인
 		if (jwtUtil.isExpired(refreshToken)) {
-			throw new IllegalArgumentException("Expired refresh token");
+			throw new AuthException(AuthErrorCode.REFRESH_TOKEN_EXPIRED);
 		}
 
 		// RefreshToken의 유효성 확인
 		String category = jwtUtil.getCategory(refreshToken);
 		String username = jwtUtil.getUsername(refreshToken);
 		if (!"RefreshToken".equals(category) || !redisService.checkExistsValue(refreshToken)) {
-			throw new IllegalArgumentException("Invalid refresh token");
+			throw new AuthException(AuthErrorCode.INVALID_TOKEN);
 		}
 
 		// Redis에서 RefreshToken 삭제
