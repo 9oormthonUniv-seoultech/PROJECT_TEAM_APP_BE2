@@ -3,7 +3,7 @@ package com.groomiz.billage.member.service;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.groomiz.billage.member.dto.JoinRequest;
+import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.entity.Role;
 import com.groomiz.billage.member.repository.MemberRepository;
@@ -19,10 +19,10 @@ public class MemberService {
 	}
 
 	//TODO: Join할 때 phone number도 받아야 함
-	public void register(JoinRequest joinRequest) {
-		String encodedPassword = passwordEncoder.encode(joinRequest.getPassword());
+	public void register(RegisterRequest registerRequest) {
+		String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
 		Member member = Member.builder()
-			.username(joinRequest.getUsername())
+			.username(registerRequest.getName())
 			.password(encodedPassword)
 			.role(Role.ADMIN)
 			.build();
