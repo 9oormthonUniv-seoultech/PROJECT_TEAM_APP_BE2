@@ -62,4 +62,10 @@ public class UserController {
 		return "success";
 	}
 
+	@PostMapping("/certificate")
+	@Operation(summary = "이메일 인증 요청")
+	public String certificate(@RequestParam String email) {
+		return "success";
+	}
+
 }
