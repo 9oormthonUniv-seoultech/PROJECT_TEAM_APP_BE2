@@ -2,9 +2,11 @@ package com.groomiz.billage.auth.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.groomiz.billage.auth.dto.LoginRequest;
@@ -12,6 +14,7 @@ import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.auth.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +51,14 @@ public class UserController {
 	@PostMapping("/register")
 	@Operation(summary = "회원 가입")
 	public String join(@RequestBody RegisterRequest registerRequest) {
+		return "success";
+	}
+
+	@GetMapping("/check-student-number")
+	@Operation(summary = "학번 중복 확인")
+	public String checkStudentNumber(
+		@Parameter(description = "학번", example = "20100000") @RequestParam Long studentNumber) {
+
 		return "success";
 	}
 
