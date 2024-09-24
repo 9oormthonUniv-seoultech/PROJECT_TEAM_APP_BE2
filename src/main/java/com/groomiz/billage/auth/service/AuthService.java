@@ -77,7 +77,7 @@ public class AuthService {
 
 	private Authentication authenticate(LoginRequest loginRequest) throws AuthenticationException {
 		UsernamePasswordAuthenticationToken authToken =
-			new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+			new UsernamePasswordAuthenticationToken(loginRequest.getStudentNumber(), loginRequest.getPassword());
 		return authenticationManager.authenticate(authToken);
 	}
 }

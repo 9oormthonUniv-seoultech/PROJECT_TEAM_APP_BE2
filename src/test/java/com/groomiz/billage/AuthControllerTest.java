@@ -15,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groomiz.billage.auth.dto.LoginRequest;
 import com.groomiz.billage.auth.jwt.JwtUtil;
-import com.groomiz.billage.member.dto.JoinRequest;
 import com.groomiz.billage.member.service.MemberService;
 
 @SpringBootTest
