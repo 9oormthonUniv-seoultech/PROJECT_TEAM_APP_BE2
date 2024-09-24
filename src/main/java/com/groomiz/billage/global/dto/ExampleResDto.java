@@ -10,4 +10,5 @@ public class ExampleResDto {
 	private String name;
 	@Schema(description = "나이", example = "20")
 	private int age;
+	
 }

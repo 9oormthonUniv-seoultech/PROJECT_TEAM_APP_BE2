@@ -28,4 +28,5 @@ public class Building extends BaseEntity {
 
 	@Column(name = "image_url")
 	private String imageUrl;
+
 }
