@@ -64,7 +64,16 @@ public class UserController {
 
 	@PostMapping("/certificate")
 	@Operation(summary = "이메일 인증 요청")
-	public String certificate(@RequestParam String email) {
+	public String certificate(
+		@Parameter(description = "이메일", example = "asdf1234@gmail.com") @RequestParam String email) {
+		return "success";
+	}
+
+	@PostMapping("/verify")
+	@Operation(summary = "이메일 인증 코드 검증")
+	public String verify(
+		@Parameter(description = "이메일", example = "asdf1234@gmail.com") @RequestParam String email,
+		@Parameter(description = "인증 코드", example = "123456") @RequestParam String code) {
 		return "success";
 	}
 
