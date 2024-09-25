@@ -51,6 +51,9 @@ public class UserController {
 	@PostMapping("/register")
 	@Operation(summary = "회원 가입")
 	public String join(@RequestBody RegisterRequest registerRequest) {
+
+		memberService.register(registerRequest);
+
 		return "success";
 	}
 

@@ -32,6 +32,7 @@ public class AuthService {
 		Authentication authentication = authenticate(loginRequest);
 
 		String username = authentication.getName();
+		
 		String role = authentication.getAuthorities().iterator().next().getAuthority();
 
 		// AccessToken과 RefreshToken 생성
