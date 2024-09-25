@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groomiz.billage.auth.dto.LoginRequest;
+import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.auth.jwt.JwtUtil;
 import com.groomiz.billage.member.service.MemberService;
 
@@ -35,10 +36,11 @@ public class AuthControllerTest {
 
 	@BeforeEach
 	public void setUp() {
-		JoinRequest joinRequest = new JoinRequest("test", "1234");
+		RegisterRequest registerRequest = new RegisterRequest("홍길동", "20100000", "password1234!", "010-1234-5678",
+			"정보통신대학", "컴퓨터공학과", "asdf1234@gmail.com");
 
-		if (!memberService.isExists(joinRequest.getUsername())) {
-			memberService.register(joinRequest);
+		if (!memberService.isExists(registerRequest.getStudentNumber())) {
+			memberService.register(registerRequest);
 		}
 
 	}
@@ -46,9 +48,9 @@ public class AuthControllerTest {
 	@Test
 	@DisplayName("로그인 성공하였습니다.")
 	public void testLoginSuccess() throws Exception {
-		LoginRequest loginRequest = new LoginRequest("test", "1234");
+		LoginRequest loginRequest = new LoginRequest("20100000", "password1234!");
 
-		mockMvc.perform(post("/api/auth/login")
+		mockMvc.perform(post("/api/v1/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(loginRequest)))
 			.andExpect(status().isOk())
@@ -61,7 +63,7 @@ public class AuthControllerTest {
 	public void testExpiredToken() throws Exception {
 
 		// 만료된 Access Token을 사용한 요청 테스트
-		String expiredToken = jwtUtil.createJwt("AccessToken", "test", "ADMIN", 1L);
+		String expiredToken = jwtUtil.createJwt("AccessToken", "20100000", "ADMIN", 1L);
 
 		Thread.sleep(1000);
 
