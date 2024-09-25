@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.groomiz.billage.auth.dto.LoginRequest;
 import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.auth.service.AuthService;
+import com.groomiz.billage.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +24,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/users")
+@Tag(name = "User Controller", description = "회원 인증/인가 관련 API")
 public class UserController {
 
 	private final AuthService authService;
+	private final MemberService memberService;
 
 	@PostMapping("/login")
 	@Operation(summary = "회원 로그인")
