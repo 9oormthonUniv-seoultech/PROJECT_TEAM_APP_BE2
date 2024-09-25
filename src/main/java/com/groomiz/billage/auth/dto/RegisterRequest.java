@@ -1,10 +1,12 @@
 package com.groomiz.billage.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @Schema(description = "회원 가입 요청 DTO")
+@AllArgsConstructor
 public class RegisterRequest {
 
 	@Schema(description = "이름", example = "홍길동")

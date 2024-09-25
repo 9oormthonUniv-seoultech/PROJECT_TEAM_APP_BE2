@@ -1,10 +1,12 @@
 package com.groomiz.billage.auth.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @Schema(description = "로그인 요청 DTO")
+@AllArgsConstructor
 public class LoginRequest {
 
 	@Schema(description = "학번", example = "20100000")
