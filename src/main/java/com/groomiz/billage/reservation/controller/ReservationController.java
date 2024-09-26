@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/reservation")
+@RequestMapping("/api/v1/reservations")
 @Tag(name = "Reservation Controller", description = "[학생] 예약 관련 API")
 public class ReservationController {
 
