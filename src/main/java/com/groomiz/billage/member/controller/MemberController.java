@@ -30,7 +30,7 @@ public class MemberController {
 		return response;
 	}
 
-	@PutMapping("/phone")
+	@PutMapping("/info")
 	@Operation(summary = "회원 정보 수정")
 	public String updatePhoneNumber(@RequestBody MemberInfoRequest memberInfoRequest) {
 		return "success";
