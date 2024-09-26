@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "예약 상세 응답 DTO")
+@Schema(description = "예약 상세 조회 응답 DTO")
 public class AdminReservationResponse {
 
 	@Schema(description = "예약 날짜", example = "2024-09-03")

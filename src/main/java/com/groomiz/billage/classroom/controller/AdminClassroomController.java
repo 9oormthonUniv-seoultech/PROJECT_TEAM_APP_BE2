@@ -28,7 +28,7 @@ public class AdminClassroomController {
 	public List<AdminClassroomStatusResponse> getClassrooms(
 		@RequestBody AdminClassroomStatusRequest request) {
 
-		List<AdminClassroomStatusResponse> response = null; // 실제로는 로직에 의해 채워져야 함
+		List<AdminClassroomStatusResponse> response = null;
 		return response;
 	}
 
@@ -38,7 +38,7 @@ public class AdminClassroomController {
 		@Parameter(description = "강의실 ID", example = "1")
 		@RequestParam("id") Long id) {
 
-		ClassroomDetailResponse response = null;  // 실제 로직 추가 필요
+		ClassroomDetailResponse response = null;
 		return response;
 	}
 
