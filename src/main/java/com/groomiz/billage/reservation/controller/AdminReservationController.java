@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
+import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,5 +60,11 @@ public class AdminReservationController {
 		@RequestBody AdminReservationRequest request) {
 
 		return ResponseEntity.ok().body("{\"message\": \"예약 완료 하였습니다.\"}");
+	}
+
+	@GetMapping("/{reservationId}")
+	public ResponseEntity<AdminReservationResponse> getReservation(@PathVariable Long reservationId) {
+		// 실제 로직 없이 기본 뼈대만 작성
+		return ResponseEntity.ok(new AdminReservationResponse());
 	}
 }
