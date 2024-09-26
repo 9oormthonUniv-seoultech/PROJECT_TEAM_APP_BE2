@@ -1,5 +1,6 @@
 package com.groomiz.billage.reservation.controller;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -59,4 +60,11 @@ public class AdminReservationController {
 		return "예약 상세 조회 완료";
 	}
 
+	@DeleteMapping("/{id}")
+	@Operation(summary = "예약 삭제", description = "단일 예약, 기간 예약, 반복 예약을 삭제합니다.")
+	public String deleteReservation(@PathVariable Long id,
+		@RequestParam(required = false, defaultValue = "single") String type) {
+
+		return "예약 삭제 하였습니다.";
+	}
 }
