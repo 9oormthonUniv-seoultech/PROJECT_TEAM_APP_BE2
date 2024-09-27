@@ -1,5 +1,8 @@
 package com.groomiz.billage.member.dto;
 
+import com.groomiz.billage.member.entity.College;
+import com.groomiz.billage.member.entity.Major;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,10 +20,10 @@ public class MemberInfoResponse {
 	private String phoneNumber;
 
 	@Schema(description = "단과대", example = "정보통신대학")
-	private String college;
+	private College college;
 
 	@Schema(description = "학과", example = "컴퓨터공학과")
-	private String major;
+	private Major major;
 
 	@Schema(description = "이메일", example = "asdf1234@gmail.com")
 	private String email;
