@@ -1,13 +1,18 @@
 package com.groomiz.billage.auth.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
+@Schema(description = "로그인 요청 DTO")
 @AllArgsConstructor
 public class LoginRequest {
 
-	private String username;
+	@Schema(description = "학번", example = "20100000")
+	private String studentNumber;
 
+	@Schema(description = "비밀번호", example = "password1234!")
 	private String password;
+
 }

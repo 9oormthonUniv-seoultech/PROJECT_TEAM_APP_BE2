@@ -32,6 +32,7 @@ public class AuthService {
 		Authentication authentication = authenticate(loginRequest);
 
 		String username = authentication.getName();
+		
 		String role = authentication.getAuthorities().iterator().next().getAuthority();
 
 		// AccessToken과 RefreshToken 생성
@@ -77,7 +78,7 @@ public class AuthService {
 
 	private Authentication authenticate(LoginRequest loginRequest) throws AuthenticationException {
 		UsernamePasswordAuthenticationToken authToken =
-			new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword());
+			new UsernamePasswordAuthenticationToken(loginRequest.getStudentNumber(), loginRequest.getPassword());
 		return authenticationManager.authenticate(authToken);
 	}
 }
