@@ -11,5 +11,4 @@ public class BillageApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(BillageApplication.class, args);
 	}
-
 }
