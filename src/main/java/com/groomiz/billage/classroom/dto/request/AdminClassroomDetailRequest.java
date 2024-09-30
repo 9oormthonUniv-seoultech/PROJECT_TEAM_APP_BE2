@@ -1,5 +1,7 @@
 package com.groomiz.billage.classroom.dto.request;
 
+import java.time.LocalDate;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class AdminClassroomDetailRequest {
 
 	@Schema(description = "조회할 날짜", example = "2024-09-03")
-	private String date;
+	private LocalDate date;
 
 	@Schema(description = "건물 ID", example = "1")
 	private Long building;

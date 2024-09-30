@@ -1,6 +1,9 @@
 package com.groomiz.billage.classroom.dto.response;
 
+import java.time.LocalDate;
 import java.util.List;
+
+import com.groomiz.billage.classroom.dto.ReservationTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -15,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "강의실 현황 필터링 응답 DTO")
 public class AdminClassroomStatusResponse {
 	@Schema(description = "날짜", example = "2024-09-04")
-	private String date;
+	private LocalDate date;
 
 	@Schema(description = "건물 리스트")
 	private List<BuildingResponse> buildings;
@@ -49,19 +52,6 @@ class ClassroomResponse {
 	private String classroomNumber;
 
 	@Schema(description = "시간 정보 리스트")
-	private List<TimeSlot> time;
+	private List<ReservationTime> time;
 }
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@Schema(description = "시간 슬롯")
-class TimeSlot {
-
-	@Schema(description = "시작 시간", example = "9")
-	private int startTime;
-
-	@Schema(description = "종료 시간", example = "10")
-	private int endTime;
-}
