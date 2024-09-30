@@ -22,5 +22,5 @@ public class AdminClassroomStatusRequest {
 	private List<Long> buildings;
 
 	@Schema(description = "층 리스트", example = "[1, 2, 3]")
-	private List<Integer> floors;
+	private List<Long> floors;
 }

@@ -1,5 +1,7 @@
 package com.groomiz.billage.reservation.dto.response;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,13 +23,13 @@ public class AdminReservationStatusListResponse {
 		private Long reservationId;
 
 		@Schema(description = "예약 날짜", example = "2024-09-04")
-		private String date;
+		private LocalDate date;
 
 		@Schema(description = "예약 시작 시간", example = "9")
-		private Integer startTime;
+		private LocalTime startTime;
 
 		@Schema(description = "예약 종료 시간", example = "10")
-		private Integer endTime;
+		private LocalTime endTime;
 
 		@Schema(description = "예약 인원", example = "10")
 		private Integer headcount;
@@ -36,7 +38,7 @@ public class AdminReservationStatusListResponse {
 		private String buildingName;
 
 		@Schema(description = "층", example = "10")
-		private Integer floor;
+		private Long floor;
 
 		@Schema(description = "강의실 이름", example = "실험실")
 		private String classroomName;
@@ -45,6 +47,6 @@ public class AdminReservationStatusListResponse {
 		private String memberName;
 
 		@Schema(description = "학생 ID", example = "20201234")
-		private String studentId;
+		private Integer studentId;
 	}
 }
