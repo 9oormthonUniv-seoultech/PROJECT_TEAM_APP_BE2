@@ -3,6 +3,7 @@ package com.groomiz.billage.classroom.dto.response;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.groomiz.billage.classroom.dto.ReservationTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,6 +18,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Schema(description = "강의실 현황 필터링 응답 DTO")
 public class AdminClassroomStatusResponse {
+
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Schema(description = "날짜", example = "2024-09-04")
 	private LocalDate date;
 
