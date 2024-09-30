@@ -46,12 +46,15 @@ class BuildingResponse {
 class ClassroomResponse {
 
 	@Schema(description = "층", example = "1")
-	private int floor;
+	private Long floor;
 
 	@Schema(description = "강의실 번호", example = "101")
 	private String classroomNumber;
 
 	@Schema(description = "시간 정보 리스트")
 	private List<ReservationTime> time;
+
+	@Schema(description = "인원 수")
+	private Integer headcount;
 }
 

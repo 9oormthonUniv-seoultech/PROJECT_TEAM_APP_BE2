@@ -52,7 +52,7 @@ public class AdminClassroomDetailResponse {
 		private LocalTime endTime;
 
 		@Schema(description = "인원 수", example = "10")
-		private int headcount;
+		private Integer headcount;
 
 		@Schema(description = "예약자 이름", example = "홍길동")
 		private String memberName;

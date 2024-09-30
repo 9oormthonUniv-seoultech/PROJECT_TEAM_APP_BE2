@@ -22,7 +22,7 @@ public class AdminClassroomDetailRequest {
 	private Long building;
 
 	@Schema(description = "층", example = "2")
-	private Integer floor;
+	private Long floor;
 
 	@Schema(description = "강의실 ID", example = "2")
 	private Long classroom;
