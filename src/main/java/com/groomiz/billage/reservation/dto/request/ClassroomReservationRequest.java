@@ -1,6 +1,7 @@
 package com.groomiz.billage.reservation.dto.request;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import com.groomiz.billage.reservation.entity.ReservationPurpose;
@@ -23,10 +24,10 @@ public class ClassroomReservationRequest {
 	private LocalDate applyDate;
 	@Schema(description = "예약 시작 시간", example = "9")
 	@NotNull
-	private Integer startTime;
+	private LocalTime startTime;
 	@Schema(description = "예약 종료 시간", example = "10")
 	@NotNull
-	private Integer endTime;
+	private LocalTime endTime;
 	@Schema(description = "예약 인원", example = "30")
 	@NotNull
 	private Integer headcount;

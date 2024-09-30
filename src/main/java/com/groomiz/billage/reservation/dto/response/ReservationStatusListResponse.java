@@ -1,6 +1,7 @@
 package com.groomiz.billage.reservation.dto.response;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import com.groomiz.billage.reservation.entity.ReservationStatusType;
@@ -23,10 +24,10 @@ public class ReservationStatusListResponse {
 		private Long reservationId;
 		@Schema(description = "예약 날짜", example = "2024-08-01")
 		private LocalDate applyDate;
-		@Schema(description = "예약 시작 시간", example = "9")
-		private Integer startTime;
-		@Schema(description = "예약 종료 시간", example = "10")
-		private Integer endTime;
+		@Schema(description = "예약 시작 시간", example = "09:00")
+		private LocalTime startTime;
+		@Schema(description = "예약 종료 시간", example = "10:00")
+		private LocalTime endTime;
 		@Schema(description = "예약 인원", example = "30")
 		private Integer headcount;
 		@Schema(description = "강의실 이름", example = "실험실")
