@@ -55,6 +55,7 @@ public class AdminReservationController {
 	}
 
 	@GetMapping("/{reservationId}")
+	@Operation(summary = "예약 상세 조회")
 	public String getReservation(@PathVariable Long reservationId) {
 
 		return "예약 상세 조회 완료";

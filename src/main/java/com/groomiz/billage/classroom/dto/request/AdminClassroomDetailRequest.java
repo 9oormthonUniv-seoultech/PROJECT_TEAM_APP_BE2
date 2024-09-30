@@ -2,6 +2,8 @@ package com.groomiz.billage.classroom.dto.request;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "강의실 상세 조회 요청 DTO")
 public class AdminClassroomDetailRequest {
 
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Schema(description = "조회할 날짜", example = "2024-09-03")
 	private LocalDate date;
 
