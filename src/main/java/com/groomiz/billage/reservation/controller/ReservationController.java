@@ -2,6 +2,7 @@ package com.groomiz.billage.reservation.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,25 +27,25 @@ public class ReservationController {
 
 	@PostMapping
 	@Operation(summary = "강의실 예약")
-	public String reserveClassroom(@RequestBody ClassroomReservationRequest request) {
+	public ResponseEntity<String> reserveClassroom(@RequestBody ClassroomReservationRequest request) {
 
-		return "success";
+		return ResponseEntity.ok("강의실 예약 요청에 성공하였습니다.");
 	}
 
 	@DeleteMapping
 	@Operation(summary = "강의실 예약 취소")
-	public String cancelClassroomReservation(
+	public ResponseEntity<String> cancelClassroomReservation(
 		@Parameter(description = "예약 ID", example = "1")
 		@PathVariable("id") Long id) {
 
-		return "success";
+		return ResponseEntity.ok("강의실 예약 취소에 성공하였습니다.");
 	}
 
 	@GetMapping
 	@Operation(summary = "예약 현황 목록 조회")
-	public List<ReservationStatusListResponse> getAllReservationStatus() {
+	public ResponseEntity<List<ReservationStatusListResponse>> getAllReservationStatus() {
 
 		List<ReservationStatusListResponse> response = null;
-		return response;
+		return ResponseEntity.ok(response);
 	}
 }

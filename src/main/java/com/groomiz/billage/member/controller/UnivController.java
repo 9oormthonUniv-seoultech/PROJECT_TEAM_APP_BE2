@@ -2,6 +2,7 @@ package com.groomiz.billage.member.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,15 +22,15 @@ public class UnivController {
 
 	@GetMapping("/college")
 	@Operation(summary = "단과대/학과 목록 조회")
-	public List<CollegeListResponse> findAllCollege() {
+	public ResponseEntity<List<CollegeListResponse>> findAllCollege() {
 		List<CollegeListResponse> response = null;
-		return response;
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/admin")
 	@Operation(summary = "담당자 목록 조회")
-	public List<AdminListResponse> findAllAdmin() {
+	public ResponseEntity<List<AdminListResponse>> findAllAdmin() {
 		List<AdminListResponse> response = null;
-		return response;
+		return ResponseEntity.ok(response);
 	}
 }
