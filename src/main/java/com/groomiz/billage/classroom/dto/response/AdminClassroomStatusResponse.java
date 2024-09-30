@@ -23,7 +23,7 @@ public class AdminClassroomStatusResponse {
 	@Schema(description = "날짜", example = "2024-09-04")
 	private LocalDate date;
 
-	@Schema(description = "건물 리스트")
+	@Schema(description = "필터링 건물 리스트")
 	private List<BuildingResponse> buildings;
 }
 
@@ -31,13 +31,13 @@ public class AdminClassroomStatusResponse {
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "건물 정보")
+@Schema(description = "필터링 건물 정보")
 class BuildingResponse {
 
 	@Schema(description = "건물 이름", example = "미래관")
 	private String buildingName;
 
-	@Schema(description = "강의실 리스트")
+	@Schema(description = "필터링 강의실 리스트")
 	private List<ClassroomResponse> classrooms;
 }
 
@@ -45,7 +45,7 @@ class BuildingResponse {
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "강의실 정보")
+@Schema(description = "필터링 강의실 정보")
 class ClassroomResponse {
 
 	@Schema(description = "층", example = "1")
