@@ -1,5 +1,6 @@
 package com.groomiz.billage.global.config;
 
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -37,5 +38,23 @@ public class SwaggerConfig {
 			.info(info)
 			.addSecurityItem(securityRequirement)
 			.components(components);
+	}
+
+	@Bean
+	public GroupedOpenApi studentGroup() {
+		return GroupedOpenApi.builder()
+			.group("학생")
+			.pathsToMatch("/api/v1/users/**", "/api/v1/univ/building/**", "/api/v1/univ/classroom/**",
+				"/api/v1/univ/**",
+				"/api/v1/reservations/**")
+			.build();
+	}
+
+	@Bean
+	public GroupedOpenApi adminGroup() {
+		return GroupedOpenApi.builder()
+			.group("관리자")
+			.pathsToMatch("/api/v1/admin/classrooms/**", "/api/v1/admin/reservations/**")
+			.build();
 	}
 }
