@@ -2,9 +2,6 @@ package com.groomiz.billage.auth.exception;
 
 import static com.groomiz.billage.global.consts.BillageStatic.*;
 
-import java.lang.reflect.Field;
-import java.util.Objects;
-
 import com.groomiz.billage.global.anotation.ExplainError;
 import com.groomiz.billage.global.dto.ErrorReason;
 import com.groomiz.billage.global.exception.BaseErrorCode;
@@ -16,15 +13,26 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AuthErrorCode implements BaseErrorCode {
 
-	@ExplainError("accessToken 만료시 발생하는 오류입니다.")
-	TOKEN_EXPIRED(UNAUTHORIZED, "AUTH_401_1", "인증 시간이 만료되었습니다. 인증토큰을 재 발급 해주세요"),
-	@ExplainError("인증 토큰이 잘못됐을 때 발생하는 오류입니다.")
-	INVALID_TOKEN(UNAUTHORIZED, "AUTH_401_2", "잘못된 토큰입니다. 재 로그인 해주세요"),
+	@ExplainError("아이디가 틀린 경우 발생하는 오류입니다.")
+	INVALID_USER_ID(BAD_REQUEST, "AUTH_400_1", "잘못된 아이디입니다."),
 
-	@ExplainError("refreshToken 만료시 발생하는 오류입니다.")
-	REFRESH_TOKEN_EXPIRED(FORBIDDEN, "AUTH_403_1", "인증 시간이 만료되었습니다. 재 로그인 해주세요."),
-	@ExplainError("헤더에 올바른 accessToken을 담지않았을 때 발생하는 오류(형식 불일치 등)")
-	ACCESS_TOKEN_NOT_EXIST(FORBIDDEN, "AUTH_403_2", "알맞은 accessToken을 넣어주세요.");
+	@ExplainError("비밀번호가 틀린 경우 발생하는 오류입니다.")
+	INVALID_PASSWORD(BAD_REQUEST, "AUTH_400_2", "잘못된 비밀번호입니다."),
+
+	@ExplainError("JWT 토큰이 없는 경우 발생하는 오류입니다.")
+	TOKEN_NOT_FOUND(UNAUTHORIZED, "AUTH_401_1", "인증 토큰이 존재하지 않습니다."),
+
+	@ExplainError("유효하지 않은 JWT 토큰인 경우 발생하는 오류입니다.")
+	INVALID_TOKEN(UNAUTHORIZED, "AUTH_401_2", "유효하지 않은 인증 토큰입니다."),
+
+	@ExplainError("JWT 토큰이 만료된 경우 발생하는 오류입니다.")
+	TOKEN_EXPIRED(UNAUTHORIZED, "AUTH_401_3", "만료된 인증 토큰입니다."),
+
+	@ExplainError("회원이 존재하지 않는 경우 발생하는 오류입니다.")
+	MEMBER_NOT_FOUND(NOT_FOUND, "AUTH_404_1", "해당 회원이 존재하지 않습니다."),
+
+	@ExplainError("이미 탈퇴한 회원인 경우 발생하는 오류입니다.")
+	MEMBER_ALREADY_WITHDRAWN(BAD_REQUEST, "AUTH_400_3", "이미 탈퇴한 회원입니다.");
 
 	private final Integer status;
 	private final String code;
@@ -36,10 +44,8 @@ public enum AuthErrorCode implements BaseErrorCode {
 	}
 
 	@Override
-	public String getExplainError() throws NoSuchFieldException {
-		Field field = this.getClass().getField(this.name());
-		ExplainError annotation = field.getAnnotation(ExplainError.class);
-		return Objects.nonNull(annotation) ? annotation.value() : this.getReason();
+	public String getExplainError() {
+		return this.reason;
 	}
 }
 
