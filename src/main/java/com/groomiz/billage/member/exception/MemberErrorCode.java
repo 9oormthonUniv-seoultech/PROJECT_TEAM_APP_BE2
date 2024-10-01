@@ -29,7 +29,10 @@ public enum MemberErrorCode implements BaseErrorCode {
 	PASSWORD_SAME_AS_OLD(BAD_REQUEST, "MEMBER_400_4", "비밀번호가 이전 값과 동일합니다."),
 
 	@ExplainError("비밀번호가 조건과 맞지 않는 경우 발생하는 오류입니다.")
-	PASSWORD_CONSTRAINT_VIOLATION(BAD_REQUEST, "MEMBER_400_5", "비밀번호가 요구 조건에 맞지 않습니다.");
+	PASSWORD_CONSTRAINT_VIOLATION(BAD_REQUEST, "MEMBER_400_5", "비밀번호가 요구 조건에 맞지 않습니다."),
+
+	@ExplainError("회원이 존재하지 않는 경우 발생하는 오류입니다.")
+	MEMBER_NOT_FOUND(NOT_FOUND, "MEMBER_404_1", "해당 회원이 존재하지 않습니다.");
 
 	private final Integer status;
 	private final String code;
