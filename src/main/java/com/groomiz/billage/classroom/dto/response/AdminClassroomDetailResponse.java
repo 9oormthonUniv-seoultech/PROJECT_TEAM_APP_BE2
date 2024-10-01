@@ -44,15 +44,12 @@ public class AdminClassroomDetailResponse {
 		@Schema(description = "예약 ID", example = "1")
 		private Long reservationId;
 
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 		@Schema(description = "예약 날짜", example = "2024-09-04")
 		private LocalDate date;
 
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
 		@Schema(description = "시작 시간", example = "09:00")
 		private LocalTime startTime;
 
-		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
 		@Schema(description = "종료 시간", example = "10:00")
 		private LocalTime endTime;
 
@@ -63,6 +60,6 @@ public class AdminClassroomDetailResponse {
 		private String memberName;
 
 		@Schema(description = "예약자 학번", example = "20201234")
-		private Integer studentId;
+		private String studentId;
 	}
 }

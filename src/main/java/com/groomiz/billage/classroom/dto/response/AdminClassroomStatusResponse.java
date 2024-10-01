@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 @Schema(description = "강의실 현황 필터링 응답 DTO")
 public class AdminClassroomStatusResponse {
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Schema(description = "날짜", example = "2024-09-04")
 	private LocalDate date;
 
