@@ -1,5 +1,6 @@
 package com.groomiz.billage.member.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,29 +24,29 @@ public class MemberController {
 
 	@GetMapping("/info")
 	@Operation(summary = "회원 정보 조회")
-	public MemberInfoResponse info() {
+	public ResponseEntity<MemberInfoResponse> info() {
 
 		MemberInfoResponse response = null;
 
-		return response;
+		return ResponseEntity.ok(response);
 	}
 
 	@PutMapping("/info")
 	@Operation(summary = "회원 정보 수정")
-	public String updatePhoneNumber(@RequestBody MemberInfoRequest memberInfoRequest) {
-		return "success";
+	public ResponseEntity<?> updatePhoneNumber(@RequestBody MemberInfoRequest memberInfoRequest) {
+		return ResponseEntity.ok("success");
 	}
 
 	@DeleteMapping
 	@Operation(summary = "회원 탈퇴")
-	public String delete() {
-		return "success";
+	public ResponseEntity<?> delete() {
+		return ResponseEntity.ok("success");
 	}
 
 	@PutMapping("/password")
 	@Operation(summary = "비밀번호 수정")
-	public String updatePassword(@RequestBody PasswordRequest passwordRequest) {
-		return "success";
+	public ResponseEntity<?> updatePassword(@RequestBody PasswordRequest passwordRequest) {
+		return ResponseEntity.ok("success");
 	}
 
 }
