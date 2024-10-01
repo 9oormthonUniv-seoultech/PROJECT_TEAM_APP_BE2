@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/v1/example")
+@RequestMapping("/api/v1/example")
 @RequiredArgsConstructor
 @Tag(name = "Exception Document", description = "예제 에러코드 문서화")
 public class ExampleController {
