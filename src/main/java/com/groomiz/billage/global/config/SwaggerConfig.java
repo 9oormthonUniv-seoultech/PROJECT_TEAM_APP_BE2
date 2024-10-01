@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springdoc.core.customizers.OperationCustomizer;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -219,5 +220,23 @@ public class SwaggerConfig {
 		tags.addAll(methodTagStrings);
 		tags.addAll(classTagStrings);
 		return tags;
+	}
+
+	@Bean
+	public GroupedOpenApi studentGroup() {
+		return GroupedOpenApi.builder()
+			.group("학생")
+			.pathsToMatch("/api/v1/users/**", "/api/v1/univ/building/**", "/api/v1/univ/classroom/**",
+				"/api/v1/univ/**",
+				"/api/v1/reservations/**")
+			.build();
+	}
+
+	@Bean
+	public GroupedOpenApi adminGroup() {
+		return GroupedOpenApi.builder()
+			.group("관리자")
+			.pathsToMatch("/api/v1/admin/classrooms/**", "/api/v1/admin/reservations/**")
+			.build();
 	}
 }

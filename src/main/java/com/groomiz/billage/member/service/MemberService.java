@@ -26,7 +26,7 @@ public class MemberService {
 			.password("{bcrypt}" + encodedPassword)
 			.phoneNumber(registerRequest.getPhoneNumber())
 			.role(Role.ADMIN)
-			.studentNumber(Integer.parseInt(registerRequest.getStudentNumber()))
+			.studentNumber(registerRequest.getStudentNumber())
 			.isAdmin(true)
 			.college(College.fromName(registerRequest.getCollege()))
 			.major(Major.fromName(registerRequest.getMajor()))
