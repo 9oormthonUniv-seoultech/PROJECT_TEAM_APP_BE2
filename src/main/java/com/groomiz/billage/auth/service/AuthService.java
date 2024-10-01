@@ -32,7 +32,6 @@ public class AuthService {
 		Authentication authentication = authenticate(loginRequest);
 
 		String username = authentication.getName();
-		
 		String role = authentication.getAuthorities().iterator().next().getAuthority();
 
 		// AccessToken과 RefreshToken 생성
@@ -51,7 +50,7 @@ public class AuthService {
 		// 헤더에서 RefreshToken 가져오기
 		String refreshToken = request.getHeader("RefreshToken");
 		if (refreshToken == null || !refreshToken.startsWith("Bearer ")) {
-			throw new AuthException(AuthErrorCode.ACCESS_TOKEN_NOT_EXIST);
+			throw new AuthException(AuthErrorCode.TOKEN_NOT_FOUND);
 		}
 
 		// Bearer 접두사 제거
@@ -59,7 +58,7 @@ public class AuthService {
 
 		// RefreshToken 만료 확인
 		if (jwtUtil.isExpired(refreshToken)) {
-			throw new AuthException(AuthErrorCode.REFRESH_TOKEN_EXPIRED);
+			throw new AuthException(AuthErrorCode.TOKEN_EXPIRED);
 		}
 
 		// RefreshToken의 유효성 확인
