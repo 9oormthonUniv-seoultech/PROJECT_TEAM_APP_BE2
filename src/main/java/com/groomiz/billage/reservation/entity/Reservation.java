@@ -1,6 +1,7 @@
 package com.groomiz.billage.reservation.entity;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 import com.groomiz.billage.classroom.entity.Classroom;
 import com.groomiz.billage.common.entity.BaseEntity;
@@ -35,10 +36,10 @@ public class Reservation extends BaseEntity {
 	private Integer headcount;
 
 	@Column(name = "start_time", nullable = false)
-	private Integer startTime;
+	private LocalTime startTime;
 
 	@Column(name = "end_time", nullable = false)
-	private Integer endTime;
+	private LocalTime endTime;
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
