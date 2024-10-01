@@ -2,6 +2,7 @@ package com.groomiz.billage.classroom.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,20 +26,20 @@ import lombok.RequiredArgsConstructor;
 public class AdminClassroomController {
 	@PostMapping
 	@Operation(summary = "강의실 현황 필터링")
-	public List<AdminClassroomStatusResponse> getClassrooms(
+	public ResponseEntity<List<AdminClassroomStatusResponse>> getClassrooms(
 		@RequestBody AdminClassroomStatusRequest request) {
 
-		List<AdminClassroomStatusResponse> response = null;
+		ResponseEntity<List<AdminClassroomStatusResponse>> response = null;
 		return response;
 	}
 
 	@GetMapping("/info")
 	@Operation(summary = "강의실 상세 조회")
-	public ClassroomDetailResponse findByClassroomId(
+	public ResponseEntity<ClassroomDetailResponse> findByClassroomId(
 		@Parameter(description = "강의실 ID", example = "1")
 		@RequestParam("id") Long id) {
 
-		ClassroomDetailResponse response = null;
+		ResponseEntity<ClassroomDetailResponse> response = null;
 		return response;
 	}
 
