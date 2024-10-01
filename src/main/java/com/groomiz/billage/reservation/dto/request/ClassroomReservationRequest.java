@@ -7,6 +7,7 @@ import com.groomiz.billage.reservation.entity.ReservationPurpose;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
@@ -21,10 +22,12 @@ public class ClassroomReservationRequest {
 	@Schema(description = "예약 날짜", example = "2024-08-01")
 	@NotNull
 	private LocalDate applyDate;
-	@Schema(description = "예약 시작 시간", example = "9")
+	@Schema(description = "예약 시작 시간", example = "09:00")
 	@NotNull
+	@Pattern(regexp = "\\d{2}-\\d{2}", message = "시간 형식은 HH:mm이어야 합니다.")
 	private LocalTime startTime;
-	@Schema(description = "예약 종료 시간", example = "10")
+	@Schema(description = "예약 종료 시간", example = "10:00")
+	@Pattern(regexp = "\\d{2}-\\d{2}", message = "시간 형식은 HH:mm이어야 합니다.")
 	@NotNull
 	private LocalTime endTime;
 	@Schema(description = "예약 인원", example = "30")

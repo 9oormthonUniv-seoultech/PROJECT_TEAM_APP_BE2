@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
 @Data
@@ -17,6 +18,7 @@ public class ClassroomListRequest {
 	@NotNull
 	private Long floor;
 	@Schema(description = "날짜", example = "2024-08-01")
+	@Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "날짜 형식은 yyyy-MM-dd여야 합니다.")
 	@NotNull
 	private LocalDate date;
 	@Schema(description = "인원", example = "30")
