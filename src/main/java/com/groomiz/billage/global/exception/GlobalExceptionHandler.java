@@ -115,9 +115,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(GlobalCodeException.class)
-	public ResponseEntity<ErrorResponse> GlobalCodeExceptionHandler(
-		GlobalCodeException e, HttpServletRequest request) {
-		BaseErrorCode code = e.getErrorCode();
+	public ResponseEntity<ErrorResponse> globalCodeExceptionHandler(
+		GlobalCodeException ex, HttpServletRequest request) {
+		BaseErrorCode code = ex.getErrorCode();
 		ErrorReason errorReason = code.getErrorReason();
 		ErrorResponse errorResponse =
 			new ErrorResponse(errorReason, request.getRequestURL().toString());
@@ -126,15 +126,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(GlobalDynamicException.class)
-	public ResponseEntity<ErrorResponse> GlobalDynamicExceptionHandler(
-		GlobalDynamicException e, HttpServletRequest request) {
+	public ResponseEntity<ErrorResponse> globalDynamicExceptionHandler(
+		GlobalDynamicException ex, HttpServletRequest request) {
 		ErrorResponse errorResponse =
 			new ErrorResponse(
-				e.getStatus(),
-				e.getCode(),
-				e.getReason(),
+				ex.getStatus(),
+				ex.getCode(),
+				ex.getReason(),
 				request.getRequestURL().toString());
-		return ResponseEntity.status(HttpStatus.valueOf(e.getStatus())).body(errorResponse);
+		return ResponseEntity.status(HttpStatus.valueOf(ex.getStatus())).body(errorResponse);
 	}
 
 	//TODO: 이 경우 디코에 알림 가도록 구성해도 좋겠다.
