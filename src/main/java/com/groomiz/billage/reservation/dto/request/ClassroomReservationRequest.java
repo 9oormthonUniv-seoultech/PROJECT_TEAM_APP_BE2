@@ -2,7 +2,6 @@ package com.groomiz.billage.reservation.dto.request;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 import com.groomiz.billage.reservation.entity.ReservationPurpose;
 
@@ -17,8 +16,8 @@ public class ClassroomReservationRequest {
 	@Schema(description = "강의실 ID", example = "1")
 	@NotNull
 	private Long classroomId;
-	@Schema(description = "예약자 전화번호 리스트", example = "[\"010-1234-5678\",\"010-1234-5679\"]")
-	private List<String> phoneNumbers;
+	@Schema(description = "예약자 추가 전화번호", example = "010-1234-5678")
+	private String phoneNumbers;
 	@Schema(description = "예약 날짜", example = "2024-08-01")
 	@NotNull
 	private LocalDate applyDate;
