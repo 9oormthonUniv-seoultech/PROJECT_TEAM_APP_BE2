@@ -47,7 +47,7 @@ public class Member extends BaseEntity {
 	private boolean agreedToTerms;  // 약관 동의 여부
 
 	@Column(name = "student_number")
-	private Integer studentNumber;
+	private String studentNumber;
 
 	@Column(name = "phone_number", nullable = false)
 	private String phoneNumber;
@@ -65,7 +65,7 @@ public class Member extends BaseEntity {
 	private Integer verificationCode;
 
 	@Builder
-	public Member(String username, String password, Role role, boolean isAdmin, boolean isValid, Integer studentNumber,
+	public Member(String username, String password, Role role, boolean isAdmin, boolean isValid, String studentNumber,
 		String phoneNumber, boolean agreedToTerms) {
 		this.username = username;
 		this.password = password;
