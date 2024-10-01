@@ -54,34 +54,34 @@ public class UserController {
 
 	@PostMapping("/register")
 	@Operation(summary = "회원 가입")
-	public String join(@RequestBody RegisterRequest registerRequest) {
+	public ResponseEntity<?> join(@RequestBody RegisterRequest registerRequest) {
 
 		memberService.register(registerRequest);
 
-		return "success";
+		return ResponseEntity.ok("success");
 	}
 
 	@GetMapping("/check-student-number")
 	@Operation(summary = "학번 중복 확인")
-	public String checkStudentNumber(
+	public ResponseEntity<?> checkStudentNumber(
 		@Parameter(description = "학번", example = "20100000") @RequestParam Long studentNumber) {
 
-		return "success";
+		return ResponseEntity.ok("success");
 	}
 
 	@PostMapping("/certificate")
 	@Operation(summary = "이메일 인증 요청")
-	public String certificate(
+	public ResponseEntity<?> certificate(
 		@Parameter(description = "이메일", example = "asdf1234@gmail.com") @RequestParam String email) {
-		return "success";
+		return ResponseEntity.ok("success");
 	}
 
 	@PostMapping("/verify")
 	@Operation(summary = "이메일 인증 코드 검증")
-	public String verify(
+	public ResponseEntity<?> verify(
 		@Parameter(description = "이메일", example = "asdf1234@gmail.com") @RequestParam String email,
 		@Parameter(description = "인증 코드", example = "123456") @RequestParam String code) {
-		return "success";
+		return ResponseEntity.ok("success");
 	}
 
 }
