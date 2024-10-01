@@ -19,7 +19,7 @@ public class ClassroomListResponse {
 	private String classroomNumber;
 	@Schema(description = "수용 인원", example = "30")
 	private Integer capacity;
-	@Schema(description = "예약된 시간", example = "[{\"startTime\":9,\"endTime\":10}]")
+	@Schema(description = "예약된 시간", example = "[{\"startTime\":\"09:00\",\"endTime\":\"10:00\"}]")
 	private List<ReservationTime> reservationTimes;
 
 }

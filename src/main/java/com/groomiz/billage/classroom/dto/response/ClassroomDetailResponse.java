@@ -23,6 +23,6 @@ public class ClassroomDetailResponse {
 	private String description;
 	@Schema(description = "강의실 이미지", example = "https://groomiz.com/classroom/1.jpg")
 	private String classroomImage;
-	@Schema(description = "예약된 시간", example = "[{\"startTime\":9,\"endTime\":10}]")
+	@Schema(description = "예약된 시간", example = "[{\"startTime\":\"09:00\",\"endTime\":\"10:00\"}]")
 	private List<ReservationTime> reservationTimes;
 }
