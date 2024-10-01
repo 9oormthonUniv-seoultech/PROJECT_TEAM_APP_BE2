@@ -37,6 +37,6 @@ public class MemberService {
 	}
 
 	public boolean isExists(String studentNumber) {
-		return memberRepository.existsByStudentNumber(Integer.parseInt(studentNumber));
+		return memberRepository.existsByStudentNumber(studentNumber);
 	}
 }

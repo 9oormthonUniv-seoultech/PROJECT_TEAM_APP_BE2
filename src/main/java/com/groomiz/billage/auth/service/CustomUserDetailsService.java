@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String studentNumber) throws UsernameNotFoundException {
 
-		Member member = memberRepository.findByStudentNumber(Integer.parseInt(studentNumber));
+		Member member = memberRepository.findByStudentNumber(studentNumber);
 
 		if (member != null) {
 
