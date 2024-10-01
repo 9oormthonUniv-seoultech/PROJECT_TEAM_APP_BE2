@@ -2,6 +2,7 @@ package com.groomiz.billage.classroom.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,19 +27,19 @@ public class ClassroomController {
 
 	@PostMapping
 	@Operation(summary = "강의실 목록 조회")
-	public List<ClassroomListResponse> findAll(@RequestBody ClassroomListRequest request) {
+	public ResponseEntity<List<ClassroomListResponse>> findAll(@RequestBody ClassroomListRequest request) {
 
 		List<ClassroomListResponse> response = null;
-		return response;
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/info")
 	@Operation(summary = "강의실 상세 조회")
-	public ClassroomDetailResponse findByClassroomId(
+	public ResponseEntity<ClassroomDetailResponse> findByClassroomId(
 		@Parameter(description = "강의실 ID", example = "1")
 		@RequestParam("id") Long id) {
 
 		ClassroomDetailResponse response = null;
-		return response;
+		return ResponseEntity.ok(response);
 	}
 }

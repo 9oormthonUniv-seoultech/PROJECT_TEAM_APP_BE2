@@ -1,7 +1,9 @@
 package com.groomiz.billage.classroom.dto;
 
+import java.time.LocalTime;
+
 public class ReservationTime {
 
-	private Integer startTime;
-	private Integer endTime;
+	private LocalTime startTime;
+	private LocalTime endTime;
 }
