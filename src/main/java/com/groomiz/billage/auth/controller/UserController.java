@@ -9,9 +9,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.groomiz.billage.auth.document.CertificateEmailExceptionDocs;
+import com.groomiz.billage.auth.document.LoginExceptionDocs;
+import com.groomiz.billage.auth.document.RegisterExceptionDocs;
+import com.groomiz.billage.auth.document.StudentNumberExcptionDocs;
+import com.groomiz.billage.auth.document.VerifyEmailException;
 import com.groomiz.billage.auth.dto.LoginRequest;
 import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.auth.service.AuthService;
+import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
 import com.groomiz.billage.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +38,7 @@ public class UserController {
 
 	@PostMapping("/login")
 	@Operation(summary = "회원 로그인")
+	@ApiErrorExceptionsExample(LoginExceptionDocs.class)
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 		try {
 			authService.login(loginRequest, response);
@@ -54,6 +61,7 @@ public class UserController {
 
 	@PostMapping("/register")
 	@Operation(summary = "회원 가입")
+	@ApiErrorExceptionsExample(RegisterExceptionDocs.class)
 	public ResponseEntity<?> join(@RequestBody RegisterRequest registerRequest) {
 
 		memberService.register(registerRequest);
@@ -63,6 +71,7 @@ public class UserController {
 
 	@GetMapping("/check-student-number")
 	@Operation(summary = "학번 중복 확인")
+	@ApiErrorExceptionsExample(StudentNumberExcptionDocs.class)
 	public ResponseEntity<?> checkStudentNumber(
 		@Parameter(description = "학번", example = "20100000") @RequestParam Long studentNumber) {
 
@@ -71,6 +80,7 @@ public class UserController {
 
 	@PostMapping("/certificate")
 	@Operation(summary = "이메일 인증 요청")
+	@ApiErrorExceptionsExample(CertificateEmailExceptionDocs.class)
 	public ResponseEntity<?> certificate(
 		@Parameter(description = "이메일", example = "asdf1234@gmail.com") @RequestParam String email) {
 		return ResponseEntity.ok("success");
@@ -78,6 +88,7 @@ public class UserController {
 
 	@PostMapping("/verify")
 	@Operation(summary = "이메일 인증 코드 검증")
+	@ApiErrorExceptionsExample(VerifyEmailException.class)
 	public ResponseEntity<?> verify(
 		@Parameter(description = "이메일", example = "asdf1234@gmail.com") @RequestParam String email,
 		@Parameter(description = "인증 코드", example = "123456") @RequestParam String code) {
