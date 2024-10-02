@@ -31,6 +31,12 @@ public enum MemberErrorCode implements BaseErrorCode {
 	@ExplainError("비밀번호가 조건과 맞지 않는 경우 발생하는 오류입니다.")
 	PASSWORD_CONSTRAINT_VIOLATION(BAD_REQUEST, "MEMBER_400_5", "비밀번호가 요구 조건에 맞지 않습니다."),
 
+	@ExplainError("단과대 값이 유효하지 않은 enum인 경우 발생하는 오류입니다.")
+	INVALID_COLLEGE_ENUM(BAD_REQUEST, "MEMBER_400_4", "잘못된 단과대 값입니다."),
+
+	@ExplainError("학과 값이 유효하지 않은 enum인 경우 발생하는 오류입니다.")
+	INVALID_MAJOR_ENUM(BAD_REQUEST, "MEMBER_400_4", "잘못된 학과 값입니다."),
+
 	@ExplainError("회원이 존재하지 않는 경우 발생하는 오류입니다.")
 	MEMBER_NOT_FOUND(NOT_FOUND, "MEMBER_404_1", "해당 회원이 존재하지 않습니다.");
 
