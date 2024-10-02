@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.groomiz.billage.classroom.document.ClassroomInfoExceptionDocs;
+import com.groomiz.billage.classroom.document.ClassroomListExceptionDocs;
 import com.groomiz.billage.classroom.dto.request.ClassroomListRequest;
 import com.groomiz.billage.classroom.dto.response.ClassroomDetailResponse;
 import com.groomiz.billage.classroom.dto.response.ClassroomListResponse;
+import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,6 +30,7 @@ public class ClassroomController {
 
 	@PostMapping
 	@Operation(summary = "강의실 목록 조회")
+	@ApiErrorExceptionsExample(ClassroomListExceptionDocs.class)
 	public ResponseEntity<List<ClassroomListResponse>> findAll(@RequestBody ClassroomListRequest request) {
 
 		List<ClassroomListResponse> response = null;
@@ -35,6 +39,7 @@ public class ClassroomController {
 
 	@GetMapping("/info")
 	@Operation(summary = "강의실 상세 조회")
+	@ApiErrorExceptionsExample(ClassroomInfoExceptionDocs.class)
 	public ResponseEntity<ClassroomDetailResponse> findByClassroomId(
 		@Parameter(description = "강의실 ID", example = "1")
 		@RequestParam("id") Long id) {
