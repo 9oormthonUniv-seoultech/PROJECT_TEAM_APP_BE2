@@ -50,7 +50,7 @@ public class SwaggerConfig {
 			.title("빌리지 API Document")
 			.version("1.0")
 			.description(
-				"환영합니다! [빌리지](https://example.com)는 서울과학기술대학교 강의실을 빌리기 위해서 위해 만들어진 플랫폼입니다. 이 API 문서는 빌리지의 API를 사용하는 방법을 설명합니다.\n")
+				"환영합니다! [발리지](https://example.com)는 서울과학기술대학교 강의실을 빌리기 위해서 위해 만들어진 플랫폼입니다. 이 API 문서는 빌리지의 API를 사용하는 방법을 설명합니다.\n")
 			.contact(new io.swagger.v3.oas.models.info.Contact().email("billage.official@gmail.com"));
 
 		String jwtScheme = "jwtAuth";
