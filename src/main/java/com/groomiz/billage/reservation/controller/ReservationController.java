@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
+import com.groomiz.billage.reservation.document.ReservationCancelExceptionDocs;
 import com.groomiz.billage.reservation.document.ReservationExceptionDocs;
 import com.groomiz.billage.reservation.dto.request.ClassroomReservationRequest;
 import com.groomiz.billage.reservation.dto.response.ReservationStatusListResponse;
@@ -36,7 +37,7 @@ public class ReservationController {
 
 	@DeleteMapping
 	@Operation(summary = "강의실 예약 취소")
-	// @ApiErrorExceptionsExample()
+	@ApiErrorExceptionsExample(ReservationCancelExceptionDocs.class)
 	public ResponseEntity<String> cancelClassroomReservation(
 		@Parameter(description = "예약 ID", example = "1")
 		@PathVariable("id") Long id) {
