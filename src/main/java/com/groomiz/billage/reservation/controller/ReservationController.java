@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
+import com.groomiz.billage.reservation.document.ReservationExceptionDocs;
 import com.groomiz.billage.reservation.dto.request.ClassroomReservationRequest;
 import com.groomiz.billage.reservation.dto.response.ReservationStatusListResponse;
 
@@ -27,13 +29,14 @@ public class ReservationController {
 
 	@PostMapping
 	@Operation(summary = "강의실 예약")
+	@ApiErrorExceptionsExample(ReservationExceptionDocs.class)
 	public ResponseEntity<String> reserveClassroom(@RequestBody ClassroomReservationRequest request) {
-
 		return ResponseEntity.ok("강의실 예약 요청에 성공하였습니다.");
 	}
 
 	@DeleteMapping
 	@Operation(summary = "강의실 예약 취소")
+	// @ApiErrorExceptionsExample()
 	public ResponseEntity<String> cancelClassroomReservation(
 		@Parameter(description = "예약 ID", example = "1")
 		@PathVariable("id") Long id) {
