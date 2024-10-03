@@ -50,7 +50,11 @@ public enum ReservationErrorCode implements BaseErrorCode {
 	INVALID_RESERVATION_PURPOSE(BAD_REQUEST, "RESERVATION_400_10", "예약 목적이 잘못된 형식입니다."),
 
 	@ExplainError("예약 목적이 기타인데, 기타에 목적이 없는 경우 발생하는 오류입니다.")
-	NO_PURPOSE_IN_ETC(BAD_REQUEST, "RESERVATION_400_11", "기타 목적에 목적이 없습니다.");
+	NO_PURPOSE_IN_ETC(BAD_REQUEST, "RESERVATION_400_11", "기타 목적에 목적이 없습니다."),
+
+	@ExplainError("시작 시간이 종료 시간보다 뒤일 경우 발생하는 오류입니다.")
+	START_TIME_AFTER_END_TIME(BAD_REQUEST, "RESERVATION_400_12", "시작 시간이 종료 시간보다 뒤입니다.");
+
 
 	private final Integer status;
 	private final String code;
