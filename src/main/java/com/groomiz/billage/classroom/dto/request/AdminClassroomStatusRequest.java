@@ -22,7 +22,6 @@ public class AdminClassroomStatusRequest {
 
 	@NotNull
 	@Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "날짜 형식은 yyyy-MM-dd여야 합니다.")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Schema(description = "날짜", example = "2024-09-04")
 	private LocalDate date;
 
