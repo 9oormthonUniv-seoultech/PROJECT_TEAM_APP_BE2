@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.groomiz.billage.building.document.BuildingListExcpetionDocs;
 import com.groomiz.billage.building.dto.response.BuildingListResponse;
+import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,6 +26,7 @@ public class BuildingController {
 
 	@GetMapping
 	@Operation(summary = "건물 목록 조회")
+	@ApiErrorExceptionsExample(BuildingListExcpetionDocs.class)
 	public ResponseEntity<List<BuildingListResponse>> findAll(
 		@Parameter(description = "예약 날짜", example = "2024-07-01")
 		@RequestParam("date") LocalDate date,

@@ -22,6 +22,9 @@ public enum ReservationErrorCode implements BaseErrorCode {
 	@ExplainError("인원이 음수인 경우 발생하는 오류입니다.")
 	NEGATIVE_PARTICIPANTS(BAD_REQUEST, "RESERVATION_400_3", "인원이 음수일 수 없습니다."),
 
+	@ExplainError("최대 인원을 초과한 경우 발생하는 오류입니다.")
+	MAXIMUM_PARTICIPANTS_EXCEEDED(BAD_REQUEST, "RESERVATION_400_4", "인원이 300명 이상일 수 없습니다."),
+
 	@ExplainError("예약 아이디가 존재하지 않는 경우 발생하는 오류입니다.")
 	RESERVATION_NOT_FOUND(NOT_FOUND, "RESERVATION_404_1", "해당 예약이 존재하지 않습니다."),
 
