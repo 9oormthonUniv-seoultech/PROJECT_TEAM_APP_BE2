@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.groomiz.billage.auth.document.JwtExceptionDocs;
 import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
 import com.groomiz.billage.reservation.document.ReservationCancelExceptionDocs;
 import com.groomiz.billage.reservation.document.ReservationExceptionDocs;
@@ -47,6 +48,7 @@ public class ReservationController {
 
 	@GetMapping
 	@Operation(summary = "예약 현황 목록 조회")
+	@ApiErrorExceptionsExample(JwtExceptionDocs.class)
 	public ResponseEntity<List<ReservationStatusListResponse>> getAllReservationStatus() {
 
 		List<ReservationStatusListResponse> response = null;
