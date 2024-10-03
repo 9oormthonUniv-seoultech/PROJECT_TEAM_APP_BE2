@@ -1,5 +1,10 @@
 package com.groomiz.billage.reservation.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
+import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,49 +29,49 @@ public class AdminReservationController {
 
 	@GetMapping
 	@Operation(summary = "예약 상태별 리스트 조회")
-	public String getReservationsByStatus(
+	public ResponseEntity<List<AdminReservationStatusListResponse>> getReservationsByStatus(
 		@RequestParam(required = false) String status) {
-
-		return "예약 상태별 리스트 조회 완료";
+		return ResponseEntity.ok(null);
 	}
 
 	@PostMapping("/{id}/approve")
 	@Operation(summary = "예약 승인")
-	public String approveReservation(@PathVariable Long id) {
-
-		return "예약 승인 되었습니다.";
+	public ResponseEntity<Map<String, String>> approveReservation(@PathVariable Long id) {
+		Map<String, String> response = new HashMap<>();
+		response.put("message", "예약 승인 되었습니다.");
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping("/{id}/reject")
 	@Operation(summary = "예약 거절")
-	public String rejectReservation(@PathVariable Long id,
+	public ResponseEntity<Map<String, String>> rejectReservation(@PathVariable Long id,
 		@RequestBody(required = false) String rejectionReason) {
-		// 거절 사유가 있는 경우 문자열에 추가
+		Map<String, String> response = new HashMap<>();
+		response.put("message", "예약 거절 완료되었습니다.");
 		if (rejectionReason != null && !rejectionReason.isEmpty()) {
-			return "예약 거절 완료되었습니다. 거절 사유: " + rejectionReason;
+			response.put("rejection_reason", rejectionReason);
 		}
-		return "예약 거절 완료되었습니다.";
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping
 	@Operation(summary = "예약 요청 처리")
-	public String createReservation(@RequestBody AdminReservationRequest request) {
+	public ResponseEntity<?> createReservation(
+		@RequestBody AdminReservationRequest request) {
 
-		return "예약 완료 하였습니다.";
+		return ResponseEntity.ok().body("{\"message\": \"예약 완료 하였습니다.\"}");
 	}
 
 	@GetMapping("/{reservationId}")
 	@Operation(summary = "예약 상세 조회")
-	public String getReservation(@PathVariable Long reservationId) {
-
-		return "예약 상세 조회 완료";
+	public ResponseEntity<String> getReservation(@PathVariable Long reservationId) {
+		return ResponseEntity.ok(null);
 	}
 
 	@DeleteMapping("/{id}")
 	@Operation(summary = "예약 삭제", description = "단일 예약, 기간 예약, 반복 예약을 삭제합니다.")
-	public String deleteReservation(@PathVariable Long id,
+	public ResponseEntity<String> deleteReservation(@PathVariable Long id,
 		@RequestParam(required = false, defaultValue = "single") String type) {
-
-		return "예약 삭제 하였습니다.";
+		return ResponseEntity.ok(null);
 	}
 }
