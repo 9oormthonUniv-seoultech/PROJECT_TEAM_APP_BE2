@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
+import com.groomiz.billage.member.document.UserInfoEditExceptionDocs;
 import com.groomiz.billage.member.document.UserInfoExceptionDocs;
+import com.groomiz.billage.member.document.UserPasswordExceptionDocs;
 import com.groomiz.billage.member.dto.MemberInfoRequest;
 import com.groomiz.billage.member.dto.MemberInfoResponse;
 import com.groomiz.billage.member.dto.PasswordRequest;
@@ -36,19 +38,22 @@ public class MemberController {
 
 	@PutMapping("/info")
 	@Operation(summary = "회원 정보 수정")
-	public ResponseEntity<?> updatePhoneNumber(@RequestBody MemberInfoRequest memberInfoRequest) {
+	@ApiErrorExceptionsExample(UserInfoEditExceptionDocs.class)
+	public ResponseEntity<String> updatePhoneNumber(@RequestBody MemberInfoRequest memberInfoRequest) {
 		return ResponseEntity.ok("success");
 	}
 
 	@DeleteMapping
 	@Operation(summary = "회원 탈퇴")
-	public ResponseEntity<?> delete() {
+	@ApiErrorExceptionsExample(UserInfoExceptionDocs.class)
+	public ResponseEntity<String> delete() {
 		return ResponseEntity.ok("success");
 	}
 
 	@PutMapping("/password")
 	@Operation(summary = "비밀번호 수정")
-	public ResponseEntity<?> updatePassword(@RequestBody PasswordRequest passwordRequest) {
+	@ApiErrorExceptionsExample(UserPasswordExceptionDocs.class)
+	public ResponseEntity<String> updatePassword(@RequestBody PasswordRequest passwordRequest) {
 		return ResponseEntity.ok("success");
 	}
 
