@@ -38,7 +38,19 @@ public enum ReservationErrorCode implements BaseErrorCode {
 	RESERVATION_ALREADY_REJECTED(BAD_REQUEST, "RESERVATION_400_6", "이미 거절된 예약입니다."),
 
 	@ExplainError("예약이 이미 삭제된 경우 발생하는 오류입니다.")
-	RESERVATION_ALREADY_DELETED(BAD_REQUEST, "RESERVATION_400_7", "이미 삭제된 예약입니다.");
+	RESERVATION_ALREADY_DELETED(BAD_REQUEST, "RESERVATION_400_7", "이미 삭제된 예약입니다."),
+
+	@ExplainError("예약 시간이 24시 형식이 아닌 경우 발생하는 오류입니다.")
+	INVALID_RESERVATION_TIME(BAD_REQUEST, "RESERVATION_400_8", "예약 시간은 24시 형식이어야 합니다."),
+
+	@ExplainError("예약 인원이 최대 인원을 초과한 경우 발생하는 오류입니다.")
+	EXCEED_MAX_PARTICIPANTS(BAD_REQUEST, "RESERVATION_400_9", "예약 인원이 최대 인원을 초과했습니다."),
+
+	@ExplainError("예약 목적이 잘못된 형식인 경우에 발생하는 오류입니다.")
+	INVALID_RESERVATION_PURPOSE(BAD_REQUEST, "RESERVATION_400_10", "예약 목적이 잘못된 형식입니다."),
+
+	@ExplainError("예약 목적이 기타인데, 기타에 목적이 없는 경우 발생하는 오류입니다.")
+	NO_PURPOSE_IN_ETC(BAD_REQUEST, "RESERVATION_400_11", "기타 목적에 목적이 없습니다.");
 
 	private final Integer status;
 	private final String code;
