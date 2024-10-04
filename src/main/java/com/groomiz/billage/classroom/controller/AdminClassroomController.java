@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.groomiz.billage.classroom.document.AdminClassroomExceptionDocs;
+import com.groomiz.billage.classroom.document.AdminClassroomFilterExceptionDocs;
 import com.groomiz.billage.classroom.dto.request.AdminClassroomStatusRequest;
 import com.groomiz.billage.classroom.dto.response.AdminClassroomStatusResponse;
 import com.groomiz.billage.classroom.dto.response.ClassroomDetailResponse;
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminClassroomController {
 	@PostMapping
 	@Operation(summary = "강의실 현황 필터링")
-	@ApiErrorExceptionsExample(AdminClassroomExceptionDocs.class)
+	@ApiErrorExceptionsExample(AdminClassroomFilterExceptionDocs.class)
 	public ResponseEntity<List<AdminClassroomStatusResponse>> getClassrooms(
 		@RequestBody AdminClassroomStatusRequest request) {
 
@@ -38,7 +38,7 @@ public class AdminClassroomController {
 
 	@GetMapping("/info")
 	@Operation(summary = "강의실 상세 조회")
-	@ApiErrorExceptionsExample(AdminClassroomExceptionDocs.class)
+	@ApiErrorExceptionsExample(AdminClassroomFilterExceptionDocs.class)
 	public ResponseEntity<ClassroomDetailResponse> findByClassroomId(
 		@Parameter(description = "강의실 ID", example = "1")
 		@RequestParam("id") Long id) {
