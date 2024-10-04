@@ -19,6 +19,7 @@ import com.groomiz.billage.reservation.document.AdminApproveRejectExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminReservationDeleteExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminReservationExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminSearchExceptionDocs;
+import com.groomiz.billage.reservation.document.AdminbyStatusExceptionDocs;
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
 
