@@ -34,7 +34,7 @@ public class AdminReservationController {
 
 	@GetMapping
 	@Operation(summary = "예약 상태별 리스트 조회")
-	@ApiErrorExceptionsExample(AdminSearchExceptionDocs.class)
+	@ApiErrorExceptionsExample(AdminbyStatusExceptionDocs.class)
 	public ResponseEntity<List<AdminReservationStatusListResponse>> getReservationsByStatus(
 		@RequestParam(required = false) String status) {
 		return ResponseEntity.ok(null);
