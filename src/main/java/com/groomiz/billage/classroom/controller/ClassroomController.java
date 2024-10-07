@@ -39,7 +39,7 @@ public class ClassroomController {
 		@Parameter(description = "강의실 ID", example = "1")
 		@RequestParam("id") Long id) {
 
-		ClassroomDetailResponse response = null;
+		ClassroomDetailResponse response = new ClassroomDetailResponse();
 		return ResponseEntity.ok(response);
 	}
 }
