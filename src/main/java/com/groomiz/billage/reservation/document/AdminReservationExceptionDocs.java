@@ -17,7 +17,8 @@ import com.groomiz.billage.reservation.exception.ReservationException;
 public class AdminReservationExceptionDocs implements SwaggerExampleExceptions {
 
 	@ExplainError("예약 타입이 올바르지 않은 경우 발생하는 오류입니다.")
-	public GlobalCodeException 잘못된_예약_타입 = new AdminReservationException(AdminReservationErrorCode.INVALID_TYPE);
+	public GlobalCodeException 잘못된_예약_타입 = new AdminReservationException(
+		AdminReservationErrorCode.INVALID_RESERVATION_TYPE);
 
 	@ExplainError("존재하지 않는 건물일 경우 발생하는 오류입니다.")
 	public GlobalCodeException 존재하지_않는_건물 = new BuildingException(BuildingErrorCode.BUILDING_NOT_FOUND);
