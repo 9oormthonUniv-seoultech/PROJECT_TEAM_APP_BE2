@@ -16,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,7 +52,7 @@ public class Reservation extends BaseEntity {
 	@JoinColumn(name = "classroom_id", nullable = false)
 	private Classroom classroom;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "reservation_status_id", nullable = false)
+	@OneToOne(fetch = FetchType.LAZY)
+	@Column(name = "reservation_status", nullable = false)
 	private ReservationStatus reservationStatus;
 }
