@@ -46,6 +46,9 @@ public class Reservation extends BaseEntity {
 	@Column(nullable = false)
 	private ReservationPurpose purpose;
 
+	@Column(name = "phone_number", nullable = false)
+	private String phoneNumber;
+
 	private String contents;
 
 	@ManyToOne(fetch = FetchType.LAZY)
