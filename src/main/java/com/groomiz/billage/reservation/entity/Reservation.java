@@ -56,6 +56,6 @@ public class Reservation extends BaseEntity {
 	private Classroom classroom;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@Column(name = "reservation_status", nullable = false)
+	@JoinColumn(name = "reservation_status_id", nullable = false)
 	private ReservationStatus reservationStatus;
 }
