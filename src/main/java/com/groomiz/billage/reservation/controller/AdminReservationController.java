@@ -1,8 +1,6 @@
 package com.groomiz.billage.reservation.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.groomiz.billage.classroom.dto.response.AdminReservationReasonResponse;
+import com.groomiz.billage.common.dto.StringResponseDto;
 import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
 import com.groomiz.billage.reservation.document.AdminApproveRejectExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminReservationDeleteExceptionDocs;
@@ -44,38 +44,31 @@ public class AdminReservationController {
 	@PostMapping("/{id}/approve")
 	@Operation(summary = "예약 승인")
 	@ApiErrorExceptionsExample(AdminApproveRejectExceptionDocs.class)
-	public ResponseEntity<Map<String, String>> approveReservation(@PathVariable Long id) {
-		Map<String, String> response = new HashMap<>();
-		response.put("message", "예약 승인 되었습니다.");
-		return ResponseEntity.ok(response);
+	public ResponseEntity<StringResponseDto> approveReservation(@PathVariable Long id) {
+		return ResponseEntity.ok(new StringResponseDto("예약 승인 완료되었습니다."));
 	}
 
 	@PostMapping("/{id}/reject")
 	@Operation(summary = "예약 거절")
 	@ApiErrorExceptionsExample(AdminApproveRejectExceptionDocs.class)
-	public ResponseEntity<Map<String, String>> rejectReservation(@PathVariable Long id,
+	//TODO: 이거 Reason 필요하면 해당 dto 만들어서 보내주세요! 임시라서 이렇게 생긴 거 같아 일단 두겠습니다!
+	public ResponseEntity<AdminReservationReasonResponse> rejectReservation(@PathVariable Long id,
 		@RequestBody(required = false) String rejectionReason) {
-		Map<String, String> response = new HashMap<>();
-		response.put("message", "예약 거절 완료되었습니다.");
-		if (rejectionReason != null && !rejectionReason.isEmpty()) {
-			response.put("rejection_reason", rejectionReason);
-		}
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(new AdminReservationReasonResponse("예약 거절 완료되었습니다.", rejectionReason));
 	}
 
 	@PostMapping
 	@Operation(summary = "예약 요청 처리")
 	@ApiErrorExceptionsExample(AdminReservationExceptionDocs.class)
-	public ResponseEntity<?> createReservation(
+	public ResponseEntity<StringResponseDto> createReservation(
 		@RequestBody AdminReservationRequest request) {
-
-		return ResponseEntity.ok().body("{\"message\": \"예약 완료 하였습니다.\"}");
+		return ResponseEntity.ok(new StringResponseDto("예약 완료 하였습니다."));
 	}
 
 	@GetMapping("/{reservationId}")
 	@Operation(summary = "예약 상세 조회")
 	@ApiErrorExceptionsExample(AdminSearchExceptionDocs.class)
-	public ResponseEntity<String> getReservation(@PathVariable Long reservationId) {
+	public ResponseEntity<StringResponseDto> getReservation(@PathVariable Long reservationId) {
 		return ResponseEntity.ok(null);
 	}
 
@@ -83,7 +76,7 @@ public class AdminReservationController {
 	@Operation(summary = "예약 삭제", description = "단일 예약, 기간 예약, 반복 예약을 삭제합니다.")
 
 	@ApiErrorExceptionsExample(AdminReservationDeleteExceptionDocs.class)
-	public ResponseEntity<String> deleteReservation(@PathVariable Long id,
+	public ResponseEntity<StringResponseDto> deleteReservation(@PathVariable Long id,
 		@RequestParam(required = false, defaultValue = "single") String type) {
 		return ResponseEntity.ok(null);
 	}
