@@ -49,5 +49,11 @@ public class ReservationExceptionDocs implements SwaggerExampleExceptions {
 
 	@ExplainError("예약 목적이 기타인데, 기타에 목적이 없는 경우 발생하는 오류입니다.")
 	public GlobalCodeException 기타_목적_오류 = new ReservationException(ReservationErrorCode.NO_PURPOSE_IN_ETC);
+
+	@ExplainError("예약 시작 시간이 종료 시간보다 늦은 경우 발생하는 오류입니다.")
+	public GlobalCodeException 시작_종료_시간_오류 = new ReservationException(ReservationErrorCode.START_TIME_AFTER_END_TIME);
+
+	@ExplainError("이미 예약 중인 강의실에 대해 중복 예약을 시도한 경우 발생하는 오류입니다.")
+	public GlobalCodeException 중복_예약 = new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
 }
 
