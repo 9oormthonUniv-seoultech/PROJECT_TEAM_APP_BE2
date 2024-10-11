@@ -1,5 +1,7 @@
 package com.groomiz.billage.reservation.entity;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import com.groomiz.billage.common.entity.BaseEntity;
 import com.groomiz.billage.member.entity.Member;
 
@@ -14,6 +16,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,4 +44,12 @@ public class ReservationStatus extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "requester_id", nullable = false)
 	private Member requester;
+
+	public ReservationStatus (Member requester) {
+		this.requester = requester;
+	}
+
+	public void updateStatus(ReservationStatusType status) {
+		this.status = status;
+	}
 }
