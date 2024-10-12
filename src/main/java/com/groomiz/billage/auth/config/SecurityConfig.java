@@ -22,7 +22,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.groomiz.billage.auth.jwt.JwtFilter;
-import com.groomiz.billage.auth.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,8 +30,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-	private final SecurityProperties securityProperties;
-	private final JwtUtil jwtUtil;
+	private final JwtFilter jwtFilter;
 
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
@@ -56,7 +54,7 @@ public class SecurityConfig {
 			.formLogin(FormLoginConfigurer::disable) // Form 로그인 비활성화
 			.httpBasic(HttpBasicConfigurer::disable) // HTTP Basic 인증 비활성화
 			.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))  // H2 Console 설정
-			.addFilterBefore(new JwtFilter(securityProperties.getWhitelist(), jwtUtil),
+			.addFilterBefore(jwtFilter,
 				UsernamePasswordAuthenticationFilter.class); // JWT 필터 추가
 		return http.build();
 	}
