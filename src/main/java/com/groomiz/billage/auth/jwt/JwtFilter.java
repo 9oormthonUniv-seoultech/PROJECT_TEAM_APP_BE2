@@ -27,12 +27,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtFilter extends OncePerRequestFilter {
 
-	private final List<String> whiteList;
 	private final JwtUtil jwtUtil;
 	private final SecurityProperties securityProperties;
 	private List<String> whiteList;
@@ -69,17 +70,17 @@ public class JwtFilter extends OncePerRequestFilter {
 				}
 
 				// username, role 값을 획득
-				String username = jwtUtil.getUsername(accessToken);
+				String studentNumber = jwtUtil.getStudentNumber(accessToken);
 				String role = jwtUtil.getRole(accessToken);
 
-				if (username == null || role == null) {
+				if (studentNumber == null || role == null) {
 					sendErrorResponse(response, "Invalid token claims", HttpServletResponse.SC_UNAUTHORIZED);
 					return;
 				}
 
 				// SecurityContext에 인증 정보 설정
 				Member member = Member.builder()
-					.username(username)
+					.studentNumber(studentNumber)
 					.role(Role.valueOf(role))
 					.build();
 
