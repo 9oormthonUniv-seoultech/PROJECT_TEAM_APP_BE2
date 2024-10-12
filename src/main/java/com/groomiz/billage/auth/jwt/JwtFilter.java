@@ -35,6 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
 	private final List<String> whiteList;
 	private final JwtUtil jwtUtil;
 	private final SecurityProperties securityProperties;
+	private List<String> whiteList;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
