@@ -15,6 +15,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.groomiz.billage.auth.config.SecurityProperties;
 import com.groomiz.billage.auth.dto.CustomUserDetails;
 import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.entity.Role;
@@ -33,10 +34,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	private final List<String> whiteList;
 	private final JwtUtil jwtUtil;
+	private final SecurityProperties securityProperties;
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
+
+		whiteList = securityProperties.getWhitelist();
 
 		// 헤더에서 Authorization에 담긴 토큰을 꺼냄
 		String authorizationHeader = request.getHeader("Authorization");
@@ -102,6 +106,10 @@ public class JwtFilter extends OncePerRequestFilter {
 	}
 
 	private boolean checkAuthRequired(HttpServletRequest request) {
+		if (whiteList == null || whiteList.isEmpty()) {
+			return true; // 인증 필요
+		}
+
 		RequestMatcher rm = new NegatedRequestMatcher(new OrRequestMatcher(
 			whiteList.stream()
 				.map(AntPathRequestMatcher::new)
