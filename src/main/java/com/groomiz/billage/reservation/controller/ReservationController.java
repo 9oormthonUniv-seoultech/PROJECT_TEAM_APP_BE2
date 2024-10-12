@@ -23,10 +23,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/reservations")
+@Slf4j
 @Tag(name = "Reservation Controller", description = "[학생] 예약 관련 API")
 public class ReservationController {
 
@@ -34,6 +36,7 @@ public class ReservationController {
 	@Operation(summary = "강의실 예약")
 	@ApiErrorExceptionsExample(ReservationExceptionDocs.class)
 	public ResponseEntity<StringResponseDto> reserveClassroom(@RequestBody ClassroomReservationRequest request) {
+
 		return ResponseEntity.ok(new StringResponseDto("강의실 예약 요청에 성공하였습니다."));
 	}
 
