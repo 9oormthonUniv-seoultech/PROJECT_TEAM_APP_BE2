@@ -3,14 +3,11 @@ package com.groomiz.billage.auth.jwt;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -112,10 +109,15 @@ public class JwtFilter extends OncePerRequestFilter {
 			return true; // 인증 필요
 		}
 
-		RequestMatcher rm = new NegatedRequestMatcher(new OrRequestMatcher(
-			whiteList.stream()
-				.map(AntPathRequestMatcher::new)
-				.collect(Collectors.toList())));
-		return rm.matcher(request).isMatch();
+		// 요청이 whiteList에 포함된 경우 인증을 요구하지 않음
+		for (String path : whiteList) {
+			RequestMatcher matcher = new AntPathRequestMatcher(path);
+			if (matcher.matches(request)) {
+				return false; // whiteList에 포함된 경우 인증 불필요
+			}
+		}
+
+		// whiteList에 포함되지 않은 경우 인증 필요
+		return true;
 	}
 }
