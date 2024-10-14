@@ -147,9 +147,9 @@ public class ReservationService {
 		return startTime1.isBefore(endTime2) && startTime2.isBefore(endTime1);
 	}
 
-	public ReservationStatusListResponse getAllReservationStatus(String studentNumeber) {
+	public ReservationStatusListResponse getAllReservationStatus(String studentNumber) {
 
-		Member member = memberRepository.findByStudentNumber(studentNumeber)
+		Member member = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 		List<ReservationStatus> all = reservationStatusRepository.findAllFetchJoinReservationByRequester(member);
