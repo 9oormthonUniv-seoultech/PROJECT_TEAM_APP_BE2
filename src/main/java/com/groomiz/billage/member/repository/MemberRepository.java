@@ -8,7 +8,7 @@ import com.groomiz.billage.member.entity.Member;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-	Optional<Member> findByStudentNumber(String studentNeumber);
+	Optional<Member> findByStudentNumber(String studentNumber);
 
 	Boolean existsByStudentNumber(String studentNumber);
 }
