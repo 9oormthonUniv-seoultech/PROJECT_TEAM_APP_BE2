@@ -78,9 +78,15 @@ public class UserController {
 	@Operation(summary = "학번 중복 확인")
 	@ApiErrorExceptionsExample(StudentNumberExcptionDocs.class)
 	public ResponseEntity<?> checkStudentNumber(
-		@Parameter(description = "학번", example = "20100000") @RequestParam Long studentNumber) {
+		@Parameter(description = "학번", example = "20100000") @RequestParam String studentNumber) {
 
-		return ResponseEntity.ok(new StringResponseDto("Student number is available"));
+		boolean exists = authService.checkStudentNumberExists(studentNumber);
+
+		if (exists) {
+			return ResponseEntity.badRequest().body(new StringResponseDto("Student number already exists"));
+		} else {
+			return ResponseEntity.ok(new StringResponseDto("Student number is available"));
+		}
 	}
 
 	@PostMapping("/certificate")

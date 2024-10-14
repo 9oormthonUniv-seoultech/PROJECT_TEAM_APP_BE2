@@ -13,6 +13,9 @@ import com.groomiz.billage.auth.exception.AuthErrorCode;
 import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.auth.jwt.JwtTokenProvider;
 import com.groomiz.billage.auth.jwt.JwtUtil;
+import com.groomiz.billage.member.exception.MemberErrorCode;
+import com.groomiz.billage.member.exception.MemberException;
+import com.groomiz.billage.member.repository.MemberRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,6 +29,7 @@ public class AuthService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RedisService redisService;
 	private final JwtUtil jwtUtil;
+	private final MemberRepository memberRepository;
 
 	public void login(LoginRequest loginRequest, HttpServletResponse response) throws AuthenticationException {
 		// 로그인 인증 처리
@@ -79,5 +83,12 @@ public class AuthService {
 		UsernamePasswordAuthenticationToken authToken =
 			new UsernamePasswordAuthenticationToken(loginRequest.getStudentNumber(), loginRequest.getPassword());
 		return authenticationManager.authenticate(authToken);
+	}
+
+	public boolean checkStudentNumberExists(String studentNumber) {
+		if (studentNumber == null || studentNumber.length() != 8) {
+			throw new MemberException(MemberErrorCode.INVALID_STUDENT_ID);
+		}
+		return memberRepository.existsByStudentNumber(studentNumber);
 	}
 }
