@@ -1,7 +1,5 @@
 package com.groomiz.billage.reservation.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +38,7 @@ public class ReservationController {
 		return ResponseEntity.ok(new StringResponseDto("강의실 예약 요청에 성공하였습니다."));
 	}
 
-	@DeleteMapping
+	@DeleteMapping("/{id}")
 	@Operation(summary = "강의실 예약 취소")
 	@ApiErrorExceptionsExample(ReservationCancelExceptionDocs.class)
 	public ResponseEntity<StringResponseDto> cancelClassroomReservation(
@@ -53,9 +51,9 @@ public class ReservationController {
 	@GetMapping
 	@Operation(summary = "예약 현황 목록 조회")
 	@ApiErrorExceptionsExample(JwtExceptionDocs.class)
-	public ResponseEntity<List<ReservationStatusListResponse>> getAllReservationStatus() {
+	public ResponseEntity<ReservationStatusListResponse> getAllReservationStatus() {
 
-		List<ReservationStatusListResponse> response = null;
+		ReservationStatusListResponse response = null;
 		return ResponseEntity.ok(response);
 	}
 }
