@@ -21,6 +21,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven{url 'https://jitpack.io'}
 }
 
 dependencies {
@@ -48,6 +49,9 @@ dependencies {
     // lombok test
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // univcert API
+    implementation 'com.github.in-seo:univcert:master-SNAPSHOT'
 }
 
 tasks.named('test') {
