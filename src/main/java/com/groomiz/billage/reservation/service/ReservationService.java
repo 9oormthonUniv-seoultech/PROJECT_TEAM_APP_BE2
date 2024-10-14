@@ -2,6 +2,7 @@ package com.groomiz.billage.reservation.service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,7 @@ import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
 import com.groomiz.billage.reservation.dto.request.ClassroomReservationRequest;
+import com.groomiz.billage.reservation.dto.response.ReservationStatusListResponse;
 import com.groomiz.billage.reservation.entity.Reservation;
 import com.groomiz.billage.reservation.entity.ReservationPurpose;
 import com.groomiz.billage.reservation.entity.ReservationStatus;
@@ -143,5 +145,15 @@ public class ReservationService {
 
 	public boolean isTimeOverlapping(LocalTime startTime1, LocalTime endTime1, LocalTime startTime2, LocalTime endTime2) {
 		return startTime1.isBefore(endTime2) && startTime2.isBefore(endTime1);
+	}
+
+	public ReservationStatusListResponse getAllReservationStatus(String studentNumeber) {
+
+		Member member = memberRepository.findByStudentNumber(studentNumeber)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+		List<ReservationStatus> all = reservationStatusRepository.findAllFetchJoinReservationByRequester(member);
+
+		return new ReservationStatusListResponse(all);
 	}
 }
