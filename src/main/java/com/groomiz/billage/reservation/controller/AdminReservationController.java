@@ -1,7 +1,5 @@
 package com.groomiz.billage.reservation.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +34,7 @@ public class AdminReservationController {
 	@GetMapping
 	@Operation(summary = "예약 상태별 리스트 조회")
 	@ApiErrorExceptionsExample(AdminbyStatusExceptionDocs.class)
-	public ResponseEntity<List<AdminReservationStatusListResponse>> getReservationsByStatus(
+	public ResponseEntity<AdminReservationStatusListResponse> getReservationsByStatus(
 		@RequestParam(required = false) String status) {
 		return ResponseEntity.ok(null);
 	}
