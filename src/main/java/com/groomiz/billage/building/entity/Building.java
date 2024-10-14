@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,10 @@ public class Building extends BaseEntity {
 	@Column(name = "image_url")
 	private String imageUrl;
 
+	@Builder
+	public Building(String name, String number, String imageUrl) {
+		this.name = name;
+		this.number = number;
+		this.imageUrl = imageUrl;
+	}
 }

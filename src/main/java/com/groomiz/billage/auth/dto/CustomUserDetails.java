@@ -12,9 +12,9 @@ public class CustomUserDetails implements UserDetails {
 
 	private final Member member;
 
-	public CustomUserDetails(Member membeer) {
+	public CustomUserDetails(Member member) {
 
-		this.member = membeer;
+		this.member = member;
 	}
 
 	@Override
@@ -43,6 +43,10 @@ public class CustomUserDetails implements UserDetails {
 	@Override
 	public String getUsername() {
 
+		return member.getStudentNumber();
+	}
+
+	public String getStudentNumber() {
 		return member.getStudentNumber();
 	}
 
