@@ -63,13 +63,16 @@ public class ReservationController {
 		return ResponseEntity.ok(new StringResponseDto("강의실 예약 요청에 성공하였습니다."));
 	}
 
-	@DeleteMapping
+	@PostMapping("/{id}")
 	@Operation(summary = "강의실 예약 취소")
 	@ApiErrorExceptionsExample(ReservationCancelExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> cancelClassroomReservation(
+	public ResponseEntity<StringResponseDto> cancleReservation(
 		@Parameter(description = "예약 ID", example = "1")
-		@PathVariable("id") Long id) {
+		@PathVariable("id") Long id,
+		@AuthenticationPrincipal CustomUserDetails user
+	) {
 
+		reservationService.cancleReservation(id, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("강의실 예약 취소에 성공하였습니다."));
 	}
 
