@@ -49,4 +49,27 @@ public class AdminReservationService {
 				throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_CANCELED);
 		}
 	}
+
+	public void rejectReservation(Long reservationId, String rejectionReason, String studentNumber) {
+
+		Member admin = memberRepository.findByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+		// 예약 거절
+		ReservationStatusType status = reservation.getReservationStatus().getStatus();
+		switch (status) {
+			case PENDING:
+				reservation.getReservationStatus().reject(admin, rejectionReason);
+				break;
+			case APPROVED:
+				throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_APPROVED);
+			case REJECTED:
+				throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
+			default:
+				throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_CANCELED);
+		}
+	}
 }

@@ -58,8 +58,9 @@ public class ReservationStatus extends BaseEntity {
 		this.admin = admin;
 	}
 
-	public void reject(Member admin) {
+	public void reject(Member admin, String rejectionReason) {
 		this.status = ReservationStatusType.REJECTED;
+		this.rejectionReason = rejectionReason;
 		this.admin = admin;
 	}
 
