@@ -107,7 +107,7 @@ public class ReservationService {
 	}
 
 	// 학생 예약 취소
-	public void cancleReservation(Long id, String studentNumber) {
+	public void cancelReservation(Long id, String studentNumber) {
 
 		Reservation reservation = reservationRepository.findById(id)
 			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
@@ -120,11 +120,11 @@ public class ReservationService {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
 		}
 
-		if (reservation.getReservationStatus().isStudentCancled()) {
+		if (reservation.getReservationStatus().isStudentCanceled()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_DELETED);
 		}
 
-		if (reservation.getReservationStatus().isAdminCancled()) {
+		if (reservation.getReservationStatus().isAdminCanceled()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
 		}
 
@@ -140,7 +140,7 @@ public class ReservationService {
 			throw new ReservationException(ReservationErrorCode.USER_RESERVATION_MISMATCH);
 		}
 
-		reservation.getReservationStatus().updateStatus(ReservationStatusType.STUDENT_CANCLED);
+		reservation.getReservationStatus().updateStatus(ReservationStatusType.STUDENT_CANCELED);
 	}
 
 	public boolean isTimeOverlapping(LocalTime startTime1, LocalTime endTime1, LocalTime startTime2, LocalTime endTime2) {
