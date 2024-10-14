@@ -37,12 +37,8 @@ public class ReservationService {
 	private final ClassroomRepository classroomRepository;
 	private final ReservationStatusRepository reservationStatusRepository;
 
+	// 예약 생성
 	public Long reserveClassroom(ClassroomReservationRequest request, String studentNumber) {
-
-		// 예약 인원 음수 예외
-		if (request.getHeadcount() <= 0) {
-			throw new ReservationException(ReservationErrorCode.NEGATIVE_PARTICIPANTS);
-		}
 
 		// 최대 인원 초과 예외
 		if (request.getHeadcount() > 100) {
