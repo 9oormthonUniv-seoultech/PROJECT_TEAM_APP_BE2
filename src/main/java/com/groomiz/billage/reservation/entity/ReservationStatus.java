@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -44,6 +45,9 @@ public class ReservationStatus extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "requester_id", nullable = false)
 	private Member requester;
+
+	@OneToOne(mappedBy = "reservationStatus")
+	private Reservation reservation;
 
 	public ReservationStatus (Member requester) {
 		this.requester = requester;

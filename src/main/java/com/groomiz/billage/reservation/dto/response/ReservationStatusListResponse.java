@@ -2,11 +2,18 @@ package com.groomiz.billage.reservation.dto.response;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.groomiz.billage.reservation.entity.Reservation;
+import com.groomiz.billage.reservation.entity.ReservationStatus;
 import com.groomiz.billage.reservation.entity.ReservationStatusType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
@@ -24,9 +31,11 @@ public class ReservationStatusListResponse {
 		private Long reservationId;
 		@Schema(description = "예약 날짜", example = "2024-08-01")
 		private LocalDate applyDate;
-		@Schema(description = "예약 시작 시간", example = "09:00")
+		@Schema(description = "예약 시작 시간", example = "09:00", type = "string")
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
 		private LocalTime startTime;
-		@Schema(description = "예약 종료 시간", example = "10:00")
+		@Schema(description = "예약 종료 시간", example = "10:00", type = "string")
+		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
 		private LocalTime endTime;
 		@Schema(description = "예약 인원", example = "30")
 		private Integer headcount;
@@ -40,5 +49,28 @@ public class ReservationStatusListResponse {
 		private String rejectionReason;
 		@Schema(description = "관리자 전화번호", example = "010-1234-5678")
 		private String adminPhoneNumber;
+
+		public ReservationInfo(ReservationStatus reservationStatus) {
+			Reservation reservation = reservationStatus.getReservation();
+
+			this.reservationId = reservation.getId();
+			this.applyDate = reservation.getApplyDate();
+			this.startTime = reservation.getStartTime();
+			this.endTime = reservation.getEndTime();
+			this.headcount = reservation.getHeadcount();
+			this.classroomName = reservation.getClassroom().getName();
+			this.classroomNumber = reservation.getClassroom().getNumber();
+			this.reservationStatus = reservationStatus.getStatus();
+			this.rejectionReason = reservationStatus.getRejectionReason();
+			if (reservationStatus.getAdmin() != null) {
+				this.adminPhoneNumber = reservationStatus.getAdmin().getPhoneNumber();
+			}
+		}
+	}
+
+	public ReservationStatusListResponse(List<ReservationStatus> reservationStatuses) {
+		this.totalReservationCount = reservationStatuses.size();
+		this.reservations = reservationStatuses.stream()
+			.map(ReservationInfo::new).collect(Collectors.toList());
 	}
 }
