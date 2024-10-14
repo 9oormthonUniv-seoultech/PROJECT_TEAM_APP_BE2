@@ -1,7 +1,5 @@
 package com.groomiz.billage.reservation.entity;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import com.groomiz.billage.common.entity.BaseEntity;
 import com.groomiz.billage.member.entity.Member;
 
@@ -17,8 +15,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -57,6 +53,25 @@ public class ReservationStatus extends BaseEntity {
 		this.status = status;
 	}
 
+	public void approve(Member admin) {
+		this.status = ReservationStatusType.APPROVED;
+		this.admin = admin;
+	}
+
+	public void reject(Member admin) {
+		this.status = ReservationStatusType.REJECTED;
+		this.admin = admin;
+	}
+
+	public void cancelByStudent() {
+		this.status = ReservationStatusType.STUDENT_CANCELED;
+	}
+
+	public void cancelByAdmin(Member admin) {
+		this.status = ReservationStatusType.ADMIN_CANCELED;
+		this.admin = admin;
+	}
+
 	public boolean isApproved() {
 		return this.status == ReservationStatusType.APPROVED;
 	}
@@ -69,11 +84,11 @@ public class ReservationStatus extends BaseEntity {
 		return this.status == ReservationStatusType.REJECTED;
 	}
 
-	public boolean isStudentCanceled() {
+	public boolean isCanceledByStudent() {
 		return this.status == ReservationStatusType.STUDENT_CANCELED;
 	}
 
-	public boolean isAdminCanceled() {
+	public boolean isCanceledByAdmin() {
 		return this.status == ReservationStatusType.ADMIN_CANCELED;
 	}
 }

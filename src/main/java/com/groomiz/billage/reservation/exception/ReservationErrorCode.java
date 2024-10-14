@@ -39,7 +39,7 @@ public enum ReservationErrorCode implements BaseErrorCode {
 
 	@ExplainError("예약이 이미 삭제된 경우 발생하는 오류입니다.")
 	RESERVATION_ALREADY_DELETED(BAD_REQUEST, "RESERVATION_400_7", "이미 삭제된 예약입니다."),
-
+	
 	@ExplainError("예약 시간이 24시 형식이 아닌 경우 발생하는 오류입니다.")
 	INVALID_RESERVATION_TIME(BAD_REQUEST, "RESERVATION_400_8", "예약 시간은 24시 형식이어야 합니다."),
 
@@ -59,7 +59,11 @@ public enum ReservationErrorCode implements BaseErrorCode {
 	INVALID_RESERVATION_DATE(BAD_REQUEST, "RESERVATION_400_13", "예약 날짜는 yyyy-MM-dd 형식이어야 합니다."),
 
 	@ExplainError("이미 예약 대기 상태 혹은 승인된 강의실인 경우 발생하는 오류입니다.")
-	DUPLICATE_RESERVATION(BAD_REQUEST, "RESERVATION_400_14", "이미 예약 대기 상태 혹은 승인된 강의실입니다.");
+	DUPLICATE_RESERVATION(BAD_REQUEST, "RESERVATION_400_14", "이미 예약 대기 상태 혹은 승인된 강의실입니다."),
+
+	@ExplainError("예약이 이미 취소된 경우 발생하는 오류입니다.")
+	RESERVATION_ALREADY_CANCELED(BAD_REQUEST, "RESERVATION_400_15", "이미 취소된 예약입니다.");
+
 
 	private final Integer status;
 	private final String code;

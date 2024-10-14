@@ -1,6 +1,7 @@
 package com.groomiz.billage.reservation.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.groomiz.billage.auth.dto.CustomUserDetails;
 import com.groomiz.billage.classroom.dto.response.AdminReservationReasonResponse;
 import com.groomiz.billage.common.dto.StringResponseDto;
 import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
@@ -20,6 +22,7 @@ import com.groomiz.billage.reservation.document.AdminSearchExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminbyStatusExceptionDocs;
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
+import com.groomiz.billage.reservation.service.AdminReservationService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +33,8 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Admin Reservation Controller", description = "[관리자] 예약 관련 API")
 @RequiredArgsConstructor
 public class AdminReservationController {
+
+	private final AdminReservationService adminReservationService;
 
 	@GetMapping
 	@Operation(summary = "예약 상태별 리스트 조회")
@@ -42,7 +47,11 @@ public class AdminReservationController {
 	@PostMapping("/{id}/approve")
 	@Operation(summary = "예약 승인")
 	@ApiErrorExceptionsExample(AdminApproveRejectExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> approveReservation(@PathVariable Long id) {
+	public ResponseEntity<StringResponseDto> approveReservation(
+		@PathVariable Long id,
+		@AuthenticationPrincipal CustomUserDetails user) {
+
+		adminReservationService.approveReservation(id, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("예약 승인 완료되었습니다."));
 	}
 
