@@ -18,6 +18,7 @@ import com.groomiz.billage.reservation.dto.request.ClassroomReservationRequest;
 import com.groomiz.billage.reservation.entity.Reservation;
 import com.groomiz.billage.reservation.entity.ReservationPurpose;
 import com.groomiz.billage.reservation.entity.ReservationStatus;
+import com.groomiz.billage.reservation.entity.ReservationStatusType;
 import com.groomiz.billage.reservation.exception.ReservationErrorCode;
 import com.groomiz.billage.reservation.exception.ReservationException;
 import com.groomiz.billage.reservation.repository.ReservationRepository;
@@ -101,6 +102,43 @@ public class ReservationService {
 		Reservation savedReservation = reservationRepository.save(reservation);
 
 		return savedReservation.getId();
+	}
+
+	// 학생 예약 취소
+	public void cancleReservation(Long id, String studentNumber) {
+
+		Reservation reservation = reservationRepository.findById(id)
+			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+		if (reservation.getReservationStatus().isApproved()) {
+			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_APPROVED);
+		}
+
+		if (reservation.getReservationStatus().isRejected()) {
+			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
+		}
+
+		if (reservation.getReservationStatus().isStudentCancled()) {
+			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_DELETED);
+		}
+
+		if (reservation.getReservationStatus().isAdminCancled()) {
+			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
+		}
+
+		// 예약 기간 지난 경우 예외
+		if (reservation.getApplyDate().isBefore(LocalDate.now())) {
+			throw new ReservationException(ReservationErrorCode.PAST_DATE_RESERVATION);
+		}
+
+		// 유저와 예약자가 다른 경우 예외
+		String requesterNumber = reservation.getReservationStatus().getRequester().getStudentNumber();
+
+		if (!requesterNumber.equals(studentNumber)) {
+			throw new ReservationException(ReservationErrorCode.USER_RESERVATION_MISMATCH);
+		}
+
+		reservation.getReservationStatus().updateStatus(ReservationStatusType.STUDENT_CANCLED);
 	}
 
 	public boolean isTimeOverlapping(LocalTime startTime1, LocalTime endTime1, LocalTime startTime2, LocalTime endTime2) {

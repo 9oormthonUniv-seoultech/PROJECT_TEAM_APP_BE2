@@ -52,4 +52,24 @@ public class ReservationStatus extends BaseEntity {
 	public void updateStatus(ReservationStatusType status) {
 		this.status = status;
 	}
+
+	public boolean isApproved() {
+		return this.status == ReservationStatusType.APPROVED;
+	}
+
+	public boolean isPending() {
+		return this.status == ReservationStatusType.PENDING;
+	}
+
+	public boolean isRejected() {
+		return this.status == ReservationStatusType.REJECTED;
+	}
+
+	public boolean isStudentCancled() {
+		return this.status == ReservationStatusType.STUDENT_CANCLED;
+	}
+
+	public boolean isAdminCancled() {
+		return this.status == ReservationStatusType.ADMIN_CANCLED;
+	}
 }
