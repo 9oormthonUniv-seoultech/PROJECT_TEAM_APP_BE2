@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.groomiz.billage.building.entity.Building;
@@ -25,6 +24,7 @@ import com.groomiz.billage.reservation.dto.request.ClassroomReservationRequest;
 import com.groomiz.billage.reservation.entity.Reservation;
 import com.groomiz.billage.reservation.entity.ReservationPurpose;
 import com.groomiz.billage.reservation.entity.ReservationStatus;
+import com.groomiz.billage.reservation.entity.ReservationStatusType;
 import com.groomiz.billage.reservation.exception.ReservationErrorCode;
 import com.groomiz.billage.reservation.exception.ReservationException;
 import com.groomiz.billage.reservation.repository.ReservationRepository;
@@ -100,6 +100,53 @@ class ReservationServiceTest {
 
 		//when & then
 		assertThatThrownBy(() -> reserveClassroom(classroom, student, applyDate, startTime3, endTime3))
+			.isInstanceOf(ReservationException.class);
+	}
+	
+	@Test
+	public void 학생_예약_취소_성공() throws Exception{
+		//given
+		Member student = saveStudent();
+		Building building = saveBuilding("미래관");
+		Classroom classroom = saveClassroom(building);
+
+		LocalDate applyDate = LocalDate.now();
+		LocalTime startTime = LocalTime.of(13, 0);
+		LocalTime endTime = LocalTime.of(14, 0);
+
+		Long reservationId = reserveClassroom(classroom, student, applyDate, startTime, endTime);
+
+		//when
+		reservationService.cancleReservation(reservationId, student.getStudentNumber());
+
+		//then
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+		assertThat(reservation.getReservationStatus().isStudentCancled()).isTrue();
+	}
+
+
+	@Test
+	public void 학생_예약_실패_이미_거절() throws Exception{
+		//given
+		Member student = saveStudent();
+		Building building = saveBuilding("미래관");
+		Classroom classroom = saveClassroom(building);
+
+		LocalDate applyDate = LocalDate.now();
+		LocalTime startTime = LocalTime.of(13, 0);
+		LocalTime endTime = LocalTime.of(14, 0);
+
+		Long reservationId = reserveClassroom(classroom, student, applyDate, startTime, endTime);
+
+		//when
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+		reservation.getReservationStatus().updateStatus(ReservationStatusType.REJECTED);
+
+		//then
+		assertThatThrownBy(() -> reservationService.cancleReservation(reservationId, student.getStudentNumber()))
 			.isInstanceOf(ReservationException.class);
 	}
 
