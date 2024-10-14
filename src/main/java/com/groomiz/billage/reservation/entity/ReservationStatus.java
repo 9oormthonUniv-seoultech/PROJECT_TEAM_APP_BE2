@@ -69,11 +69,11 @@ public class ReservationStatus extends BaseEntity {
 		return this.status == ReservationStatusType.REJECTED;
 	}
 
-	public boolean isStudentCancled() {
-		return this.status == ReservationStatusType.STUDENT_CANCLED;
+	public boolean isStudentCanceled() {
+		return this.status == ReservationStatusType.STUDENT_CANCELED;
 	}
 
-	public boolean isAdminCancled() {
-		return this.status == ReservationStatusType.ADMIN_CANCLED;
+	public boolean isAdminCanceled() {
+		return this.status == ReservationStatusType.ADMIN_CANCELED;
 	}
 }

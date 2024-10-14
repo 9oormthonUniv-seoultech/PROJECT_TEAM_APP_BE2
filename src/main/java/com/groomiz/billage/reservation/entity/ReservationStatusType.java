@@ -13,8 +13,8 @@ public enum ReservationStatusType {
 	APPROVED("예약 승인"),
 	PENDING("예약 대기"),
 	REJECTED("예약 거절"),
-	STUDENT_CANCLED("학생 취소"),
-	ADMIN_CANCLED("관리자 취소");
+	STUDENT_CANCELED("학생 취소"),
+	ADMIN_CANCELED("관리자 취소");
 
 	private final String name;
 
