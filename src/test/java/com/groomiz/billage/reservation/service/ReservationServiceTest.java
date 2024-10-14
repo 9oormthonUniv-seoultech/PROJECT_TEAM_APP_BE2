@@ -117,13 +117,13 @@ class ReservationServiceTest {
 		Long reservationId = reserveClassroom(classroom, student, applyDate, startTime, endTime);
 
 		//when
-		reservationService.cancleReservation(reservationId, student.getStudentNumber());
+		reservationService.cancelReservation(reservationId, student.getStudentNumber());
 
 		//then
 		Reservation reservation = reservationRepository.findById(reservationId)
 			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
 
-		assertThat(reservation.getReservationStatus().isStudentCancled()).isTrue();
+		assertThat(reservation.getReservationStatus().isCanceledByStudent()).isTrue();
 	}
 
 
@@ -146,7 +146,7 @@ class ReservationServiceTest {
 		reservation.getReservationStatus().updateStatus(ReservationStatusType.REJECTED);
 
 		//then
-		assertThatThrownBy(() -> reservationService.cancleReservation(reservationId, student.getStudentNumber()))
+		assertThatThrownBy(() -> reservationService.cancelReservation(reservationId, student.getStudentNumber()))
 			.isInstanceOf(ReservationException.class);
 	}
 

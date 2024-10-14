@@ -120,11 +120,11 @@ public class ReservationService {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
 		}
 
-		if (reservation.getReservationStatus().isStudentCanceled()) {
+		if (reservation.getReservationStatus().isCanceledByStudent()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_DELETED);
 		}
 
-		if (reservation.getReservationStatus().isAdminCanceled()) {
+		if (reservation.getReservationStatus().isCanceledByAdmin()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
 		}
 
