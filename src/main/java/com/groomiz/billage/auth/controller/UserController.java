@@ -1,5 +1,7 @@
 package com.groomiz.billage.auth.controller;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +19,7 @@ import com.groomiz.billage.auth.document.VerifyEmailException;
 import com.groomiz.billage.auth.dto.LoginRequest;
 import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.auth.service.AuthService;
+import com.groomiz.billage.auth.service.UnivCertService;
 import com.groomiz.billage.common.dto.StringResponseDto;
 import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
 import com.groomiz.billage.member.service.MemberService;
@@ -36,6 +39,7 @@ public class UserController {
 
 	private final AuthService authService;
 	private final MemberService memberService;
+	private final UnivCertService univCertService;
 
 	@PostMapping("/login")
 	@Operation(summary = "회원 로그인")
@@ -83,17 +87,30 @@ public class UserController {
 	@Operation(summary = "이메일 인증 요청")
 	@ApiErrorExceptionsExample(CertificateEmailExceptionDocs.class)
 	public ResponseEntity<?> certificate(
-		@Parameter(description = "이메일", example = "asdf1234@gmail.com") @RequestParam String email) {
-		return ResponseEntity.ok(new StringResponseDto("email success"));
+		@Parameter(description = "이메일", example = "menten4859@seoultech.ac.kr") @RequestParam String email) {
+
+		Map<?, ?> certificated = univCertService.certificate(email);
+
+		return ResponseEntity.ok(certificated);
 	}
 
 	@PostMapping("/verify")
 	@Operation(summary = "이메일 인증 코드 검증")
 	@ApiErrorExceptionsExample(VerifyEmailException.class)
 	public ResponseEntity<?> verify(
-		@Parameter(description = "이메일", example = "asdf1234@gmail.com") @RequestParam String email,
-		@Parameter(description = "인증 코드", example = "123456") @RequestParam String code) {
-		return ResponseEntity.ok(new StringResponseDto("verify success"));
+		@Parameter(description = "이메일", example = "menten4859@seoultech.ac.kr") @RequestParam String email,
+		@Parameter(description = "인증 코드", example = "123456") @RequestParam int codeNumber) {
+
+		Map<?, ?> verify = univCertService.verify(email, codeNumber);
+		return ResponseEntity.ok(verify);
+	}
+
+	@PostMapping("/clear-email")
+	@Operation(summary = "[개발용] 이메일 인증 정보 삭제")
+	public ResponseEntity<?> clearEmail() {
+
+		Map<?, ?> responseMap = univCertService.clearEmailList();
+		return ResponseEntity.ok(responseMap);
 	}
 
 }
