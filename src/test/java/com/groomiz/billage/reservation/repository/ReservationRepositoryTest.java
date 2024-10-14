@@ -63,7 +63,7 @@ class ReservationRepositoryTest {
 		LocalTime endTime = LocalTime.of(14, 0);
 		LocalTime startTime2 = LocalTime.of(14, 0);
 		LocalTime endTime2 = LocalTime.of(15, 0);
-		LocalTime startTime3 = LocalTime.of(14, 0);
+		LocalTime startTime3 = LocalTime.of(15, 0);
 		LocalTime endTime3 = LocalTime.of(16, 0);
 		LocalTime startTime4 = LocalTime.of(13, 0);
 		LocalTime endTime4 = LocalTime.of(16, 0);
