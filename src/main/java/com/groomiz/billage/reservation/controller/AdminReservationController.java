@@ -20,6 +20,7 @@ import com.groomiz.billage.reservation.document.AdminReservationDeleteExceptionD
 import com.groomiz.billage.reservation.document.AdminReservationExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminSearchExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminbyStatusExceptionDocs;
+import com.groomiz.billage.reservation.dto.request.AdminRejectionRequest;
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
 import com.groomiz.billage.reservation.service.AdminReservationService;
@@ -58,10 +59,15 @@ public class AdminReservationController {
 	@PostMapping("/{id}/reject")
 	@Operation(summary = "예약 거절")
 	@ApiErrorExceptionsExample(AdminApproveRejectExceptionDocs.class)
-	//TODO: 이거 Reason 필요하면 해당 dto 만들어서 보내주세요! 임시라서 이렇게 생긴 거 같아 일단 두겠습니다!
 	public ResponseEntity<AdminReservationReasonResponse> rejectReservation(@PathVariable Long id,
-		@RequestBody(required = false) String rejectionReason) {
-		return ResponseEntity.ok(new AdminReservationReasonResponse("예약 거절 완료되었습니다.", rejectionReason));
+		@RequestBody AdminRejectionRequest request,
+		@AuthenticationPrincipal CustomUserDetails user) {
+
+		adminReservationService.rejectReservation(id, request.getReason(), user.getStudentNumber());
+
+		AdminReservationReasonResponse response = new AdminReservationReasonResponse(
+			"예약 거절 완료되었습니다.", request.getReason());
+		return ResponseEntity.ok(response);
 	}
 
 	@PostMapping
