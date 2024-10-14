@@ -60,7 +60,7 @@ public class ReservationService {
 
 		// 기타 목적 예외
 		if (request.getPurpose().equals(ReservationPurpose.OTHERS)
-			&& ( request.getContents().trim().isEmpty() || request.getContents() == null)) {
+			&& (request.getContents() == null || request.getContents().trim().isEmpty())) {
 			throw new ReservationException(ReservationErrorCode.NO_PURPOSE_IN_ETC);
 		}
 
