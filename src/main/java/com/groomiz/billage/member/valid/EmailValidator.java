@@ -1,5 +1,8 @@
 package com.groomiz.billage.member.valid;
 
+import com.groomiz.billage.member.exception.MemberErrorCode;
+import com.groomiz.billage.member.exception.MemberException;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -19,10 +22,7 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
 		}
 
 		if (!value.matches(EMAIL_REGEX)) {
-			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("유효하지 않은 이메일 형식입니다. (예: user@example.com)")
-				.addConstraintViolation();
-			return false;
+			throw new MemberException(MemberErrorCode.INVALID_EMAIL);
 		}
 
 		return true;  // 이메일 형식이 유효한 경우 true 반환

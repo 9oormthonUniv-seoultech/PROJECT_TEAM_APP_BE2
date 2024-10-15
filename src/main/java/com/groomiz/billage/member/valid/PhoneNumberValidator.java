@@ -1,6 +1,7 @@
 package com.groomiz.billage.member.valid;
 
 import com.groomiz.billage.member.exception.MemberErrorCode;
+import com.groomiz.billage.member.exception.MemberException;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -20,10 +21,7 @@ public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumbe
 		}
 
 		if (!value.matches(PHONE_REGEX)) {
-			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678 또는 02-123-5678)")
-				.addConstraintViolation();
-			return false;
+			throw new MemberException(MemberErrorCode.INVALID_PHONE_NUMBER);
 		}
 
 		return true;

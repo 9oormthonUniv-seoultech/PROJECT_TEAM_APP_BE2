@@ -29,6 +29,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -44,7 +45,7 @@ public class UserController {
 	@PostMapping("/login")
 	@Operation(summary = "회원 로그인")
 	@ApiErrorExceptionsExample(LoginExceptionDocs.class)
-	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+	public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
 		try {
 			authService.login(loginRequest, response);
 			return ResponseEntity.ok(new StringResponseDto("로그인 성공하였습니다."));
@@ -67,7 +68,7 @@ public class UserController {
 	@PostMapping("/register")
 	@Operation(summary = "회원 가입")
 	@ApiErrorExceptionsExample(RegisterExceptionDocs.class)
-	public ResponseEntity<?> join(@RequestBody RegisterRequest registerRequest) {
+	public ResponseEntity<?> join(@RequestBody @Valid RegisterRequest registerRequest) {
 
 		memberService.register(registerRequest);
 

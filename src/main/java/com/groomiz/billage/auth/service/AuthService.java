@@ -89,6 +89,10 @@ public class AuthService {
 		if (studentNumber == null || studentNumber.length() != 8) {
 			throw new MemberException(MemberErrorCode.INVALID_STUDENT_ID);
 		}
-		return memberRepository.existsByStudentNumber(studentNumber);
+
+		Boolean isExist = memberRepository.existsByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.STUDENT_ID_ALREADY_REGISTERED));
+
+		return isExist;
 	}
 }

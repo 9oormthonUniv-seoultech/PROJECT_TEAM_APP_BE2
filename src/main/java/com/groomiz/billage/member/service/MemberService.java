@@ -22,9 +22,13 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
 
-	//Todo : 약관동의도 넣어야 함
 	public void register(RegisterRequest registerRequest) {
 		String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
+
+		if (isExists(registerRequest.getStudentNumber())) {
+			throw new MemberException(STUDENT_ID_ALREADY_REGISTERED);
+		}
+
 		Member member = Member.builder()
 			.username(registerRequest.getName())
 			.password("{bcrypt}" + encodedPassword)
@@ -32,8 +36,9 @@ public class MemberService {
 			.role(Role.ADMIN)
 			.studentNumber(registerRequest.getStudentNumber())
 			.isAdmin(true)
+			.agreedToTerms(registerRequest.isAgreedToTerms())
 			.college(College.fromName(registerRequest.getCollege()))
-			.major(Major.fromName(registerRequest.getMajor()))
+			.major(Major.fromNameAndCollege(registerRequest.getMajor(), registerRequest.getCollege()))
 			.studentEmail(registerRequest.getStudentEmail())
 			.build();
 		memberRepository.save(member);
@@ -103,6 +108,7 @@ public class MemberService {
 
 
 	public boolean isExists(String studentNumber) {
-		return memberRepository.existsByStudentNumber(studentNumber);
+		return memberRepository.existsByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 	}
 }
