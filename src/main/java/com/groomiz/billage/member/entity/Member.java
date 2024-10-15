@@ -92,4 +92,8 @@ public class Member extends BaseEntity {
 		}
 
 	}
+
+	public void changePassword(String newPassword) {
+		this.password = newPassword;
+	}
 }

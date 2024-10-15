@@ -66,8 +66,6 @@ public class MemberService {
 		memberRepository.save(member);
 	}
 
-	//Todo: 전화번호 형식 에러 처리
-
 	public void deleteMember(String studentNumber) {
 		// 학번으로 회원을 조회하고 존재하지 않으면 예외를 던짐
 		Member member = memberRepository.findByStudentNumber(studentNumber)
@@ -75,6 +73,32 @@ public class MemberService {
 
 		// 회원 삭제
 		memberRepository.delete(member);
+	}
+
+	//비밀번호 업데이트
+	public void updatePassword(String oldPassword, String newPassword, String studentNumber) {
+		Member member = memberRepository.findByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+		// 기존 비밀번호가 일치하지 않으면 예외를 던짐
+		String storedPassword = member.getPassword();
+		if (storedPassword.startsWith("{bcrypt}")) {
+			storedPassword = storedPassword.substring(8);  // {bcrypt} 접두사 제거
+		}
+
+		if (!passwordEncoder.matches(oldPassword, storedPassword)) {
+			throw new MemberException(INVALID_OLD_PASSWORD);  // 기존 비밀번호 불일치 시 예외 발생
+		}
+
+		if(oldPassword.equals(newPassword)) {
+			throw new MemberException(PASSWORD_SAME_AS_OLD);
+		}
+
+		// 저장하는 로직
+		String encodedPassword = passwordEncoder.encode(newPassword);
+		member.changePassword("{bcrypt}" + encodedPassword);
+
+		memberRepository.save(member);
 	}
 
 
