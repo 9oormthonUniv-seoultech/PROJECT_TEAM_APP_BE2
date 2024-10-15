@@ -73,6 +73,9 @@ public class AuthService {
 
 		// 응답에서 RefreshToken 헤더를 제거
 		response.setHeader("RefreshToken", "");
+
+		// Redis에서 FCM Token 삭제
+		redisService.deleteValues("FCM_" + username);
 	}
 
 	private Authentication authenticate(LoginRequest loginRequest) throws AuthenticationException {

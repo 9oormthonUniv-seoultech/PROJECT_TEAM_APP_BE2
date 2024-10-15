@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.groomiz.billage.auth.dto.CustomUserDetails;
 import com.groomiz.billage.classroom.dto.response.AdminReservationReasonResponse;
 import com.groomiz.billage.common.dto.StringResponseDto;
@@ -50,9 +51,10 @@ public class AdminReservationController {
 	@ApiErrorExceptionsExample(AdminApproveRejectExceptionDocs.class)
 	public ResponseEntity<StringResponseDto> approveReservation(
 		@PathVariable Long id,
-		@AuthenticationPrincipal CustomUserDetails user) {
+		@AuthenticationPrincipal CustomUserDetails user) throws FirebaseMessagingException {
 
 		adminReservationService.approveReservation(id, user.getStudentNumber());
+
 		return ResponseEntity.ok(new StringResponseDto("예약 승인 완료되었습니다."));
 	}
 
@@ -61,7 +63,7 @@ public class AdminReservationController {
 	@ApiErrorExceptionsExample(AdminApproveRejectExceptionDocs.class)
 	public ResponseEntity<AdminReservationReasonResponse> rejectReservation(@PathVariable Long id,
 		@RequestBody AdminRejectionRequest request,
-		@AuthenticationPrincipal CustomUserDetails user) {
+		@AuthenticationPrincipal CustomUserDetails user) throws FirebaseMessagingException {
 
 		adminReservationService.rejectReservation(id, request.getReason(), user.getStudentNumber());
 
