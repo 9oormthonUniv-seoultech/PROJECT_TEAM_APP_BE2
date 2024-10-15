@@ -40,6 +40,10 @@ public class RegisterRequest {
 	private String major;
 
 	@NotNull
+	@Schema(description = "약관동의", example = "true")
+	private boolean agreedToTerms;
+
+	@NotNull
 	@ValidEmail
 	@Schema(description = "이메일", example = "asdf1234@gmail.com")
 	private String studentEmail;
