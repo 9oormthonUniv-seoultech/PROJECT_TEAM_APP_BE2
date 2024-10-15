@@ -7,7 +7,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.groomiz.billage.auth.dto.LoginRequest;
@@ -33,7 +32,7 @@ public class AuthService {
 	private final JwtUtil jwtUtil;
 	private final MemberRepository memberRepository;
 
-	public void login(LoginRequest loginRequest, HttpServletResponse response) throws AuthenticationException {
+	public void login(LoginRequest loginRequest, HttpServletResponse response) {
 		try {
 			// 로그인 인증 처리
 			Authentication authentication = authenticate(loginRequest);
@@ -53,10 +52,10 @@ public class AuthService {
 			response.setHeader("RefreshToken", "Bearer " + refreshToken);
 
 		} catch (BadCredentialsException e) {
-			// 비밀번호가 틀린 경우
+			// 비밀번호가 틀린 경우 AuthException 던지기
 			throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
-		} catch (UsernameNotFoundException e) {
-			// 아이디가 틀린 경우
+		} catch (AuthenticationException e) {
+			// 기타 인증 실패 시 AuthException 던지기
 			throw new AuthException(AuthErrorCode.INVALID_USER_ID);
 		}
 	}
@@ -90,7 +89,7 @@ public class AuthService {
 		response.setHeader("RefreshToken", "");
 	}
 
-	private Authentication authenticate(LoginRequest loginRequest) throws AuthenticationException {
+	private Authentication authenticate(LoginRequest loginRequest) {
 		UsernamePasswordAuthenticationToken authToken =
 			new UsernamePasswordAuthenticationToken(loginRequest.getStudentNumber(), loginRequest.getPassword());
 		return authenticationManager.authenticate(authToken);

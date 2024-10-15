@@ -46,12 +46,11 @@ public class UserController {
 	@Operation(summary = "회원 로그인")
 	@ApiErrorExceptionsExample(LoginExceptionDocs.class)
 	public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
-		try {
-			authService.login(loginRequest, response);
-			return ResponseEntity.ok(new StringResponseDto("로그인 성공하였습니다."));
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed: " + e.getMessage());
-		}
+
+		authService.login(loginRequest, response);
+
+		return ResponseEntity.ok(new StringResponseDto("로그인 성공하였습니다."));
+
 	}
 
 	@PostMapping("/logout")
