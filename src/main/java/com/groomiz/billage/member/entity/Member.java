@@ -61,9 +61,6 @@ public class Member extends BaseEntity {
 	@Column(name = "student_email")
 	private String studentEmail;
 
-	@Column(name = "verification_code")
-	private Integer verificationCode;
-
 	@Builder
 	public Member(String username, String password, Role role, boolean isAdmin, boolean isValid, String studentNumber,
 		String phoneNumber, boolean agreedToTerms) {
