@@ -1,6 +1,8 @@
 package com.groomiz.billage.auth.dto;
 
 import com.groomiz.billage.member.valid.ValidEmail;
+import com.groomiz.billage.member.valid.ValidPassword;
+import com.groomiz.billage.member.valid.ValidPhoneNumber;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -21,10 +23,12 @@ public class RegisterRequest {
 	private String studentNumber;
 
 	@NotNull
+	@ValidPassword
 	@Schema(description = "비밀번호", example = "password1234!")
 	private String password;
 
 	@NotNull
+	@ValidPhoneNumber
 	@Schema(description = "전화번호", example = "010-1234-5678")
 	private String phoneNumber;
 

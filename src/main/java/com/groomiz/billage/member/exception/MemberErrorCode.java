@@ -53,7 +53,10 @@ public enum MemberErrorCode implements BaseErrorCode {
 	INVALID_EMAIL(BAD_REQUEST, "MEMBER_400_11", "이메일 형식이 요구 조건에 맞지 않습니다."),
 
 	@ExplainError("회원이 존재하지 않는 경우 발생하는 오류입니다.")
-	MEMBER_NOT_FOUND(NOT_FOUND, "MEMBER_404_1", "해당 회원이 존재하지 않습니다.");
+	MEMBER_NOT_FOUND(NOT_FOUND, "MEMBER_404_1", "해당 회원이 존재하지 않습니다."),
+
+	@ExplainError("기존비밀번호가 일치하지 않는 경우 발생하는 오류입니다.")
+	INVALID_OLD_PASSWORD(BAD_REQUEST, "MEMBER_400_12", "기존 비밀번호가 일치하지 않습니다.");
 
 	private final Integer status;
 	private final String code;

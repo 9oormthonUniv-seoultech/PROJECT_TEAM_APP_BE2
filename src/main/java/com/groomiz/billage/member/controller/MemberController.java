@@ -22,6 +22,7 @@ import com.groomiz.billage.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -45,7 +46,7 @@ public class MemberController {
 	@PutMapping("/info")
 	@Operation(summary = "회원 정보 수정")
 	@ApiErrorExceptionsExample(UserInfoEditExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> updateInfo(@RequestBody MemberInfoRequest memberInfoRequest, @AuthenticationPrincipal CustomUserDetails user) {
+	public ResponseEntity<StringResponseDto> updateInfo(@RequestBody @Valid MemberInfoRequest memberInfoRequest, @AuthenticationPrincipal CustomUserDetails user) {
 
 		memberService.updateMemberInfo(memberInfoRequest.getEmail(), memberInfoRequest.getPhoneNumber(), user.getUsername());
 
@@ -65,8 +66,11 @@ public class MemberController {
 	@PutMapping("/password")
 	@Operation(summary = "비밀번호 수정")
 	@ApiErrorExceptionsExample(UserPasswordExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> updatePassword(@RequestBody PasswordRequest passwordRequest) {
-		return ResponseEntity.ok(new StringResponseDto("success"));
+	public ResponseEntity<StringResponseDto> updatePassword(@RequestBody @Valid PasswordRequest passwordRequest, @AuthenticationPrincipal CustomUserDetails user) {
+
+		memberService.updatePassword(passwordRequest.getOldPassword(), passwordRequest.getNewPassword(), user.getUsername());
+
+		return ResponseEntity.ok(new StringResponseDto("비밀번호가 성공적으로 수정되었습니다."));
 	}
 
 }
