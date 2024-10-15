@@ -15,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -46,6 +47,13 @@ public class ReservationStatus extends BaseEntity {
 	private Reservation reservation;
 
 	public ReservationStatus (Member requester) {
+		this.requester = requester;
+	}
+
+	@Builder
+	public ReservationStatus(ReservationStatusType status, Member requester) {
+		this.status = status;
+		this.admin = requester;
 		this.requester = requester;
 	}
 
