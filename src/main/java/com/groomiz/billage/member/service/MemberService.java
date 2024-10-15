@@ -1,13 +1,17 @@
 package com.groomiz.billage.member.service;
 
+import static com.groomiz.billage.member.exception.MemberErrorCode.*;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.groomiz.billage.auth.dto.RegisterRequest;
+import com.groomiz.billage.member.dto.MemberInfoResponse;
 import com.groomiz.billage.member.entity.College;
 import com.groomiz.billage.member.entity.Major;
 import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.entity.Role;
+import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,8 +37,46 @@ public class MemberService {
 			.studentEmail(registerRequest.getStudentEmail())
 			.build();
 		memberRepository.save(member);
-
 	}
+
+	public MemberInfoResponse findByStudentNumber(String studentNumber) {
+
+		Member byStudentNumber = memberRepository.findByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+		//Todo : 예약 횟수도 넣어야 함
+		return MemberInfoResponse.builder()
+			.studentNumber(byStudentNumber.getStudentNumber())
+			.name(byStudentNumber.getUsername())
+			.phoneNumber(byStudentNumber.getPhoneNumber())
+			.college(byStudentNumber.getCollege())
+			.major(byStudentNumber.getMajor())
+			.email(byStudentNumber.getStudentEmail())
+			.reservationCount(0)
+			.build();
+	}
+
+	public void updateMemberInfo(String email, String phoneNumber, String studentNumber) {
+		Member member = memberRepository.findByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+		member.changePhoneNumber(phoneNumber); // 명시적인 메서드 사용
+		member.changeEmail(email);
+
+		memberRepository.save(member);
+	}
+
+	//Todo: 전화번호 형식 에러 처리
+
+	public void deleteMember(String studentNumber) {
+		// 학번으로 회원을 조회하고 존재하지 않으면 예외를 던짐
+		Member member = memberRepository.findByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+
+		// 회원 삭제
+		memberRepository.delete(member);
+	}
+
 
 	public boolean isExists(String studentNumber) {
 		return memberRepository.existsByStudentNumber(studentNumber);
