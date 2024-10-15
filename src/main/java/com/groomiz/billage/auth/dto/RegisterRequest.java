@@ -1,5 +1,7 @@
 package com.groomiz.billage.auth.dto;
 
+import com.groomiz.billage.member.valid.ValidEmail;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -34,6 +36,7 @@ public class RegisterRequest {
 	private String major;
 
 	@NotNull
+	@ValidEmail
 	@Schema(description = "이메일", example = "asdf1234@gmail.com")
 	private String studentEmail;
 
