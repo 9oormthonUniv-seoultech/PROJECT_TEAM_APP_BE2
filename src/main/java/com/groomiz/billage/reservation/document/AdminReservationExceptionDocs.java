@@ -40,4 +40,7 @@ public class AdminReservationExceptionDocs implements SwaggerExampleExceptions {
 
 	@ExplainError("예약 시간이 24시 형식이 아닌 경우 발생하는 오류입니다.")
 	public GlobalCodeException 잘못된_시간_형식 = new ReservationException(ReservationErrorCode.INVALID_RESERVATION_TIME);
+
+	@ExplainError("이미 예약 중인 강의실에 대해 중복 예약을 시도한 경우 발생하는 오류입니다.")
+	public GlobalCodeException 중복_예약 = new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
 }

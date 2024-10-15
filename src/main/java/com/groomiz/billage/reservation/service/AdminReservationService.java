@@ -1,5 +1,7 @@
 package com.groomiz.billage.reservation.service;
 
+import static com.groomiz.billage.common.util.DateUtills.*;
+
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -148,6 +150,15 @@ public class AdminReservationService {
 		Classroom classroom = classroomRepository.findById(request.getClassroomId())
 			.orElseThrow(() -> new ClassroomException(ClassroomErrorCode.CLASSROOM_NOT_FOUND));
 
+		// 예약 날짜 과거 예외
+		if (request.getStartDate().isBefore(LocalDate.now())) {
+			throw new ReservationException(ReservationErrorCode.PAST_DATE_RESERVATION);
+		}
+
+		// 예약 시작 시간과 종료 시간 비교 예외
+		if (request.getStartTime().isAfter(request.getEndTime())) {
+			throw new ReservationException(ReservationErrorCode.START_TIME_AFTER_END_TIME);
+		}
 
 		// 타입별 예약 생성
 		switch (request.getType()) {
@@ -165,6 +176,15 @@ public class AdminReservationService {
 	}
 
 	private void createSingleReservation(AdminReservationRequest request, Member requester, Classroom classroom) {
+
+		// 중복 예약 예외
+		reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(request.getStartDate(), request.getClassroomId())
+			.forEach(reservationTime -> {
+				if (isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(), reservationTime.getEndTime())) {
+					throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
+				}
+			});
+
 		ReservationStatus status = ReservationStatus.builder()
 			.requester(requester)
 			.status(ReservationStatusType.APPROVED)
@@ -183,12 +203,23 @@ public class AdminReservationService {
 	}
 
 	private void createPeriodReservation(AdminReservationRequest request, Member requester, Classroom classroom) {
+
 		int period = (int)ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate());
 
 		ReservationGroup group = new ReservationGroup();
 		List<ReservationStatus> statuses = new ArrayList<>(period);
 
 		for (int i = 0; i <= period; i++) {
+			LocalDate date = request.getStartDate().plusDays(i);
+
+			// 중복 예약 예외
+			reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(date, request.getClassroomId())
+				.forEach(reservationTime -> {
+					if (isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(), reservationTime.getEndTime())) {
+						throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
+					}
+				});
+
 			ReservationStatus status = ReservationStatus.builder()
 				.requester(requester)
 				.status(ReservationStatusType.APPROVED)
@@ -196,7 +227,7 @@ public class AdminReservationService {
 
 			Reservation reservation = Reservation.builder()
 				.classroom(classroom)
-				.applyDate(request.getStartDate().plusDays(i))
+				.applyDate(date)
 				.startTime(request.getStartTime())
 				.endTime(request.getEndTime())
 				.reservationStatus(status)
@@ -213,6 +244,7 @@ public class AdminReservationService {
 
 
 	private void createRecurringReservation(AdminReservationRequest request, Member requester, Classroom classroom) {
+
 		ReservationGroup group = new ReservationGroup();
 		List<ReservationStatus> statuses = new ArrayList<>();
 
@@ -228,6 +260,14 @@ public class AdminReservationService {
 			for (DayOfWeek day : request.getDays()) {
 				// 요일별 날짜
 				LocalDate with = date.with(day);
+
+				// 중복 예약 예외
+				reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(date, request.getClassroomId())
+					.forEach(reservationTime -> {
+						if (isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(), reservationTime.getEndTime())) {
+							throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
+						}
+					});
 
 				if (with.isBefore(request.getStartDate())) {
 					continue;

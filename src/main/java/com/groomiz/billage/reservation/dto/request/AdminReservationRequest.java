@@ -20,9 +20,9 @@ public class AdminReservationRequest {
 	@Schema(description = "예약 타입", example = "일반")
 	private ReservationType type;
 
-	@NotNull
-	@Schema(description = "건물 ID", example = "1")
-	private Long buildingId;
+	// @NotNull
+	// @Schema(description = "건물 ID", example = "1")
+	// private Long buildingId;
 
 	@NotNull
 	@Schema(description = "강의실 ID", example = "1")
@@ -40,7 +40,7 @@ public class AdminReservationRequest {
 	private List<DayOfWeek> days;
 
 	@NotNull
-	@Schema(description = "시작 시간", example = "9:00", type = "string")
+	@Schema(description = "시작 시간", example = "09:00", type = "string")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
 	private LocalTime startTime;
 
