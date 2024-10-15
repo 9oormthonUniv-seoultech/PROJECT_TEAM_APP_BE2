@@ -47,7 +47,7 @@ public class UserController {
 	public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
 		try {
 			authService.login(loginRequest, response);
-			return ResponseEntity.ok(new StringResponseDto("Login successful"));
+			return ResponseEntity.ok(new StringResponseDto("로그인 성공하였습니다."));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Login failed: " + e.getMessage());
 		}
@@ -58,7 +58,7 @@ public class UserController {
 	public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			authService.logout(request, response);
-			return ResponseEntity.ok(new StringResponseDto("Logout successful"));
+			return ResponseEntity.ok(new StringResponseDto("로그아웃 성공하였습니다."));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Logout failed: " + e.getMessage());
 		}
@@ -71,7 +71,7 @@ public class UserController {
 
 		memberService.register(registerRequest);
 
-		return ResponseEntity.ok(new StringResponseDto("Register successful"));
+		return ResponseEntity.ok(new StringResponseDto("회원가입이 완료되었습니다."));
 	}
 
 	@GetMapping("/check-student-number")
@@ -83,9 +83,9 @@ public class UserController {
 		boolean exists = authService.checkStudentNumberExists(studentNumber);
 
 		if (exists) {
-			return ResponseEntity.badRequest().body(new StringResponseDto("Student number already exists"));
+			return ResponseEntity.badRequest().body(new StringResponseDto("학번이 이미 존재합니다."));
 		} else {
-			return ResponseEntity.ok(new StringResponseDto("Student number is available"));
+			return ResponseEntity.ok(new StringResponseDto("사용 가능한 학번입니다."));
 		}
 	}
 
