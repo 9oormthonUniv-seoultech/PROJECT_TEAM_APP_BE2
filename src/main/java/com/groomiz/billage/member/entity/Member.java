@@ -1,7 +1,6 @@
 package com.groomiz.billage.member.entity;
 
 import com.groomiz.billage.common.entity.BaseEntity;
-import com.groomiz.billage.member.exception.Validator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -80,19 +79,17 @@ public class Member extends BaseEntity {
 
 	public void changePhoneNumber(String newPhoneNumber) {
 
-		Validator.validatePhoneNumber(newPhoneNumber);
-
 		if (!this.phoneNumber.equals(newPhoneNumber)) {
 			this.phoneNumber = newPhoneNumber;
 		}
+
 	}
 
 	public void changeEmail(String newEmail) {
 
-		Validator.validateEmail(newEmail);
-
 		if (!this.studentEmail.equals(newEmail)) {
 			this.studentEmail = newEmail;
 		}
+
 	}
 }
