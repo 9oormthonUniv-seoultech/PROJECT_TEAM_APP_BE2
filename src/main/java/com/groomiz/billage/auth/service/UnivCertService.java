@@ -6,7 +6,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-
+import com.groomiz.billage.member.exception.MemberErrorCode;
+import com.groomiz.billage.member.exception.MemberException;
 import com.univcert.api.UnivCert;
 
 @Service
@@ -16,6 +17,12 @@ public class UnivCertService {
 	private String UNIV_API_KEY;
 
 	public Map<?, ?> certificate(String email){
+		String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
+
+		if (!email.matches(EMAIL_REGEX)) {
+			throw new MemberException(MemberErrorCode.INVALID_EMAIL);
+		}
+
 		try {
 			Map<String, Object> certifyMap = UnivCert.certify(UNIV_API_KEY, email, "서울과학기술대학교", true);
 
