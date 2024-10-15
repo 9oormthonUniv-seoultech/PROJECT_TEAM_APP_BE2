@@ -20,7 +20,7 @@ public enum AdminReservationErrorCode implements BaseErrorCode {
 	MISSING_STATUS_PARAMETER(BAD_REQUEST, "ADMIN_RESERVATION_400_2", "예약 상태 파라미터가 필요합니다."),
 
 	@ExplainError("예약 유형 값이 올바르지 않을 때 발생하는 오류입니다.")
-	INVALID_RESERVATION_TYPE(BAD_REQUEST, "ADMIN_RESERVATION_400_3", "예약 유형 값이 올바르지 않습니다. 허용되는 값은 'single', 'period', 'recurring'입니다."),
+	INVALID_RESERVATION_TYPE(BAD_REQUEST, "ADMIN_RESERVATION_400_3", "예약 유형 값이 올바르지 않습니다. 허용되는 값은 '일반', '기간', '반복'입니다."),
 
 	@ExplainError("예약 유형 값이 누락되었을 때 발생하는 오류입니다.")
 	MISSING_RESERVATION_TYPE(BAD_REQUEST, "ADMIN_RESERVATION_400_4", "예약 유형 값이 올바르지 않습니다. 허용되는 값은 'single', 'period', 'recurring'입니다.");

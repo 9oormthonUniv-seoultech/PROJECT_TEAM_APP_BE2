@@ -2,13 +2,10 @@ package com.groomiz.billage.reservation.entity;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.groomiz.billage.classroom.entity.Classroom;
 import com.groomiz.billage.common.entity.BaseEntity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,7 +16,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,7 +34,7 @@ public class Reservation extends BaseEntity {
 	@Column(name = "apply_date", nullable = false)
 	private LocalDate applyDate;
 
-	@Column(nullable = false)
+	@Column
 	private Integer headcount;
 
 	@Column(name = "start_time", nullable = false)
@@ -48,10 +44,9 @@ public class Reservation extends BaseEntity {
 	private LocalTime endTime;
 
 	@Enumerated(EnumType.STRING)
-	@Column(nullable = false)
 	private ReservationPurpose purpose;
 
-	@Column(name = "phone_number", nullable = false)
+	@Column(name = "phone_number")
 	private String phoneNumber;
 
 	private String contents;
@@ -64,10 +59,18 @@ public class Reservation extends BaseEntity {
 	@JoinColumn(name = "reservation_status_id", nullable = false)
 	private ReservationStatus reservationStatus;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "reservaion_group_id")
+	private ReservationGroup group;
+
+	public void setGroup(ReservationGroup group) {
+		this.group = group;
+	}
+
 	@Builder
 	public Reservation(LocalDate applyDate, Integer headcount, LocalTime startTime, LocalTime endTime,
 		ReservationPurpose purpose, String phoneNumber, String contents, Classroom classroom,
-		ReservationStatus reservationStatus) {
+		ReservationStatus reservationStatus, ReservationGroup group) {
 		this.applyDate = applyDate;
 		this.headcount = headcount;
 		this.startTime = startTime;
@@ -77,5 +80,6 @@ public class Reservation extends BaseEntity {
 		this.contents = contents;
 		this.classroom = classroom;
 		this.reservationStatus = reservationStatus;
+		this.group = group;
 	}
 }

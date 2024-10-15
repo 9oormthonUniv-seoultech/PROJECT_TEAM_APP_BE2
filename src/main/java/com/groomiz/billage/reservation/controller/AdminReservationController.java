@@ -76,7 +76,10 @@ public class AdminReservationController {
 	@Operation(summary = "예약 요청 처리")
 	@ApiErrorExceptionsExample(AdminReservationExceptionDocs.class)
 	public ResponseEntity<StringResponseDto> createReservation(
-		@RequestBody AdminReservationRequest request) {
+		@RequestBody AdminReservationRequest request,
+		@AuthenticationPrincipal CustomUserDetails user) {
+
+		adminReservationService.reserveClassroom(request, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("예약 완료 하였습니다."));
 	}
 

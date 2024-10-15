@@ -1,5 +1,10 @@
 package com.groomiz.billage.reservation.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -10,15 +15,24 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.groomiz.billage.auth.service.RedisService;
+import com.groomiz.billage.classroom.entity.Classroom;
+import com.groomiz.billage.classroom.exception.ClassroomErrorCode;
+import com.groomiz.billage.classroom.exception.ClassroomException;
+import com.groomiz.billage.classroom.repository.ClassroomRepository;
 import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
+import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.entity.Reservation;
+import com.groomiz.billage.reservation.entity.ReservationGroup;
+import com.groomiz.billage.reservation.entity.ReservationStatus;
 import com.groomiz.billage.reservation.entity.ReservationStatusType;
 import com.groomiz.billage.reservation.exception.ReservationErrorCode;
 import com.groomiz.billage.reservation.exception.ReservationException;
+import com.groomiz.billage.reservation.repository.ReservationGroupRepository;
 import com.groomiz.billage.reservation.repository.ReservationRepository;
+import com.groomiz.billage.reservation.repository.ReservationStatusRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +44,13 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminReservationService {
 
 	private final MemberRepository memberRepository;
+
 	private final ReservationRepository reservationRepository;
+	private final ReservationStatusRepository reservationStatusRepository;
+	private final ReservationGroupRepository reservationGroupRepository;
+
+	private final ClassroomRepository classroomRepository;
+
 	private final RedisService redisService;
 
 	public void approveReservation(Long reservationId, String studentNumber) throws FirebaseMessagingException {
@@ -119,4 +139,126 @@ public class AdminReservationService {
 
 		FirebaseMessaging.getInstance().send(message);
 	}
+
+	public void reserveClassroom(AdminReservationRequest request, String studentNumber) {
+
+		Member requester = memberRepository.findByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+		Classroom classroom = classroomRepository.findById(request.getClassroomId())
+			.orElseThrow(() -> new ClassroomException(ClassroomErrorCode.CLASSROOM_NOT_FOUND));
+
+
+		// 타입별 예약 생성
+		switch (request.getType()) {
+			case SINGLE:
+				createSingleReservation(request, requester, classroom);
+				break;
+			case PERIOD:
+				createPeriodReservation(request, requester, classroom);
+				break;
+			case RECURRING:
+				createRecurringReservation(request, requester, classroom);
+				break;
+			default:
+		}
+	}
+
+	private void createSingleReservation(AdminReservationRequest request, Member requester, Classroom classroom) {
+		ReservationStatus status = ReservationStatus.builder()
+			.requester(requester)
+			.status(ReservationStatusType.APPROVED)
+			.build();
+
+		Reservation reservation = Reservation.builder()
+			.classroom(classroom)
+			.applyDate(request.getStartDate())
+			.startTime(request.getStartTime())
+			.endTime(request.getEndTime())
+			.reservationStatus(status)
+			.build();
+
+		reservationStatusRepository.save(status);
+		reservationRepository.save(reservation);
+	}
+
+	private void createPeriodReservation(AdminReservationRequest request, Member requester, Classroom classroom) {
+		int period = (int)ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate());
+
+		ReservationGroup group = new ReservationGroup();
+		List<ReservationStatus> statuses = new ArrayList<>(period);
+
+		for (int i = 0; i <= period; i++) {
+			ReservationStatus status = ReservationStatus.builder()
+				.requester(requester)
+				.status(ReservationStatusType.APPROVED)
+				.build();
+
+			Reservation reservation = Reservation.builder()
+				.classroom(classroom)
+				.applyDate(request.getStartDate().plusDays(i))
+				.startTime(request.getStartTime())
+				.endTime(request.getEndTime())
+				.reservationStatus(status)
+				.group(group)
+				.build();
+
+			group.getReservations().add(reservation);
+			statuses.add(status);
+		}
+
+		reservationStatusRepository.saveAll(statuses);
+		reservationGroupRepository.save(group);
+	}
+
+
+	private void createRecurringReservation(AdminReservationRequest request, Member requester, Classroom classroom) {
+		ReservationGroup group = new ReservationGroup();
+		List<ReservationStatus> statuses = new ArrayList<>();
+
+		// 요일 정렬
+		List<DayOfWeek> days = request.getDays().stream().sorted().toList();
+
+		LocalDate date = request.getStartDate();
+
+		boolean st = true;
+
+		while (st) {
+
+			for (DayOfWeek day : request.getDays()) {
+				// 요일별 날짜
+				LocalDate with = date.with(day);
+
+				if (with.isBefore(request.getStartDate())) {
+					continue;
+				}
+				else if (with.isAfter(request.getEndDate())) {
+					st = false;
+					break;
+				} else {
+					ReservationStatus status = ReservationStatus.builder()
+						.requester(requester)
+						.status(ReservationStatusType.APPROVED)
+						.build();
+
+					Reservation reservation = Reservation.builder()
+						.classroom(classroom)
+						.applyDate(with)
+						.startTime(request.getStartTime())
+						.endTime(request.getEndTime())
+						.reservationStatus(status)
+						.group(group)
+						.build();
+
+					group.getReservations().add(reservation);
+					statuses.add(status);
+				}
+			}
+			date = date.plusWeeks(1);
+		}
+
+		reservationStatusRepository.saveAll(statuses);
+		reservationGroupRepository.save(group);
+	}
+
 }
