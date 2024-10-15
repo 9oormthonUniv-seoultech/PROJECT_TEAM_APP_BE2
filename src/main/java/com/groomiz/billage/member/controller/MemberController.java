@@ -20,9 +20,9 @@ import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
 import com.groomiz.billage.member.document.UserInfoEditExceptionDocs;
 import com.groomiz.billage.member.document.UserInfoExceptionDocs;
 import com.groomiz.billage.member.document.UserPasswordExceptionDocs;
-import com.groomiz.billage.member.dto.request.MemberInfoRequest;
-import com.groomiz.billage.member.dto.request.PasswordRequest;
-import com.groomiz.billage.member.dto.response.MemberInfoResponse;
+import com.groomiz.billage.member.dto.MemberInfoRequest;
+import com.groomiz.billage.member.dto.MemberInfoResponse;
+import com.groomiz.billage.member.dto.PasswordRequest;
 import com.groomiz.billage.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
