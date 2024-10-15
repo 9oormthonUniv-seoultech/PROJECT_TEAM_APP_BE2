@@ -1,7 +1,8 @@
 package com.groomiz.billage.reservation.service;
 
+import static com.groomiz.billage.common.util.DateUtills.*;
+
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -141,10 +142,6 @@ public class ReservationService {
 		}
 
 		reservation.getReservationStatus().updateStatus(ReservationStatusType.STUDENT_CANCELED);
-	}
-
-	public boolean isTimeOverlapping(LocalTime startTime1, LocalTime endTime1, LocalTime startTime2, LocalTime endTime2) {
-		return startTime1.isBefore(endTime2) && startTime2.isBefore(endTime1);
 	}
 
 	public ReservationStatusListResponse getAllReservationStatus(String studentNumber) {
