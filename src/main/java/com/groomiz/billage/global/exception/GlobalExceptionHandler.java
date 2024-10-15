@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.groomiz.billage.auth.document.LoginExceptionDocs;
+import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.global.dto.ErrorReason;
 import com.groomiz.billage.global.dto.ErrorResponse;
 import com.groomiz.billage.member.exception.MemberErrorCode;
@@ -112,6 +113,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			.body(errorResponse);
 	}
 
+	@ExceptionHandler(AuthException.class)
+	public ResponseEntity<ErrorResponse> handleAuthException(AuthException ex, HttpServletRequest request) {
+		ErrorReason reason = ex.getErrorCode().getErrorReason();
+		ErrorResponse errorResponse =
+			new ErrorResponse(ex.getErrorCode().getErrorReason(), request.getRequestURL().toString());
+
+		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+			.body(errorResponse);
+	}
 	//주로 요청 본문이 유효성 검사를 통과하지 못할 때 발생합니다 (예: @Valid 어노테이션 사용 시) MethodArgumentNotValidException 예외를 처리하는 메서드
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
