@@ -62,7 +62,10 @@ public enum ReservationErrorCode implements BaseErrorCode {
 	DUPLICATE_RESERVATION(BAD_REQUEST, "RESERVATION_400_14", "이미 예약 대기 상태 혹은 승인된 강의실입니다."),
 
 	@ExplainError("예약이 이미 취소된 경우 발생하는 오류입니다.")
-	RESERVATION_ALREADY_CANCELED(BAD_REQUEST, "RESERVATION_400_15", "이미 취소된 예약입니다.");
+	RESERVATION_ALREADY_CANCELED(BAD_REQUEST, "RESERVATION_400_15", "이미 취소된 예약입니다."),
+
+	@ExplainError("예약 상태가 잘못된 형식인 경우 발생하는 오류입니다.")
+	INVALID_RESERVATION_STATUS_TYPE(BAD_REQUEST, "RESERVATION_400_16", "예약 상태가 잘못된 형식입니다.");
 
 
 	private final Integer status;
