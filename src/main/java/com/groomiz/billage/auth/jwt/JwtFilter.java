@@ -14,8 +14,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.groomiz.billage.auth.config.SecurityProperties;
 import com.groomiz.billage.auth.dto.CustomUserDetails;
+import com.groomiz.billage.auth.exception.AuthErrorCode;
+import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.entity.Role;
+import com.groomiz.billage.member.exception.MemberException;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -62,8 +65,7 @@ public class JwtFilter extends OncePerRequestFilter {
 				String category = jwtUtil.getCategory(accessToken);
 
 				if (category == null || !category.equals("AccessToken")) {
-					sendErrorResponse(response, "Invalid access token", HttpServletResponse.SC_UNAUTHORIZED);
-					return;
+					throw new AuthException(AuthErrorCode.INVALID_TOKEN);
 				}
 
 				// username, role 값을 획득
@@ -91,7 +93,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			// 다음 필터로 넘김
 			filterChain.doFilter(request, response);
 		} catch (ExpiredJwtException e) {
-			sendErrorResponse(response, "Access token expired", HttpServletResponse.SC_UNAUTHORIZED);
+			throw new AuthException(AuthErrorCode.TOKEN_EXPIRED);
 		} catch (JwtException e) {
 			sendErrorResponse(response, "JWT processing failed", HttpServletResponse.SC_UNAUTHORIZED);
 		}
