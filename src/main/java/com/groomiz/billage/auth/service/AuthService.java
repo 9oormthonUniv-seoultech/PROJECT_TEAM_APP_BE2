@@ -3,9 +3,11 @@ package com.groomiz.billage.auth.service;
 import java.time.Duration;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.groomiz.billage.auth.dto.LoginRequest;
@@ -32,22 +34,31 @@ public class AuthService {
 	private final MemberRepository memberRepository;
 
 	public void login(LoginRequest loginRequest, HttpServletResponse response) throws AuthenticationException {
-		// 로그인 인증 처리
-		Authentication authentication = authenticate(loginRequest);
+		try {
+			// 로그인 인증 처리
+			Authentication authentication = authenticate(loginRequest);
 
-		String username = authentication.getName();
-		String role = authentication.getAuthorities().iterator().next().getAuthority();
+			String username = authentication.getName();
+			String role = authentication.getAuthorities().iterator().next().getAuthority();
 
-		// AccessToken과 RefreshToken 생성
-		String accessToken = jwtTokenProvider.createAccessToken(username, role);
-		String refreshToken = jwtTokenProvider.createRefreshToken(username, role);
+			// AccessToken과 RefreshToken 생성
+			String accessToken = jwtTokenProvider.createAccessToken(username, role);
+			String refreshToken = jwtTokenProvider.createRefreshToken(username, role);
 
-		// Redis에 RefreshToken 저장
-		redisService.setValues(username, refreshToken, Duration.ofMillis(86400000L));  // 1일 유효
+			// Redis에 RefreshToken 저장
+			redisService.setValues(username, refreshToken, Duration.ofMillis(86400000L));  // 1일 유효
 
-		// AccessToken과 RefreshToken을 헤더에 추가
-		response.setHeader("Authorization", "Bearer " + accessToken);
-		response.setHeader("RefreshToken", "Bearer " + refreshToken);
+			// AccessToken과 RefreshToken을 헤더에 추가
+			response.setHeader("Authorization", "Bearer " + accessToken);
+			response.setHeader("RefreshToken", "Bearer " + refreshToken);
+
+		} catch (BadCredentialsException e) {
+			// 비밀번호가 틀린 경우
+			throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
+		} catch (UsernameNotFoundException e) {
+			// 아이디가 틀린 경우
+			throw new AuthException(AuthErrorCode.INVALID_USER_ID);
+		}
 	}
 
 	public void logout(HttpServletRequest request, HttpServletResponse response) {
