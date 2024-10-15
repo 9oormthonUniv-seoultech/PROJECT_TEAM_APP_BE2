@@ -9,9 +9,10 @@ import jakarta.validation.Constraint;
 
 @Target({ ElementType.FIELD })
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PhoneNumberValidator.class)
+@Constraint(validatedBy = EmailValidator.class)
 public @interface ValidEmail {
 	String message() default "INVALID_EMAIL";
 	Class[] groups() default {};
 	Class[] payload() default {};
+
 }
