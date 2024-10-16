@@ -23,8 +23,10 @@ import com.groomiz.billage.reservation.document.AdminSearchExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminbyStatusExceptionDocs;
 import com.groomiz.billage.reservation.dto.request.AdminRejectionRequest;
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
+import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
 import com.groomiz.billage.reservation.service.AdminReservationService;
+import com.groomiz.billage.reservation.service.ReservationService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminReservationController {
 
 	private final AdminReservationService adminReservationService;
+	private final ReservationService reservationService;
 
 	@GetMapping
 	@Operation(summary = "예약 상태별 리스트 조회")
@@ -73,7 +76,7 @@ public class AdminReservationController {
 	}
 
 	@PostMapping
-	@Operation(summary = "예약 요청 처리")
+	@Operation(summary = "강의실 예약(일반/기간/반복)")
 	@ApiErrorExceptionsExample(AdminReservationExceptionDocs.class)
 	public ResponseEntity<StringResponseDto> createReservation(
 		@RequestBody AdminReservationRequest request,
@@ -86,8 +89,10 @@ public class AdminReservationController {
 	@GetMapping("/{reservationId}")
 	@Operation(summary = "예약 상세 조회")
 	@ApiErrorExceptionsExample(AdminSearchExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> getReservation(@PathVariable Long reservationId) {
-		return ResponseEntity.ok(null);
+	public ResponseEntity<AdminReservationResponse> getReservation(@PathVariable Long reservationId) {
+
+		AdminReservationResponse reservation = reservationService.getReservation(reservationId);
+		return ResponseEntity.ok(reservation);
 	}
 
 	@DeleteMapping("/{id}")
