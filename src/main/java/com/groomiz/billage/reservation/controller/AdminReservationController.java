@@ -99,9 +99,15 @@ public class AdminReservationController {
 	@DeleteMapping("/{id}")
 	@Operation(summary = "예약 삭제", description = "단일 예약, 기간 예약, 반복 예약을 삭제합니다.")
 
+	@DeleteMapping("/{id}/student")
+	@Operation(summary = "예약 강제 취소", description = "학생 예약을 강제 취소합니다.")
 	@ApiErrorExceptionsExample(AdminReservationDeleteExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> deleteReservation(@PathVariable Long id,
-		@RequestParam(required = false, defaultValue = "single") String type) {
-		return ResponseEntity.ok(null);
+	public ResponseEntity<StringResponseDto> cancleStudentReservation(
+		@Parameter(description = "예약 ID", example = "1")
+		@PathVariable("id") Long id,
+		@AuthenticationPrincipal CustomUserDetails user) {
+
+		adminReservationService.cancelStudentReservation(id, user.getStudentNumber());
+		return ResponseEntity.ok(new StringResponseDto("학생 예약 강제 취소 완료되었습니다."));
 	}
 }

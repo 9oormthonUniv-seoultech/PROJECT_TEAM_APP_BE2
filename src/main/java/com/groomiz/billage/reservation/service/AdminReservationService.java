@@ -26,6 +26,7 @@ import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
+import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.entity.Reservation;
 import com.groomiz.billage.reservation.entity.ReservationGroup;
 import com.groomiz.billage.reservation.entity.ReservationStatus;
@@ -307,5 +308,27 @@ public class AdminReservationService {
 
 		return reservationRepository.findAdminReservationResponseById(reservationId)
 			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+	}
+
+	public void cancelStudentReservation(Long id, String studentNumber) {
+
+		Reservation reservation = reservationRepository.findById(id)
+			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+		Member admin = memberRepository.findByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+		if (reservation.getReservationStatus().isRejected()) {
+			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
+		} else if (reservation.getReservationStatus().isCanceledByStudent()) {
+			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_DELETED);
+		}
+
+		// 예약 기간 지난 경우 예외
+		if (reservation.getApplyDate().isBefore(LocalDate.now())) {
+			throw new ReservationException(ReservationErrorCode.PAST_DATE_RESERVATION);
+		}
+
+		reservation.getReservationStatus().cancelByAdmin(admin);
 	}
 }
