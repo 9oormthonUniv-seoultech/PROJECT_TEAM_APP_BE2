@@ -22,6 +22,9 @@ import com.groomiz.billage.auth.service.AuthService;
 import com.groomiz.billage.auth.service.UnivCertService;
 import com.groomiz.billage.common.dto.StringResponseDto;
 import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
+import com.groomiz.billage.global.dto.ErrorReason;
+import com.groomiz.billage.global.dto.ErrorResponse;
+import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.service.MemberService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,6 +33,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -78,15 +82,20 @@ public class UserController {
 	@Operation(summary = "학번 중복 확인")
 	@ApiErrorExceptionsExample(StudentNumberExcptionDocs.class)
 	public ResponseEntity<?> checkStudentNumber(
-		@Parameter(description = "학번", example = "20100000") @RequestParam String studentNumber) {
+		@Parameter(description = "학번", example = "20100000") @NotNull @RequestParam String studentNumber, HttpServletRequest request) {
 
 		boolean exists = authService.checkStudentNumberExists(studentNumber);
 
 		if (exists) {
-			return ResponseEntity.badRequest().body(new StringResponseDto("학번이 이미 존재합니다."));
-		} else {
+			// ErrorReason 객체 생성
+			ErrorReason errorReason = MemberErrorCode.STUDENT_ID_ALREADY_REGISTERED.getErrorReason();
+
+			// ErrorResponse 객체 생성
+			ErrorResponse errorResponse = new ErrorResponse(errorReason, request.getRequestURI());
+
+			return ResponseEntity.status(errorReason.getStatus()).body(errorResponse);
+		} else
 			return ResponseEntity.ok(new StringResponseDto("사용 가능한 학번입니다."));
-		}
 	}
 
 	@PostMapping("/certificate")
