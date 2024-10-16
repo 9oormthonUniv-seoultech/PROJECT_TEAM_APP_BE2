@@ -115,17 +115,11 @@ public class ReservationService {
 
 		if (reservation.getReservationStatus().isApproved()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_APPROVED);
-		}
-
-		if (reservation.getReservationStatus().isRejected()) {
+		} else if (reservation.getReservationStatus().isRejected()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
-		}
-
-		if (reservation.getReservationStatus().isCanceledByStudent()) {
+		} else if (reservation.getReservationStatus().isCanceledByStudent()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_DELETED);
-		}
-
-		if (reservation.getReservationStatus().isCanceledByAdmin()) {
+		} else if (reservation.getReservationStatus().isCanceledByAdmin()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
 		}
 
