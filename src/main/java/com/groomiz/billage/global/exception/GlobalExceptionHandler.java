@@ -1,3 +1,5 @@
+
+
 package com.groomiz.billage.global.exception;
 
 import java.io.IOException;
@@ -22,7 +24,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.groomiz.billage.auth.document.LoginExceptionDocs;
 import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.global.dto.ErrorReason;
@@ -122,6 +123,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
 			.body(errorResponse);
 	}
+
 	//주로 요청 본문이 유효성 검사를 통과하지 못할 때 발생합니다 (예: @Valid 어노테이션 사용 시) MethodArgumentNotValidException 예외를 처리하는 메서드
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -233,6 +235,3 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			.body(errorResponse);
 	}
 }
-
-
-
