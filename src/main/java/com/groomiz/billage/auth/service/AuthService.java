@@ -96,12 +96,9 @@ public class AuthService {
 	}
 
 	public boolean checkStudentNumberExists(String studentNumber) {
-		if (studentNumber == null || studentNumber.length() != 8) {
-			throw new MemberException(MemberErrorCode.INVALID_STUDENT_ID);
-		}
 
 		Boolean isExist = memberRepository.existsByStudentNumber(studentNumber)
-			.orElseThrow(() -> new MemberException(MemberErrorCode.STUDENT_ID_ALREADY_REGISTERED));
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 		return isExist;
 	}
