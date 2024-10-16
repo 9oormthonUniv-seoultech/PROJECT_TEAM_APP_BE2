@@ -13,9 +13,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum MemberErrorCode implements BaseErrorCode {
 
-	@ExplainError("학번이 8자리가 아닌 경우 발생하는 오류입니다.")
-	INVALID_STUDENT_ID(BAD_REQUEST, "MEMBER_400_1", "학번은 8자리여야 합니다."),
-
 	@ExplainError("비밀번호가 형식에 맞지 않는 경우 발생하는 오류입니다.")
 	INVALID_PASSWORD_FORMAT(BAD_REQUEST, "MEMBER_400_2", "비밀번호가 형식에 맞지 않습니다."),
 
