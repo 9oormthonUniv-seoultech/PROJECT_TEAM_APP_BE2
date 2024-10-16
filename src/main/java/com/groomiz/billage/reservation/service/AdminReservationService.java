@@ -301,4 +301,11 @@ public class AdminReservationService {
 		reservationGroupRepository.save(group);
 	}
 
+
+	@Transactional(readOnly = true)
+	public AdminReservationResponse getReservation(Long reservationId) {
+
+		return reservationRepository.findAdminReservationResponseById(reservationId)
+			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+	}
 }
