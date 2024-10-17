@@ -84,12 +84,9 @@ public class UserController {
 	public ResponseEntity<?> checkStudentNumber(
 		@Parameter(description = "학번", example = "20100000") @NotNull @RequestParam String studentNumber, HttpServletRequest request) {
 
-		boolean exists = authService.checkStudentNumberExists(studentNumber);
+		authService.checkStudentNumberExists(studentNumber);
 
-		if (exists) {
-			return ResponseEntity.ok(new StringResponseDto("이미 가입된 학번입니다."));
-		} else
-			return ResponseEntity.ok(new StringResponseDto("사용 가능한 학번입니다."));
+		return ResponseEntity.ok(new StringResponseDto("사용 가능한 학번입니다."));
 	}
 
 	@PostMapping("/certificate")

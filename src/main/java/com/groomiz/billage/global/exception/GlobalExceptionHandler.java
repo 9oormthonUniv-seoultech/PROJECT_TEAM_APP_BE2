@@ -114,6 +114,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
 			.body(errorResponse);
+	}
 	@ExceptionHandler(AuthException.class)
 	public ResponseEntity<ErrorResponse> handleAuthException(AuthException ex, HttpServletRequest request) {
 		ErrorReason reason = ex.getErrorCode().getErrorReason();
