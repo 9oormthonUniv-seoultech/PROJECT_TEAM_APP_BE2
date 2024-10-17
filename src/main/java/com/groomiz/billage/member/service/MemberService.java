@@ -4,6 +4,7 @@ import static com.groomiz.billage.member.exception.MemberErrorCode.*;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.member.dto.MemberInfoResponse;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
+@Transactional // 기본적으로 모든 메서드에 트랜잭션 적용
 public class MemberService {
 	private final MemberRepository memberRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
@@ -44,8 +46,8 @@ public class MemberService {
 		memberRepository.save(member);
 	}
 
+	@Transactional(readOnly = true) // 조회용 메서드에 읽기 전용 트랜잭션 적용
 	public MemberInfoResponse findByStudentNumber(String studentNumber) {
-
 		Member byStudentNumber = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
 
@@ -80,7 +82,7 @@ public class MemberService {
 		memberRepository.delete(member);
 	}
 
-	//비밀번호 업데이트
+	// 비밀번호 업데이트
 	public void updatePassword(String oldPassword, String newPassword, String studentNumber) {
 		Member member = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
@@ -95,18 +97,18 @@ public class MemberService {
 			throw new MemberException(INVALID_OLD_PASSWORD);  // 기존 비밀번호 불일치 시 예외 발생
 		}
 
-		if(oldPassword.equals(newPassword)) {
+		if (oldPassword.equals(newPassword)) {
 			throw new MemberException(PASSWORD_SAME_AS_OLD);
 		}
 
-		// 저장하는 로직
+		// 새로운 비밀번호 저장
 		String encodedPassword = passwordEncoder.encode(newPassword);
 		member.changePassword("{bcrypt}" + encodedPassword);
 
 		memberRepository.save(member);
 	}
 
-
+	@Transactional(readOnly = true) // 조회용 메서드에 읽기 전용 트랜잭션 적용
 	public boolean isExists(String studentNumber) {
 		return memberRepository.existsByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
