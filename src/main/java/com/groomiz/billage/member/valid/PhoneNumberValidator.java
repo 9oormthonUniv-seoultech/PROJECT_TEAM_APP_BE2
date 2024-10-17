@@ -1,5 +1,6 @@
 package com.groomiz.billage.member.valid;
 
+import com.groomiz.billage.member.exception.MemberErrorCode;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -27,4 +28,5 @@ public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumbe
 
 		return true;  // 전화번호 형식이 유효한 경우 true 반환
 	}
+}
 }

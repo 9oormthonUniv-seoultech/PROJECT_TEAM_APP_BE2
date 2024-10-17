@@ -26,6 +26,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groomiz.billage.auth.document.LoginExceptionDocs;
 import com.groomiz.billage.auth.exception.AuthException;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.groomiz.billage.auth.document.LoginExceptionDocs;
 import com.groomiz.billage.global.dto.ErrorReason;
 import com.groomiz.billage.global.dto.ErrorResponse;
 import com.groomiz.billage.member.exception.MemberErrorCode;
@@ -112,8 +114,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
 			.body(errorResponse);
-	}
-
 	@ExceptionHandler(AuthException.class)
 	public ResponseEntity<ErrorResponse> handleAuthException(AuthException ex, HttpServletRequest request) {
 		ErrorReason reason = ex.getErrorCode().getErrorReason();
