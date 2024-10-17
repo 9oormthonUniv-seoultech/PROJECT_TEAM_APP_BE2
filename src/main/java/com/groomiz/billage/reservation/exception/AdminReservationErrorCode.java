@@ -26,7 +26,10 @@ public enum AdminReservationErrorCode implements BaseErrorCode {
 	MISSING_RESERVATION_TYPE(BAD_REQUEST, "ADMIN_RESERVATION_400_4", "예약 유형 값이 올바르지 않습니다. 허용되는 값은 '일반', '기간', '반복'입니다."),
 
 	@ExplainError("이미 예약 대기 상태 혹은 승인된 강의실인 경우 발생하는 오류입니다.")
-	DUPLICATE_RESERVATION(BAD_REQUEST, "ADMIN_RESERVATION_400_5", "이미 예약 대기 상태 혹은 승인된 강의실입니다.");
+	DUPLICATE_RESERVATION(BAD_REQUEST, "ADMIN_RESERVATION_400_5", "이미 예약 대기 상태 혹은 승인된 강의실입니다."),
+
+	@ExplainError("예약 그룹이 존재하지 않을 때 발생하는 오류입니다.")
+	RESERVATION_GROUP_NOT_FOUND(NOT_FOUND, "ADMIN_RESERVATION_404_1", "예약 그룹이 존재하지 않습니다.");
 
 	private final Integer status;
 	private final String code;

@@ -31,12 +31,15 @@ import com.groomiz.billage.reservation.entity.Reservation;
 import com.groomiz.billage.reservation.entity.ReservationGroup;
 import com.groomiz.billage.reservation.entity.ReservationStatus;
 import com.groomiz.billage.reservation.entity.ReservationStatusType;
+import com.groomiz.billage.reservation.exception.AdminReservationErrorCode;
+import com.groomiz.billage.reservation.exception.AdminReservationException;
 import com.groomiz.billage.reservation.exception.ReservationErrorCode;
 import com.groomiz.billage.reservation.exception.ReservationException;
 import com.groomiz.billage.reservation.repository.ReservationGroupRepository;
 import com.groomiz.billage.reservation.repository.ReservationRepository;
 import com.groomiz.billage.reservation.repository.ReservationStatusRepository;
 
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,6 +58,8 @@ public class AdminReservationService {
 	private final ClassroomRepository classroomRepository;
 
 	private final RedisService redisService;
+
+	private final EntityManager entityManager;
 
 	public void approveReservation(Long reservationId, String studentNumber) throws FirebaseMessagingException {
 
@@ -308,6 +313,40 @@ public class AdminReservationService {
 
 		return reservationRepository.findAdminReservationResponseById(reservationId)
 			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+	}
+
+	public void cancelReservation(Long reservationId, boolean isDeleteAll, String studentNumber) {
+
+		Reservation reservation = reservationRepository.findById(reservationId)
+			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
+
+		Member admin = memberRepository.findByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+		// 예약 기간 지난 경우 예외
+		if (reservation.getApplyDate().isBefore(LocalDate.now())) {
+			throw new ReservationException(ReservationErrorCode.PAST_DATE_RESERVATION);
+		}
+
+		if (isDeleteAll) {
+			// 기간 or 반복 예약 취소
+			ReservationGroup group = reservation.getGroup();
+			if (group == null) {
+				throw new AdminReservationException(AdminReservationErrorCode.RESERVATION_GROUP_NOT_FOUND);
+			}
+
+			List<ReservationStatus> reservationStatuses = reservationStatusRepository.findReservationStatusWithReservationByReservationGroup(
+				group);
+
+			// 예약 일괄 취소
+			reservationStatusRepository.cancelAllByAdmin(reservationStatuses, admin.getId());
+
+			entityManager.flush();
+			entityManager.clear();
+		} else {
+			// 단일 예약 취소
+			reservation.getReservationStatus().cancelByAdmin(admin);
+		}
 	}
 
 	public void cancelStudentReservation(Long id, String studentNumber) {
