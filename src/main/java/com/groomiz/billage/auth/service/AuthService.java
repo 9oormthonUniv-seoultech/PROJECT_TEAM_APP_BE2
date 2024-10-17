@@ -95,7 +95,7 @@ public class AuthService {
 		return authenticationManager.authenticate(authToken);
 	}
 
-	public boolean checkStudentNumberExists(String studentNumber) {
+	public void checkStudentNumberExists(String studentNumber) {
 
 		Boolean isExist = memberRepository.existsByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
@@ -104,6 +104,5 @@ public class AuthService {
 			throw new MemberException(MemberErrorCode.STUDENT_ID_ALREADY_REGISTERED);
 		}
 
-		return isExist;
 	}
 }
