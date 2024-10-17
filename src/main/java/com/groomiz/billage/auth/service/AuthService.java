@@ -100,6 +100,10 @@ public class AuthService {
 		Boolean isExist = memberRepository.existsByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
+		if (isExist) {
+			throw new MemberException(MemberErrorCode.STUDENT_ID_ALREADY_REGISTERED);
+		}
+
 		return isExist;
 	}
 }

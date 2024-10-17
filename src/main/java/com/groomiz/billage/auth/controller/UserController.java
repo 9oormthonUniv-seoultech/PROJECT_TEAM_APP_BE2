@@ -87,13 +87,7 @@ public class UserController {
 		boolean exists = authService.checkStudentNumberExists(studentNumber);
 
 		if (exists) {
-			// ErrorReason 객체 생성
-			ErrorReason errorReason = MemberErrorCode.STUDENT_ID_ALREADY_REGISTERED.getErrorReason();
-
-			// ErrorResponse 객체 생성
-			ErrorResponse errorResponse = new ErrorResponse(errorReason, request.getRequestURI());
-
-			return ResponseEntity.status(errorReason.getStatus()).body(errorResponse);
+			return ResponseEntity.ok(new StringResponseDto("이미 가입된 학번입니다."));
 		} else
 			return ResponseEntity.ok(new StringResponseDto("사용 가능한 학번입니다."));
 	}
