@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.groomiz.billage.member.exception.MemberErrorCode;
+import com.groomiz.billage.member.exception.MemberException;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -81,11 +83,19 @@ public enum Major {
 	}
 
 	@JsonCreator
-	public static Major fromName(String name) {
+	public static Major fromNameAndCollege(String name, String collegeName) {
 		Major major = NAME_TO_ENUM_MAP.get(name);
 
 		if (major == null) {
-			// TODO: 예외 처리
+			throw new MemberException(MemberErrorCode.INVALID_MAJOR_ENUM);
+		}
+
+		// 단과대 이름으로 College 객체를 가져옴
+		College college = College.fromName(collegeName);
+
+		// 학과가 해당 단과대에 속하지 않으면 예외 발생
+		if (major.getCollege() != college) {
+			throw new MemberException(MemberErrorCode.INVALID_COLLEGE_AND_MAJOR);
 		}
 
 		return major;

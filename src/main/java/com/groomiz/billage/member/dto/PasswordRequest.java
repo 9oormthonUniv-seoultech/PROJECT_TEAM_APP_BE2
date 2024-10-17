@@ -1,5 +1,7 @@
 package com.groomiz.billage.member.dto;
 
+import com.groomiz.billage.member.valid.ValidPassword;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -13,6 +15,7 @@ public class PasswordRequest {
 	private String oldPassword;
 
 	@NotNull
+	@ValidPassword
 	@Schema(description = "새로운 비밀번호", example = "newpassword1234!")
 	private String newPassword;
 }
