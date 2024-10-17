@@ -26,12 +26,14 @@ import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
 import com.groomiz.billage.reservation.service.AdminReservationService;
-import com.groomiz.billage.reservation.service.ReservationService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/admin/reservations")
 @Tag(name = "Admin Reservation Controller", description = "[관리자] 예약 관련 API")
@@ -97,7 +99,18 @@ public class AdminReservationController {
 	}
 
 	@DeleteMapping("/{id}")
-	@Operation(summary = "예약 삭제", description = "단일 예약, 기간 예약, 반복 예약을 삭제합니다.")
+	@Operation(summary = "예약 취소", description = "관리자 일반/기간/반복 예약을 취소합니다.")
+	@ApiErrorExceptionsExample(AdminReservationDeleteExceptionDocs.class)
+	public ResponseEntity<StringResponseDto> cancelReservation(
+		@Parameter(description = "예약 ID", example = "1")
+		@PathVariable("id") Long id,
+		@Parameter(description = "일괄 삭제 여부", example = "0")
+		@RequestParam(required = false, defaultValue = "0") boolean isDeleteAll,
+		@AuthenticationPrincipal CustomUserDetails user) {
+
+		adminReservationService.cancelReservation(id, isDeleteAll, user.getStudentNumber());
+		return ResponseEntity.ok(new StringResponseDto("예약 취소 완료되었습니다."));
+	}
 
 	@DeleteMapping("/{id}/student")
 	@Operation(summary = "예약 강제 취소", description = "학생 예약을 강제 취소합니다.")
