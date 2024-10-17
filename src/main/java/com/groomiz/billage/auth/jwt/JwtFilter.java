@@ -7,18 +7,21 @@ import java.util.List;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.groomiz.billage.auth.config.SecurityProperties;
 import com.groomiz.billage.auth.dto.CustomUserDetails;
+import com.groomiz.billage.auth.exception.AuthErrorCode;
+import com.groomiz.billage.auth.exception.AuthException;
+import com.groomiz.billage.global.dto.ErrorResponse;
 import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.entity.Role;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,91 +36,92 @@ public class JwtFilter extends OncePerRequestFilter {
 
 	private final JwtUtil jwtUtil;
 	private final SecurityProperties securityProperties;
-	private List<String> whiteList;
+	private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
+		.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // ObjectMapper 재사용
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		whiteList = securityProperties.getWhitelist();
-
 		// 헤더에서 Authorization에 담긴 토큰을 꺼냄
 		String authorizationHeader = request.getHeader("Authorization");
 
-		// 토큰이 없다면 다음 필터로 넘김
+		// 토큰이 없다면 예외 처리
 		if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		// Bearer 접두사를 제거하고 순수 토큰 값만 추출
-		String accessToken = authorizationHeader.substring(7);
-
 		try {
+			// Bearer 접두사를 제거하고 순수 토큰 값만 추출
+			String accessToken = authorizationHeader.substring(7);
+
 			// 토큰 만료 여부 확인 및 만료된 경우 예외 처리
-			if (checkAuthRequired(request)) {
-				jwtUtil.isExpired(accessToken);
+			jwtUtil.isExpired(accessToken);
 
-				// 토큰이 AccessToken인지 확인 (발급시 페이로드에 명시)
-				String category = jwtUtil.getCategory(accessToken);
+			// 토큰이 AccessToken인지 확인 (발급시 페이로드에 명시)
+			String category = jwtUtil.getCategory(accessToken);
 
-				if (category == null || !category.equals("AccessToken")) {
-					sendErrorResponse(response, "Invalid access token", HttpServletResponse.SC_UNAUTHORIZED);
-					return;
-				}
-
-				// username, role 값을 획득
-				String studentNumber = jwtUtil.getStudentNumber(accessToken);
-				String role = jwtUtil.getRole(accessToken);
-
-				if (studentNumber == null || role == null) {
-					sendErrorResponse(response, "Invalid token claims", HttpServletResponse.SC_UNAUTHORIZED);
-					return;
-				}
-
-				// SecurityContext에 인증 정보 설정
-				Member member = Member.builder()
-					.studentNumber(studentNumber)
-					.role(Role.valueOf(role))
-					.build();
-
-				CustomUserDetails customUserDetails = new CustomUserDetails(member);
-
-				Authentication authToken = new UsernamePasswordAuthenticationToken(
-					customUserDetails, null, customUserDetails.getAuthorities());
-
-				SecurityContextHolder.getContext().setAuthentication(authToken);
+			if (category == null || !category.equals("AccessToken")) {
+				throw new AuthException(AuthErrorCode.INVALID_TOKEN);
 			}
-			// 다음 필터로 넘김
+
+			// username, role 값을 획득
+			String studentNumber = jwtUtil.getStudentNumber(accessToken);
+			String role = jwtUtil.getRole(accessToken);
+
+			if (studentNumber == null || role == null) {
+				log.error("Invalid claims in token: studentNumber={}, role={}", studentNumber, role); // 추가된 로그
+				sendErrorResponse(request, response, AuthErrorCode.INVALID_TOKEN);
+				return;
+			}
+
+			// SecurityContext에 인증 정보 설정
+			Member member = Member.builder()
+				.studentNumber(studentNumber)
+				.role(Role.valueOf(role))
+				.build();
+
+			CustomUserDetails customUserDetails = new CustomUserDetails(member);
+
+			Authentication authToken = new UsernamePasswordAuthenticationToken(
+				customUserDetails, null, customUserDetails.getAuthorities());
+
+			SecurityContextHolder.getContext().setAuthentication(authToken);
+
+			// 필터 체인을 계속 실행
 			filterChain.doFilter(request, response);
+
 		} catch (ExpiredJwtException e) {
-			sendErrorResponse(response, "Access token expired", HttpServletResponse.SC_UNAUTHORIZED);
-		} catch (JwtException e) {
-			sendErrorResponse(response, "JWT processing failed", HttpServletResponse.SC_UNAUTHORIZED);
+			log.error("Expired JWT token", e); // 추가된 로그
+			sendErrorResponse(request, response, AuthErrorCode.TOKEN_EXPIRED);
+		} catch (AuthException e) {
+			log.error("JWT Authentication failed", e); // 추가된 로그
+			sendErrorResponse(request, response, (AuthErrorCode) e.getErrorCode());  // 예외에 담긴 정확한 에러 코드 사용
+		} catch (Exception e) {
+			log.error("Authentication failed", e); // 추가된 로그
+			sendErrorResponse(request, response, AuthErrorCode.AUTHENTICATION_FAIL);
 		}
 	}
 
-	private void sendErrorResponse(HttpServletResponse response, String message, int status) throws IOException {
-		response.setStatus(status);
+
+	private void sendErrorResponse(HttpServletRequest request, HttpServletResponse response, AuthErrorCode errorCode) throws IOException {
+		response.setStatus(errorCode.getStatus());
+		response.setContentType("application/json;charset=UTF-8");
+		String path = request.getRequestURI();  // 요청 경로 가져오기
+		// ErrorResponse 생성
+		ErrorResponse errorResponse = new ErrorResponse(
+			errorCode.getStatus(),  // 에러 코드의 상태 값
+			errorCode.getCode(),    // 에러 코드
+			errorCode.getReason(),  // 에러 메시지
+			path                    // 요청 경로
+		);
+
+		// 응답에 JSON 쓰기
+		String jsonResponse = objectMapper.writeValueAsString(errorResponse);
 		PrintWriter writer = response.getWriter();
-		writer.print(message);
+		writer.print(jsonResponse);
 		writer.flush();
 	}
 
-	private boolean checkAuthRequired(HttpServletRequest request) {
-		if (whiteList == null || whiteList.isEmpty()) {
-			return true; // 인증 필요
-		}
-
-		// 요청이 whiteList에 포함된 경우 인증을 요구하지 않음
-		for (String path : whiteList) {
-			RequestMatcher matcher = new AntPathRequestMatcher(path);
-			if (matcher.matches(request)) {
-				return false; // whiteList에 포함된 경우 인증 불필요
-			}
-		}
-
-		// whiteList에 포함되지 않은 경우 인증 필요
-		return true;
-	}
 }

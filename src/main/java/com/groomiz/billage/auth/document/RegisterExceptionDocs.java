@@ -30,6 +30,4 @@ public class RegisterExceptionDocs implements SwaggerExampleExceptions {
 	@ExplainError
 	public GlobalCodeException 학과_미존재 = new MemberException(MemberErrorCode.INVALID_MAJOR_ENUM);
 
-	@ExplainError
-	public GlobalCodeException 학번_형식_오류 = new MemberException(MemberErrorCode.INVALID_STUDENT_ID);
 }

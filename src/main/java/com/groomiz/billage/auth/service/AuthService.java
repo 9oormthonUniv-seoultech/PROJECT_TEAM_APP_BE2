@@ -3,6 +3,7 @@ package com.groomiz.billage.auth.service;
 import java.time.Duration;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -13,6 +14,9 @@ import com.groomiz.billage.auth.exception.AuthErrorCode;
 import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.auth.jwt.JwtTokenProvider;
 import com.groomiz.billage.auth.jwt.JwtUtil;
+import com.groomiz.billage.member.exception.MemberErrorCode;
+import com.groomiz.billage.member.exception.MemberException;
+import com.groomiz.billage.member.repository.MemberRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,24 +30,34 @@ public class AuthService {
 	private final JwtTokenProvider jwtTokenProvider;
 	private final RedisService redisService;
 	private final JwtUtil jwtUtil;
+	private final MemberRepository memberRepository;
 
-	public void login(LoginRequest loginRequest, HttpServletResponse response) throws AuthenticationException {
-		// 로그인 인증 처리
-		Authentication authentication = authenticate(loginRequest);
+	public void login(LoginRequest loginRequest, HttpServletResponse response) {
+		try {
+			// 로그인 인증 처리
+			Authentication authentication = authenticate(loginRequest);
 
-		String username = authentication.getName();
-		String role = authentication.getAuthorities().iterator().next().getAuthority();
+			String username = authentication.getName();
+			String role = authentication.getAuthorities().iterator().next().getAuthority();
 
-		// AccessToken과 RefreshToken 생성
-		String accessToken = jwtTokenProvider.createAccessToken(username, role);
-		String refreshToken = jwtTokenProvider.createRefreshToken(username, role);
+			// AccessToken과 RefreshToken 생성
+			String accessToken = jwtTokenProvider.createAccessToken(username, role);
+			String refreshToken = jwtTokenProvider.createRefreshToken(username, role);
 
-		// Redis에 RefreshToken 저장
-		redisService.setValues(username, refreshToken, Duration.ofMillis(86400000L));  // 1일 유효
+			// Redis에 RefreshToken 저장
+			redisService.setValues(username, refreshToken, Duration.ofMillis(86400000L));  // 1일 유효
 
-		// AccessToken과 RefreshToken을 헤더에 추가
-		response.setHeader("Authorization", "Bearer " + accessToken);
-		response.setHeader("RefreshToken", "Bearer " + refreshToken);
+			// AccessToken과 RefreshToken을 헤더에 추가
+			response.setHeader("Authorization", "Bearer " + accessToken);
+			response.setHeader("RefreshToken", "Bearer " + refreshToken);
+
+		} catch (BadCredentialsException e) {
+			// 비밀번호가 틀린 경우 AuthException 던지기
+			throw new AuthException(AuthErrorCode.INVALID_PASSWORD);
+		} catch (AuthenticationException e) {
+			// 기타 인증 실패 시 AuthException 던지기
+			throw new AuthException(AuthErrorCode.INVALID_USER_ID);
+		}
 	}
 
 	public void logout(HttpServletRequest request, HttpServletResponse response) {
@@ -75,9 +89,20 @@ public class AuthService {
 		response.setHeader("RefreshToken", "");
 	}
 
-	private Authentication authenticate(LoginRequest loginRequest) throws AuthenticationException {
+	private Authentication authenticate(LoginRequest loginRequest) {
 		UsernamePasswordAuthenticationToken authToken =
 			new UsernamePasswordAuthenticationToken(loginRequest.getStudentNumber(), loginRequest.getPassword());
 		return authenticationManager.authenticate(authToken);
+	}
+
+	public void checkStudentNumberExists(String studentNumber) {
+
+		Boolean isExist = memberRepository.existsByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+		if (isExist) {
+			throw new MemberException(MemberErrorCode.STUDENT_ID_ALREADY_REGISTERED);
+		}
+
 	}
 }
