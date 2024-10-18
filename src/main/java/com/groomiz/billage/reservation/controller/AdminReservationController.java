@@ -25,6 +25,7 @@ import com.groomiz.billage.reservation.dto.request.AdminRejectionRequest;
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
+import com.groomiz.billage.reservation.entity.ReservationStatusType;
 import com.groomiz.billage.reservation.service.AdminReservationService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -46,8 +47,15 @@ public class AdminReservationController {
 	@Operation(summary = "예약 상태별 리스트 조회")
 	@ApiErrorExceptionsExample(AdminbyStatusExceptionDocs.class)
 	public ResponseEntity<AdminReservationStatusListResponse> getReservationsByStatus(
-		@RequestParam(required = false) String status) {
-		return ResponseEntity.ok(null);
+		@Parameter(description = "예약 상태 (PENDING/APPROVED/REJECTED)", example = "APPROVED", required = true)
+		@RequestParam(required = true) String status,
+		@AuthenticationPrincipal CustomUserDetails user) {
+
+		ReservationStatusType type = ReservationStatusType.valueOf(status.toUpperCase());
+
+		AdminReservationStatusListResponse reservations = adminReservationService.getReservationByStatus(type,
+			user.getStudentNumber());
+		return ResponseEntity.ok(reservations);
 	}
 
 	@PostMapping("/{id}/approve")
