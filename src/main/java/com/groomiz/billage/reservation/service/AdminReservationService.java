@@ -17,6 +17,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.groomiz.billage.auth.service.RedisService;
+import com.groomiz.billage.building.repository.BuildingAdminRepository;
 import com.groomiz.billage.classroom.entity.Classroom;
 import com.groomiz.billage.classroom.exception.ClassroomErrorCode;
 import com.groomiz.billage.classroom.exception.ClassroomException;
@@ -27,6 +28,7 @@ import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
+import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
 import com.groomiz.billage.reservation.entity.Reservation;
 import com.groomiz.billage.reservation.entity.ReservationGroup;
 import com.groomiz.billage.reservation.entity.ReservationStatus;
@@ -56,6 +58,8 @@ public class AdminReservationService {
 	private final ReservationGroupRepository reservationGroupRepository;
 
 	private final ClassroomRepository classroomRepository;
+
+	private final BuildingAdminRepository buildingAdminRepository;
 
 	private final RedisService redisService;
 
@@ -369,5 +373,37 @@ public class AdminReservationService {
 		}
 
 		reservation.getReservationStatus().cancelByAdmin(admin);
+	}
+
+	public AdminReservationStatusListResponse getReservationByStatus(ReservationStatusType status, String studentNumber) {
+
+		Member admin = memberRepository.findByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+
+		List<Long> buildingIds = buildingAdminRepository.findAllBuildingIdByAdmin(admin);
+
+		if (buildingIds.isEmpty()) {
+			throw new AdminReservationException(AdminReservationErrorCode.BUILDING_ADMIN_NOT_FOUND);
+		}
+
+		List<Reservation> reservations = new ArrayList<>();
+
+		switch (status) {
+			case PENDING:
+				// 해당 admin이 관리하는 건물들의 대기 상태인 예약 모두 조회
+				reservations = reservationRepository.findPendingReservationsWithReservationStatusByBuildingIds(
+					buildingIds);
+				break;
+			case APPROVED:
+				// 해당 admin이 승인한 예약 모두 조회
+				reservations = reservationRepository.findApprovedReservationsWithReservationStatusByAdmin(admin);
+				break;
+			default:
+				// 해당 admin이 거절한 예약 + admin이 승인한 예약 중 학생 취소한 예약 + admin이 강제 취소(관리자 취소)한 예약 모두 조회
+				reservations = reservationRepository.findRejectedCanceledReservationsWithReservationStatusByAdmin(admin);
+				break;
+		}
+
+		return AdminReservationStatusListResponse.from(status, reservations);
 	}
 }
