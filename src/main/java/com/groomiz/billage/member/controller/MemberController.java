@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.groomiz.billage.auth.dto.CustomUserDetails;
+import com.groomiz.billage.auth.dto.CustomUserDetails;
 import com.groomiz.billage.auth.service.RedisService;
 import com.groomiz.billage.common.dto.StringResponseDto;
 import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
@@ -28,6 +29,7 @@ import com.groomiz.billage.member.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -36,16 +38,15 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Member Controller", description = "회원 정보 관리 API")
 public class MemberController {
 
-	private static final Logger log = LoggerFactory.getLogger(MemberController.class);
 	private final MemberService memberService;
 	private final RedisService redisService;
 
 	@GetMapping("/info")
 	@Operation(summary = "회원 정보 조회")
 	@ApiErrorExceptionsExample(UserInfoExceptionDocs.class)
-	public ResponseEntity<MemberInfoResponse> info() {
+	public ResponseEntity<MemberInfoResponse> info(@AuthenticationPrincipal CustomUserDetails user) {
 
-		MemberInfoResponse response = null;
+		MemberInfoResponse response = memberService.findByStudentNumber(user.getUsername());
 
 		return ResponseEntity.ok(response);
 	}
@@ -53,26 +54,32 @@ public class MemberController {
 	@PutMapping("/info")
 	@Operation(summary = "회원 정보 수정")
 	@ApiErrorExceptionsExample(UserInfoEditExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> updatePhoneNumber(@RequestBody MemberInfoRequest memberInfoRequest) {
-		return ResponseEntity.ok(new StringResponseDto("success"));
+	public ResponseEntity<StringResponseDto> updateInfo(@RequestBody @Valid MemberInfoRequest memberInfoRequest, @AuthenticationPrincipal CustomUserDetails user) {
+
+		memberService.updateMemberInfo(memberInfoRequest.getEmail(), memberInfoRequest.getPhoneNumber(), user.getUsername());
+
+		return ResponseEntity.ok(new StringResponseDto("회원 정보가 성공적으로 수정되었습니다."));
 	}
 
 	@DeleteMapping
 	@Operation(summary = "회원 탈퇴")
 	@ApiErrorExceptionsExample(UserInfoExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> delete(
-		@AuthenticationPrincipal CustomUserDetails user) {
-
+	public ResponseEntity<StringResponseDto> delete(@AuthenticationPrincipal CustomUserDetails user) {
 		// FCM 토큰 삭제
 		redisService.deleteValues("FCM_" + user);
-		return ResponseEntity.ok(new StringResponseDto("success"));
+		memberService.deleteMember(user.getUsername());
+
+		return ResponseEntity.ok(new StringResponseDto("회원 탈퇴가 성공적으로 처리되었습니다."));
 	}
 
 	@PutMapping("/password")
 	@Operation(summary = "비밀번호 수정")
 	@ApiErrorExceptionsExample(UserPasswordExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> updatePassword(@RequestBody PasswordRequest passwordRequest) {
-		return ResponseEntity.ok(new StringResponseDto("success"));
+	public ResponseEntity<StringResponseDto> updatePassword(@RequestBody @Valid PasswordRequest passwordRequest, @AuthenticationPrincipal CustomUserDetails user) {
+
+		memberService.updatePassword(passwordRequest.getOldPassword(), passwordRequest.getNewPassword(), user.getUsername());
+
+		return ResponseEntity.ok(new StringResponseDto("비밀번호가 성공적으로 수정되었습니다."));
 	}
 
 	@PostMapping("/fcmtoken")

@@ -1,31 +1,31 @@
 package com.groomiz.billage.member.valid;
 
-import com.groomiz.billage.member.exception.MemberErrorCode;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumber, String> {
+public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
 
-	private static final String PHONE_REGEX = "^(010|02)-\\d{3,4}-\\d{4}$";
+	// 이메일 형식을 검증하는 정규식
+	private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
 		if (value == null || value.isEmpty()) {
 			// 기본 오류 메시지를 비활성화하고 커스텀 메시지를 설정
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("전화번호를 입력해주세요.")
+			context.buildConstraintViolationWithTemplate("이메일을 입력해주세요.")
 				.addConstraintViolation();
 			return false;
 		}
 
-		if (!value.matches(PHONE_REGEX)) {
+		if (!value.matches(EMAIL_REGEX)) {
 			// 기본 오류 메시지를 비활성화하고 커스텀 메시지를 설정
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678 또는 02-123-5678)")
+			context.buildConstraintViolationWithTemplate("이메일 형식이 올바르지 않습니다.")
 				.addConstraintViolation();
 			return false;
 		}
 
-		return true;  // 전화번호 형식이 유효한 경우 true 반환
+		return true;  // 이메일 형식이 유효한 경우 true 반환
 	}
 }

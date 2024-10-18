@@ -21,6 +21,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven{url 'https://jitpack.io'}
 }
 
 dependencies {
@@ -53,6 +54,9 @@ dependencies {
 
     // firebase
     implementation 'com.google.firebase:firebase-admin:9.3.0'
+
+    // univcert API
+    implementation 'com.github.in-seo:univcert:master-SNAPSHOT'
 }
 
 tasks.named('test') {

@@ -13,9 +13,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum MemberErrorCode implements BaseErrorCode {
 
-	@ExplainError("학번이 8자리가 아닌 경우 발생하는 오류입니다.")
-	INVALID_STUDENT_ID(BAD_REQUEST, "MEMBER_400_1", "학번은 8자리여야 합니다."),
-
 	@ExplainError("비밀번호가 형식에 맞지 않는 경우 발생하는 오류입니다.")
 	INVALID_PASSWORD_FORMAT(BAD_REQUEST, "MEMBER_400_2", "비밀번호가 형식에 맞지 않습니다."),
 
@@ -52,11 +49,14 @@ public enum MemberErrorCode implements BaseErrorCode {
 	@ExplainError("이메일 형식이 알맞지 않는 경우 발생하는 오류입니다.")
 	INVALID_EMAIL(BAD_REQUEST, "MEMBER_400_11", "이메일 형식이 요구 조건에 맞지 않습니다."),
 
+	@ExplainError("기존 비밀번호가 일치하지 않는 경우 발생하는 오류입니다.")
+	INVALID_OLD_PASSWORD(BAD_REQUEST, "MEMBER_400_12", "기존 비밀번호가 일치하지 않습니다."),
+
 	@ExplainError("회원이 존재하지 않는 경우 발생하는 오류입니다.")
 	MEMBER_NOT_FOUND(NOT_FOUND, "MEMBER_404_1", "해당 회원이 존재하지 않습니다."),
 
 	@ExplainError("FCM 토큰이 존재하지 않는 경우 발생하는 오류입니다.")
-	FCM_TOKEN_NOT_FOUND(NOT_FOUND, "MEMBER_404_2", "FCM 토큰이 존재하지 않습니다."),;
+	FCM_TOKEN_NOT_FOUND(NOT_FOUND, "MEMBER_404_2", "FCM 토큰이 존재하지 않습니다.");
 
 	private final Integer status;
 	private final String code;
