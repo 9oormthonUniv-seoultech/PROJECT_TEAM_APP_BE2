@@ -27,13 +27,13 @@ public class Building extends BaseEntity {
 	@Column(nullable = false)
 	private String number;
 
+	@Column(nullable = false)
+	private Long startFloor;
+
+	@Column(nullable = false)
+	private Long endFloor;
+
 	@Column(name = "image_url")
 	private String imageUrl;
 
-	@Builder
-	public Building(String name, String number, String imageUrl) {
-		this.name = name;
-		this.number = number;
-		this.imageUrl = imageUrl;
-	}
 }
