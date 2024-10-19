@@ -1,7 +1,6 @@
 package com.groomiz.billage.classroom.controller;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,11 +35,11 @@ public class AdminClassroomController {
 	@PostMapping
 	@Operation(summary = "강의실 현황 필터링")
 	@ApiErrorExceptionsExample(AdminClassroomFilterExceptionDocs.class)
-	public ResponseEntity<List<AdminClassroomStatusResponse>> getClassrooms(
+	public ResponseEntity<AdminClassroomStatusResponse> getClassrooms(
 		@RequestBody AdminClassroomStatusRequest request) {
 
-		ResponseEntity<List<AdminClassroomStatusResponse>> response = null;
-		return response;
+		AdminClassroomStatusResponse response = adminClassroomService.findClassroomsByFilter(request);
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/info/{id}")
