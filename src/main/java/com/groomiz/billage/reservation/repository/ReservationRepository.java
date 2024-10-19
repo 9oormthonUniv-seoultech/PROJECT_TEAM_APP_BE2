@@ -57,4 +57,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 		+ "WHERE rs.status IN ('REJECTED', 'ADMIN_CANCELED', 'STUDENT_CANCELED') "
 		+ "AND rs.admin = :admin")
 	List<Reservation> findRejectedCanceledReservationsWithReservationStatusByAdmin(@Param("admin") Member admin);
+
+	@Query("SELECT DISTINCT r "
+	+ "FROM Reservation r "
+	+ "JOIN FETCH r.reservationStatus rs "
+	+ "WHERE r.classroom.id in :classroomIds "
+	+ "AND r.applyDate = :date "
+	+ "AND rs.status IN ('PENDING', 'APPROVED')")
+	List<Reservation> findReservationsByClassroomIdsAndDate(List<Long> classroomIds, LocalDate date);
 }
