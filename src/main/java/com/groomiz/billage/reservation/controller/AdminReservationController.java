@@ -1,9 +1,5 @@
 package com.groomiz.billage.reservation.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,12 +43,7 @@ public class AdminReservationController {
 	@Operation(summary = "예약 거절")
 	public ResponseEntity<Map<String, String>> rejectReservation(@PathVariable Long id,
 		@RequestBody(required = false) String rejectionReason) {
-		Map<String, String> response = new HashMap<>();
-		response.put("message", "예약 거절 완료되었습니다.");
-		if (rejectionReason != null && !rejectionReason.isEmpty()) {
-			response.put("rejection_reason", rejectionReason);
-		}
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(new AdminReservationReasonResponse("예약 거절 완료되었습니다.", rejectionReason));
 	}
 
 	@PostMapping
