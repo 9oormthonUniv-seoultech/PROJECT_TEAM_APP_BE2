@@ -138,6 +138,7 @@ public class ReservationService {
 		reservation.getReservationStatus().updateStatus(ReservationStatusType.STUDENT_CANCELED);
 	}
 
+	@Transactional(readOnly = true)
 	public ReservationStatusListResponse getAllReservationStatus(String studentNumber) {
 
 		Member member = memberRepository.findByStudentNumber(studentNumber)
