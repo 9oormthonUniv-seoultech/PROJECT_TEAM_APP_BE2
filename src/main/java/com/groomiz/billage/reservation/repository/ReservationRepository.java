@@ -41,6 +41,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 	@Query("SELECT r "
 		+ "FROM Reservation r "
 		+ "JOIN FETCH r.reservationStatus rs "
+		+ "JOIN FETCH r.classroom c "
+		+ "JOIN FETCH c.building b "
+		+ "JOIN FETCH rs.requester m "
 		+ "WHERE rs.status = 'APPROVED'"
 		+ "AND rs.admin = :admin")
 	List<Reservation> findApprovedReservationsWithReservationStatusByAdmin(Member admin);
@@ -48,6 +51,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 	@Query("SELECT r "
 		+ "FROM Reservation r "
 		+ "JOIN FETCH r.reservationStatus rs "
+		+ "JOIN FETCH r.classroom c "
+		+ "JOIN FETCH c.building b "
+		+ "JOIN FETCH rs.requester m "
 		+ "WHERE rs.status IN ('REJECTED', 'ADMIN_CANCELED', 'STUDENT_CANCELED') "
 		+ "AND rs.admin = :admin")
 	List<Reservation> findRejectedCanceledReservationsWithReservationStatusByAdmin(@Param("admin") Member admin);
