@@ -14,4 +14,9 @@ public class BuildingListResponse {
 	@Schema(description = "건물 번호", example = "39")
 	private String buildingNumber;
 
+	public BuildingListResponse(Long buildingId, String buildingName, String buildingNumber) {
+		this.buildingId = buildingId;
+		this.buildingName = buildingName;
+		this.buildingNumber = buildingNumber;
+	}
 }
