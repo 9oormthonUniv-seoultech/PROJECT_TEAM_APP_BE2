@@ -352,6 +352,7 @@ public class AdminReservationService {
 		reservation.getReservationStatus().cancelByAdmin(admin);
 	}
 
+	@Transactional(readOnly = true)
 	public AdminReservationStatusListResponse getReservationByStatus(ReservationStatusType status, String studentNumber) {
 
 		Member admin = memberRepository.findByStudentNumber(studentNumber)
