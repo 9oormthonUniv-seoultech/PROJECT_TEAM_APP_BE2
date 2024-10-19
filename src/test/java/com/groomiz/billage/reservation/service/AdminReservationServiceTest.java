@@ -145,7 +145,7 @@ class AdminReservationServiceTest {
 
 	private Member register(String username, Role role, String studentNumber) {
 		RegisterRequest registerRequest = new RegisterRequest(username, studentNumber, "password1234!", "010-1234-5678",
-			"정보통신대학", "컴퓨터공학과", "asdf1234@gmail.com");
+			"정보통신대학", "컴퓨터공학과", true, "asdf1234@gmail.com");
 
 		memberService.register(registerRequest);
 		return memberRepository.findByStudentNumber(studentNumber).get();
