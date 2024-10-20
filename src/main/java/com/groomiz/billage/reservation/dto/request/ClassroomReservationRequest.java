@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.groomiz.billage.common.valid.ValidDate;
+import com.groomiz.billage.common.valid.ValidHeadCount;
 import com.groomiz.billage.member.valid.ValidPhoneNumber;
 import com.groomiz.billage.reservation.entity.ReservationPurpose;
 
@@ -27,6 +29,7 @@ public class ClassroomReservationRequest {
 	@ValidPhoneNumber
 	private String phoneNumber;
 	@Schema(description = "예약 날짜", example = "2024-08-01")
+	@ValidDate
 	@NotNull
 	private LocalDate applyDate;
 	@Schema(description = "예약 시작 시간", example = "09:00", type = "string")
@@ -38,6 +41,7 @@ public class ClassroomReservationRequest {
 	@NotNull
 	private LocalTime endTime;
 	@Schema(description = "예약 인원", example = "30")
+	@ValidHeadCount
 	@NotNull
 	private Integer headcount;
 	@Schema(description = "예약 사유", example = "단과대 행사")

@@ -13,7 +13,7 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
 		if (value == null || value.isEmpty()) {
 			// 기본 오류 메시지를 비활성화하고 커스텀 메시지를 설정
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("이메일을 입력해주세요.")
+			context.buildConstraintViolationWithTemplate("EMAIL_NOT_NULL")
 				.addConstraintViolation();
 			return false;
 		}
@@ -21,7 +21,7 @@ public class EmailValidator implements ConstraintValidator<ValidEmail, String> {
 		if (!value.matches(EMAIL_REGEX)) {
 			// 기본 오류 메시지를 비활성화하고 커스텀 메시지를 설정
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("이메일 형식이 올바르지 않습니다.")
+			context.buildConstraintViolationWithTemplate("INVALID_EMAIL")
 				.addConstraintViolation();
 			return false;
 		}

@@ -31,6 +31,12 @@ public class Building extends BaseEntity {
 	@Column(nullable = false)
 	private String number;
 
+	@Column(nullable = false)
+	private Long startFloor;
+
+	@Column(nullable = false)
+	private Long endFloor;
+
 	@Column(name = "image_url")
 	private String imageUrl;
 
@@ -38,9 +44,11 @@ public class Building extends BaseEntity {
 	private List<Classroom> classrooms;
 
 	@Builder
-	public Building(String name, String number, String imageUrl) {
+	public Building(String name, String number, Long startFloor, Long endFloor, String imageUrl) {
 		this.name = name;
 		this.number = number;
+		this.startFloor = startFloor;
+		this.endFloor = endFloor;
 		this.imageUrl = imageUrl;
 	}
 }

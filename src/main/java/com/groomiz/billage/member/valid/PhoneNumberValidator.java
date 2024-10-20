@@ -13,7 +13,7 @@ public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumbe
 		if (value == null || value.isEmpty()) {
 			// 기본 오류 메시지를 비활성화하고 커스텀 메시지를 설정
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("전화번호를 입력해주세요.")
+			context.buildConstraintViolationWithTemplate("PHONE_NUMBER_NOT_NULL")
 				.addConstraintViolation();
 			return false;
 		}
@@ -21,7 +21,7 @@ public class PhoneNumberValidator implements ConstraintValidator<ValidPhoneNumbe
 		if (!value.matches(PHONE_REGEX)) {
 			// 기본 오류 메시지를 비활성화하고 커스텀 메시지를 설정
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678 또는 02-123-5678)")
+			context.buildConstraintViolationWithTemplate("INVALID_PHONE_NUMBER")
 				.addConstraintViolation();
 			return false;
 		}

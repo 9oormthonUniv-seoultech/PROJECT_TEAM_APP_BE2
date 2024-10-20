@@ -14,17 +14,31 @@ public class AdminListResponse {
 
 	@Schema(description = "단과대 이름", example = "공과대학")
 	private College college;
+
 	@Schema(description = "단과대 전화번호", example = "02-1234-5678")
 	private String collegePhoneNumber;
+
 	@Schema(description = "담당자 목록")
 	private List<AdminInfo> admins;
 
+	public AdminListResponse(College college, String collegePhoneNumber, List<AdminInfo> admins) {
+		this.college = college;
+		this.collegePhoneNumber = collegePhoneNumber;
+		this.admins = admins;
+	}
+
 	@Data
 	@Schema(description = "담당자 정보")
-	static class AdminInfo {
+	public static class AdminInfo {  // 접근 제한자를 public으로 수정
 		@Schema(description = "소속 학과", example = "기계시스템디자인공학과")
 		private Major major;
+
 		@Schema(description = "담당자 전화번호", example = "02-2345-6789")
 		private String phoneNumber;
+
+		public AdminInfo(Major major, String phoneNumber) {
+			this.major = major;
+			this.phoneNumber = phoneNumber;
+		}
 	}
 }
