@@ -1,15 +1,9 @@
 package com.groomiz.billage.reservation.controller;
 
-import java.time.LocalDate;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,15 +16,10 @@ import com.groomiz.billage.auth.document.JwtExceptionDocs;
 import com.groomiz.billage.auth.dto.CustomUserDetails;
 import com.groomiz.billage.common.dto.StringResponseDto;
 import com.groomiz.billage.global.anotation.ApiErrorExceptionsExample;
-import com.groomiz.billage.member.exception.MemberErrorCode;
-import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.reservation.document.ReservationCancelExceptionDocs;
 import com.groomiz.billage.reservation.document.ReservationExceptionDocs;
 import com.groomiz.billage.reservation.dto.request.ClassroomReservationRequest;
 import com.groomiz.billage.reservation.dto.response.ReservationStatusListResponse;
-import com.groomiz.billage.reservation.entity.ReservationPurpose;
-import com.groomiz.billage.reservation.exception.ReservationErrorCode;
-import com.groomiz.billage.reservation.exception.ReservationException;
 import com.groomiz.billage.reservation.service.ReservationService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,13 +50,13 @@ public class ReservationController {
 	@DeleteMapping("/{id}")
 	@Operation(summary = "강의실 예약 취소")
 	@ApiErrorExceptionsExample(ReservationCancelExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> cancleReservation(
+	public ResponseEntity<StringResponseDto> cancelReservation(
 		@Parameter(description = "예약 ID", example = "1")
 		@PathVariable("id") Long id,
 		@AuthenticationPrincipal CustomUserDetails user
 	) {
 
-		reservationService.cancleReservation(id, user.getStudentNumber());
+		reservationService.cancelReservation(id, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("강의실 예약 취소에 성공하였습니다."));
 	}
 

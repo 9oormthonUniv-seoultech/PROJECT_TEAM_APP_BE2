@@ -1,9 +1,11 @@
 package com.groomiz.billage.classroom.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,13 +39,15 @@ public class ClassroomController {
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/info")
+	@GetMapping("/info/{id}")
 	@Operation(summary = "강의실 상세 조회")
-	public ResponseEntity<ClassroomDetailResponse> findByClassroomId(
+	public ResponseEntity<ClassroomDetailResponse> findByClassroomIdAndDate(
 		@Parameter(description = "강의실 ID", example = "1")
-		@RequestParam("id") Long id) {
+		@PathVariable("id") Long id,
+		@Parameter(description = "날짜", example = "2024-11-03")
+		@RequestParam("date") LocalDate date) {
 
-		ClassroomDetailResponse response = new ClassroomDetailResponse();
-		return ResponseEntity.ok(response);
+		ClassroomDetailResponse classroom = classroomService.findClassroomByIdAndDate(id, date);
+		return ResponseEntity.ok(classroom);
 	}
 }
