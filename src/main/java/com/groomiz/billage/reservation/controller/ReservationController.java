@@ -54,11 +54,6 @@ public class ReservationController {
 	public ResponseEntity<StringResponseDto> reserveClassroom(@RequestBody @Valid ClassroomReservationRequest request
 		, @AuthenticationPrincipal CustomUserDetails user) {
 
-		// 예약 인원 음수 예외
-		if (request.getHeadcount() <= 0) {
-			throw new ReservationException(ReservationErrorCode.NEGATIVE_PARTICIPANTS);
-		}
-
 		reservationService.reserveClassroom(request, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("강의실 예약 요청에 성공하였습니다."));
 	}
