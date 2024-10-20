@@ -1,5 +1,7 @@
 package com.groomiz.billage.member.service;
 
+import java.time.Duration;
+import org.springframework.beans.factory.annotation.Value;
 import static com.groomiz.billage.member.exception.MemberErrorCode.*;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -7,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.groomiz.billage.auth.dto.RegisterRequest;
+import com.groomiz.billage.auth.service.RedisService;
 import com.groomiz.billage.member.dto.MemberInfoResponse;
 import com.groomiz.billage.member.entity.College;
 import com.groomiz.billage.member.entity.Major;
@@ -14,7 +17,6 @@ import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.entity.Role;
 import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
-
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -23,6 +25,10 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 	private final MemberRepository memberRepository;
 	private final BCryptPasswordEncoder passwordEncoder;
+	private final RedisService redisService;
+
+	@Value("${spring.data.redis.cache.fcm-ttl}")
+	private Long ttl;
 
 	public void register(RegisterRequest registerRequest) {
 		String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
@@ -100,7 +106,6 @@ public class MemberService {
 		if (oldPassword.equals(newPassword)) {
 			throw new MemberException(PASSWORD_SAME_AS_OLD);
 		}
-
 		// 새로운 비밀번호 저장
 		String encodedPassword = passwordEncoder.encode(newPassword);
 		member.changePassword("{bcrypt}" + encodedPassword);
@@ -112,5 +117,10 @@ public class MemberService {
 	public boolean isExists(String studentNumber) {
 		return memberRepository.existsByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MEMBER_NOT_FOUND));
+	}
+
+	public void saveFCMToken(String token, String studentNumber) {
+		String key = "FCM_" + studentNumber;
+		redisService.setValues(key, token, Duration.ofMillis(ttl));
 	}
 }

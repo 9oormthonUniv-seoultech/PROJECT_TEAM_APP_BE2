@@ -1,11 +1,13 @@
 package com.groomiz.billage.classroom.service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.groomiz.billage.classroom.dto.response.ClassroomDetailResponse;
 import com.groomiz.billage.classroom.dto.ReservationTime;
 import com.groomiz.billage.classroom.dto.request.ClassroomListRequest;
 import com.groomiz.billage.classroom.dto.response.ClassroomListResponse;
@@ -18,12 +20,21 @@ import com.groomiz.billage.reservation.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-@Service
 @Transactional
+@Service
 public class ClassroomService {
 
 	private final ClassroomRepository classroomRepository;
 	private final ReservationRepository reservationRepository;
+
+	@Transactional(readOnly = true)
+	public ClassroomDetailResponse findClassroomByIdAndDate(Long classroomId, LocalDate date) {
+
+		Classroom classroom = classroomRepository.findClassroomByIdAndDate(classroomId, date)
+			.orElseThrow(() -> new ClassroomException(ClassroomErrorCode.CLASSROOM_NOT_FOUND));
+
+		return ClassroomDetailResponse.from(classroom);
+	}
 
 	@Transactional(readOnly = true)
 	public List<ClassroomListResponse> findAllClassroom(ClassroomListRequest request) {
@@ -46,5 +57,4 @@ public class ClassroomService {
 				.build();
 		}).collect(Collectors.toList());
 	}
-
 }

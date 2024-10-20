@@ -1,7 +1,5 @@
 package com.groomiz.billage.reservation.entity;
 
-import org.hibernate.annotations.ColumnDefault;
-
 import com.groomiz.billage.common.entity.BaseEntity;
 import com.groomiz.billage.member.entity.Member;
 
@@ -17,7 +15,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,8 +50,35 @@ public class ReservationStatus extends BaseEntity {
 		this.requester = requester;
 	}
 
+	@Builder
+	public ReservationStatus(ReservationStatusType status, Member requester) {
+		this.status = status;
+		this.admin = requester;
+		this.requester = requester;
+	}
+
 	public void updateStatus(ReservationStatusType status) {
 		this.status = status;
+	}
+
+	public void approve(Member admin) {
+		this.status = ReservationStatusType.APPROVED;
+		this.admin = admin;
+	}
+
+	public void reject(Member admin, String rejectionReason) {
+		this.status = ReservationStatusType.REJECTED;
+		this.rejectionReason = rejectionReason;
+		this.admin = admin;
+	}
+
+	public void cancelByStudent() {
+		this.status = ReservationStatusType.STUDENT_CANCELED;
+	}
+
+	public void cancelByAdmin(Member admin) {
+		this.status = ReservationStatusType.ADMIN_CANCELED;
+		this.admin = admin;
 	}
 
 	public boolean isApproved() {
@@ -69,11 +93,11 @@ public class ReservationStatus extends BaseEntity {
 		return this.status == ReservationStatusType.REJECTED;
 	}
 
-	public boolean isStudentCancled() {
-		return this.status == ReservationStatusType.STUDENT_CANCLED;
+	public boolean isCanceledByStudent() {
+		return this.status == ReservationStatusType.STUDENT_CANCELED;
 	}
 
-	public boolean isAdminCancled() {
-		return this.status == ReservationStatusType.ADMIN_CANCLED;
+	public boolean isCanceledByAdmin() {
+		return this.status == ReservationStatusType.ADMIN_CANCELED;
 	}
 }

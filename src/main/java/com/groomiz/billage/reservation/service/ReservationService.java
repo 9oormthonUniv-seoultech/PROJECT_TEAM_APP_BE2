@@ -1,12 +1,14 @@
 package com.groomiz.billage.reservation.service;
 
+import static com.groomiz.billage.common.util.DateUtills.*;
+
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.groomiz.billage.classroom.dto.ReservationTime;
 import com.groomiz.billage.classroom.entity.Classroom;
 import com.groomiz.billage.classroom.exception.ClassroomErrorCode;
 import com.groomiz.billage.classroom.exception.ClassroomException;
@@ -55,12 +57,17 @@ public class ReservationService {
 		}
 		
 		// 중복 예약 예외
-		reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(request.getApplyDate(), request.getClassroomId())
-			.forEach(reservationTime -> {
-				if (isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(), reservationTime.getEndTime())) {
-					throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
-				}
-			});
+		List<ReservationTime> reservations = reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(
+			request.getApplyDate(), request.getClassroomId());
+
+		boolean hasConflict = reservations.stream().anyMatch(
+			reservationTime ->
+				isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(),
+					reservationTime.getEndTime()));
+
+		if (hasConflict) {
+			throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
+		}
 
 		Member requester = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
@@ -92,24 +99,18 @@ public class ReservationService {
 	}
 
 	// 학생 예약 취소
-	public void cancleReservation(Long id, String studentNumber) {
+	public void cancelReservation(Long id, String studentNumber) {
 
 		Reservation reservation = reservationRepository.findById(id)
 			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
 
 		if (reservation.getReservationStatus().isApproved()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_APPROVED);
-		}
-
-		if (reservation.getReservationStatus().isRejected()) {
+		} else if (reservation.getReservationStatus().isRejected()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
-		}
-
-		if (reservation.getReservationStatus().isStudentCancled()) {
+		} else if (reservation.getReservationStatus().isCanceledByStudent()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_DELETED);
-		}
-
-		if (reservation.getReservationStatus().isAdminCancled()) {
+		} else if (reservation.getReservationStatus().isCanceledByAdmin()) {
 			throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_REJECTED);
 		}
 
@@ -125,13 +126,10 @@ public class ReservationService {
 			throw new ReservationException(ReservationErrorCode.USER_RESERVATION_MISMATCH);
 		}
 
-		reservation.getReservationStatus().updateStatus(ReservationStatusType.STUDENT_CANCLED);
+		reservation.getReservationStatus().updateStatus(ReservationStatusType.STUDENT_CANCELED);
 	}
 
-	public boolean isTimeOverlapping(LocalTime startTime1, LocalTime endTime1, LocalTime startTime2, LocalTime endTime2) {
-		return startTime1.isBefore(endTime2) && startTime2.isBefore(endTime1);
-	}
-
+	@Transactional(readOnly = true)
 	public ReservationStatusListResponse getAllReservationStatus(String studentNumber) {
 
 		Member member = memberRepository.findByStudentNumber(studentNumber)

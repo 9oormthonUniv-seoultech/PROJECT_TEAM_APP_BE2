@@ -32,12 +32,12 @@ import com.groomiz.billage.global.dto.ErrorReason;
 import com.groomiz.billage.global.dto.ErrorResponse;
 import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.exception.MemberException;
+import com.groomiz.billage.reservation.exception.AdminReservationException;
 import com.groomiz.billage.reservation.exception.ReservationErrorCode;
 import com.groomiz.billage.reservation.exception.ReservationException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
@@ -71,10 +71,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 			ReservationErrorCode errorCode = null;
 
-			if (message.contains("LocalDate:")) { // LocalDate 형식 에러
+			if (message.contains("LocalDate:")) {
 				errorCode = ReservationErrorCode.INVALID_RESERVATION_DATE;
 			}
-			else if (message.contains("LocalTime:")) { // LocalTime 형식 에러
+			else if (message.contains("LocalTime:")) {
 				errorCode = ReservationErrorCode.INVALID_RESERVATION_TIME;
 			}
 			else if (message.contains("DateValidator:")) {
@@ -118,6 +118,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
 			.body(errorResponse);
 	}
+
+	@ExceptionHandler(AdminReservationException.class)
+	public ResponseEntity<ErrorResponse> handleAdminReservationException(ReservationException ex, HttpServletRequest request) {
+
+		log.info("AdminReservationException: {}", ex.getMessage());
+		ErrorReason reason = ex.getErrorReason();
+		ErrorResponse errorResponse =
+			new ErrorResponse(ex.getErrorReason(), request.getRequestURL().toString());
+
+		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+			.body(errorResponse);
+	}
+
 	@ExceptionHandler(AuthException.class)
 	public ResponseEntity<ErrorResponse> handleAuthException(AuthException ex, HttpServletRequest request) {
 		ErrorReason reason = ex.getErrorCode().getErrorReason();
