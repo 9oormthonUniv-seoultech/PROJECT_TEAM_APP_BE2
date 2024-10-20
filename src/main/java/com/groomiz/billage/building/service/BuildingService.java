@@ -20,10 +20,11 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class BuildingService {
 	private final BuildingRepository buildingRepository;
 
+	@Transactional(readOnly = true)
 	public List<BuildingListResponse> findAllBuildings(Integer count) {
 		// 예시: 건물 목록을 Building 엔티티에서 조회
 		List<Building> buildings = buildingRepository.findBuildingsByCapacity(count)
