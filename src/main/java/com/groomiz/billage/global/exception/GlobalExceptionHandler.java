@@ -180,6 +180,29 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.body(errorResponse);
 		}
 
+		// 인원이 음수인 경우
+		if (firstErrorMessage.equals("NEGATIVE_PARTICIPANTS")) {
+			ReservationErrorCode errorCode = ReservationErrorCode.NEGATIVE_PARTICIPANTS;
+			ReservationException reservationException = new ReservationException(errorCode);
+
+			ErrorReason reason = reservationException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		if (firstErrorMessage.equals("EXCEED_MAX_PARTICIPANTS")) {
+			ReservationErrorCode errorCode = ReservationErrorCode.EXCEED_MAX_PARTICIPANTS;
+			ReservationException reservationException = new ReservationException(errorCode);
+
+			ErrorReason reason = reservationException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
 
 
 		Map<String, Object> fieldAndErrorMessages =
