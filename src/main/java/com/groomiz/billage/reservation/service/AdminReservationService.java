@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.groomiz.billage.building.repository.BuildingAdminRepository;
+import com.groomiz.billage.classroom.dto.ReservationTime;
 import com.groomiz.billage.classroom.entity.Classroom;
 import com.groomiz.billage.classroom.exception.ClassroomErrorCode;
 import com.groomiz.billage.classroom.exception.ClassroomException;
@@ -165,12 +166,7 @@ public class AdminReservationService {
 	private void createSingleReservation(AdminReservationRequest request, Member requester, Classroom classroom) {
 
 		// 중복 예약 예외
-		reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(request.getStartDate(), request.getClassroomId())
-			.forEach(reservationTime -> {
-				if (isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(), reservationTime.getEndTime())) {
-					throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
-				}
-			});
+		checkReservationConflict(request, request.getStartDate());
 
 		ReservationStatus status = ReservationStatus.builder()
 			.requester(requester)
@@ -200,12 +196,7 @@ public class AdminReservationService {
 			LocalDate date = request.getStartDate().plusDays(i);
 
 			// 중복 예약 예외
-			reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(date, request.getClassroomId())
-				.forEach(reservationTime -> {
-					if (isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(), reservationTime.getEndTime())) {
-						throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
-					}
-				});
+			checkReservationConflict(request, date);
 
 			ReservationStatus status = ReservationStatus.builder()
 				.requester(requester)
@@ -229,7 +220,6 @@ public class AdminReservationService {
 		reservationGroupRepository.save(group);
 	}
 
-
 	private void createRecurringReservation(AdminReservationRequest request, Member requester, Classroom classroom) {
 
 		ReservationGroup group = new ReservationGroup();
@@ -249,12 +239,7 @@ public class AdminReservationService {
 				LocalDate with = date.with(day);
 
 				// 중복 예약 예외
-				reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(date, request.getClassroomId())
-					.forEach(reservationTime -> {
-						if (isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(), reservationTime.getEndTime())) {
-							throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
-						}
-					});
+				checkReservationConflict(request, date);
 
 				if (with.isBefore(request.getStartDate())) {
 					continue;
@@ -383,5 +368,20 @@ public class AdminReservationService {
 		}
 
 		return AdminReservationStatusListResponse.from(status, reservations);
+	}
+
+	private void checkReservationConflict(AdminReservationRequest request, LocalDate date) {
+
+		List<ReservationTime> reservations = reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(
+			date, request.getClassroomId());
+
+		boolean hasConflict = reservations.stream().anyMatch(
+			reservationTime ->
+				isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(),
+					reservationTime.getEndTime()));
+
+		if (hasConflict) {
+			throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
+		}
 	}
 }

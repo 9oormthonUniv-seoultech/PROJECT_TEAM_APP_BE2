@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.groomiz.billage.classroom.dto.ReservationTime;
 import com.groomiz.billage.classroom.entity.Classroom;
 import com.groomiz.billage.classroom.exception.ClassroomErrorCode;
 import com.groomiz.billage.classroom.exception.ClassroomException;
@@ -71,12 +72,17 @@ public class ReservationService {
 		}
 		
 		// 중복 예약 예외
-		reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(request.getApplyDate(), request.getClassroomId())
-			.forEach(reservationTime -> {
-				if (isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(), reservationTime.getEndTime())) {
-					throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
-				}
-			});
+		List<ReservationTime> reservations = reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(
+			request.getApplyDate(), request.getClassroomId());
+
+		boolean hasConflict = reservations.stream().anyMatch(
+			reservationTime ->
+				isTimeOverlapping(request.getStartTime(), request.getEndTime(), reservationTime.getStartTime(),
+					reservationTime.getEndTime()));
+
+		if (hasConflict) {
+			throw new ReservationException(ReservationErrorCode.DUPLICATE_RESERVATION);
+		}
 
 		Member requester = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
