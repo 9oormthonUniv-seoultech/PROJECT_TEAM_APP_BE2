@@ -18,6 +18,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -26,8 +28,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groomiz.billage.auth.document.LoginExceptionDocs;
 import com.groomiz.billage.auth.exception.AuthException;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.groomiz.billage.auth.document.LoginExceptionDocs;
 import com.groomiz.billage.global.dto.ErrorReason;
 import com.groomiz.billage.global.dto.ErrorResponse;
 import com.groomiz.billage.member.exception.MemberErrorCode;
@@ -76,6 +76,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			}
 			else if (message.contains("LocalTime:")) { // LocalTime 형식 에러
 				errorCode = ReservationErrorCode.INVALID_RESERVATION_TIME;
+			}
+			else if (message.contains("DateValidator:")) {
+				errorCode = ReservationErrorCode.PAST_DATE_RESERVATION; // 새 에러 코드 추가
 			}
 			else {
 				return super.handleHttpMessageNotReadable(ex, headers, status, request);
@@ -153,6 +156,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
 				.body(errorResponse);
 		}
+		// 예약 날짜가 과거인 경우
+		if (firstErrorMessage.equals("PAST_DATE")) {
+			ReservationErrorCode errorCode = ReservationErrorCode.PAST_DATE_RESERVATION;
+			ReservationException reservationException = new ReservationException(errorCode);
+
+			ErrorReason reason = reservationException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		// 예약 날짜가 한 달 이후인 경우
+		if (firstErrorMessage.equals("FUTURE_DATE")) {
+			ReservationErrorCode errorCode = ReservationErrorCode.FUTURE_DATE_LIMIT_EXCEEDED;
+			ReservationException reservationException = new ReservationException(errorCode);
+
+			ErrorReason reason = reservationException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+
 
 		Map<String, Object> fieldAndErrorMessages =
 			errors.stream()
@@ -217,22 +245,31 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	//TODO: 이 경우 디코에 알림 가도록 구성해도 좋겠다.
 	@ExceptionHandler(Exception.class)
-	protected ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request)
-		throws IOException {
-		ServletWebRequest servletWebRequest = (ServletWebRequest)request;
-		HttpServletRequest httpServletRequest = servletWebRequest.getRequest(); // 예외가 발생한 URL과 같은 요청에 대한 세부 정보를 추출
+	protected ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request) throws IOException {
+		HttpServletRequest httpServletRequest;
+
+		// RequestContextHolder를 통해 HttpServletRequest를 안전하게 가져옵니다.
+		if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes) {
+			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		} else {
+			// 만약 RequestContextHolder가 ServletRequestAttributes의 인스턴스가 아닌 경우
+			// 기본 HttpServletRequest 객체를 사용합니다.
+			httpServletRequest = request;
+		}
+
 		String url = httpServletRequest.getRequestURL().toString();
 
 		log.error("INTERNAL_SERVER_ERROR", ex);
 		GlobalErrorCode internalServerError = GlobalErrorCode.INTERNAL_SERVER_ERROR;
-		ErrorResponse errorResponse =
-			new ErrorResponse(
-				internalServerError.getStatus(),
-				internalServerError.getCode(),
-				internalServerError.getReason(),
-				url);
+		ErrorResponse errorResponse = new ErrorResponse(
+			internalServerError.getStatus(),
+			internalServerError.getCode(),
+			internalServerError.getReason(),
+			url
+		);
 
 		return ResponseEntity.status(HttpStatus.valueOf(internalServerError.getStatus()))
 			.body(errorResponse);
 	}
+
 }

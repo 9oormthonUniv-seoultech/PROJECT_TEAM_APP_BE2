@@ -2,6 +2,8 @@ package com.groomiz.billage.classroom.dto.request;
 
 import java.time.LocalDate;
 
+import com.groomiz.billage.common.valid.ValidDate;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -18,7 +20,7 @@ public class ClassroomListRequest {
 	@NotNull
 	private Long floor;
 	@Schema(description = "날짜", example = "2024-08-01")
-	@Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}", message = "날짜 형식은 yyyy-MM-dd여야 합니다.")
+	@ValidDate
 	@NotNull
 	private LocalDate date;
 	@Schema(description = "인원", example = "30")
