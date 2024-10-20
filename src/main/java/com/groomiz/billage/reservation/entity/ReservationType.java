@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.groomiz.billage.reservation.exception.AdminReservationErrorCode;
+import com.groomiz.billage.reservation.exception.AdminReservationException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,7 +36,7 @@ public enum ReservationType {
 		ReservationType type = NAME_TO_ENUM_MAP.get(name);
 
 		if (type == null) {
-			// TODO: 예외 처리
+			throw new AdminReservationException(AdminReservationErrorCode.INVALID_RESERVATION_TYPE);
 		}
 
 		return type;
