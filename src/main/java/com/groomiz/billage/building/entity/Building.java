@@ -36,4 +36,12 @@ public class Building extends BaseEntity {
 	@Column(name = "image_url")
 	private String imageUrl;
 
+	@Builder
+	public Building(String name, String number, Long startFloor, Long endFloor, String imageUrl) {
+		this.name = name;
+		this.number = number;
+		this.startFloor = startFloor;
+		this.endFloor = endFloor;
+		this.imageUrl = imageUrl;
+	}
 }

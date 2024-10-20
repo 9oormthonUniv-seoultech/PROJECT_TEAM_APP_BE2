@@ -24,9 +24,9 @@ import lombok.RequiredArgsConstructor;
 public class BuildingService {
 	private final BuildingRepository buildingRepository;
 
-	public List<BuildingListResponse> findAllBuildings(LocalDate date, Integer count) {
+	public List<BuildingListResponse> findAllBuildings(Integer count) {
 		// 예시: 건물 목록을 Building 엔티티에서 조회
-		List<Building> buildings = buildingRepository.findAvailableBuildings(date, count)
+		List<Building> buildings = buildingRepository.findBuildingsByCapacity(count)
 			.orElseThrow(() -> new BuildingException(BuildingErrorCode.BUILDING_NOT_FOUND));
 
 

@@ -32,8 +32,7 @@ public class BuildingController {
 		@RequestParam("date") LocalDate date,
 		@Parameter(description = "예약 인원", example = "30")
 		@RequestParam("headcount") Integer count) {
-
-		List<BuildingListResponse> response = buildingService.findAllBuildings(date, count);
+		List<BuildingListResponse> response = buildingService.findAllBuildings(count);
 		return ResponseEntity.ok(response);
 	}
 }
