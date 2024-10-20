@@ -13,12 +13,9 @@ import io.lettuce.core.dynamic.annotation.Param;
 
 public interface BuildingRepository extends JpaRepository<Building, Long> {
 
-	// 날짜와 인원을 기준으로 예약 가능한 건물 목록을 조회하는 JPQL 쿼리
+	// 특정 날짜와 인원에 맞는 수용 가능한 건물 조회 (예약 여부는 무시)
 	@Query("SELECT DISTINCT b FROM Building b " +
 		"JOIN Classroom c ON c.building.id = b.id " +
-		"LEFT JOIN Reservation r ON r.classroom.id = c.id AND r.applyDate = :date " +
-		"WHERE r.id IS NULL AND c.capacity >= :headcount")
-	Optional<List<Building>> findAvailableBuildings(@Param("date") LocalDate date, @Param("headcount") Integer headcount);
-
+		"WHERE c.capacity >= :headcount")
+	Optional<List<Building>> findBuildingsByCapacity(@Param("headcount") Integer headcount);
 }
-
