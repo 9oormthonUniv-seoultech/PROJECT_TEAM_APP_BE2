@@ -3,6 +3,7 @@ package com.groomiz.billage.classroom.dto.request;
 import java.time.LocalDate;
 
 import com.groomiz.billage.common.valid.ValidDate;
+import com.groomiz.billage.common.valid.ValidHeadCount;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -24,6 +25,7 @@ public class ClassroomListRequest {
 	@NotNull
 	private LocalDate date;
 	@Schema(description = "인원", example = "30")
+	@ValidHeadCount
 	@NotNull
 	private Integer headcount;
 }
