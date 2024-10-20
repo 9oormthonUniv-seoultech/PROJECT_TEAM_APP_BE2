@@ -19,12 +19,13 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class ClassroomService {
 
 	private final ClassroomRepository classroomRepository;
 	private final ReservationRepository reservationRepository;
 
+	@Transactional(readOnly = true)
 	public List<ClassroomListResponse> findAllClassroom(ClassroomListRequest request) {
 
 		List<Classroom> classrooms = classroomRepository.findByBuildingIdAndFloorAndCapacityGreaterThanEqual(
