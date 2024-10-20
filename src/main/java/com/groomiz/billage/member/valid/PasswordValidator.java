@@ -13,7 +13,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
 		// 비밀번호가 null이거나 빈 문자열인 경우
 		if (value == null || value.isEmpty()) {
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("비밀번호를 입력해주세요.")
+			context.buildConstraintViolationWithTemplate("PASSWORD_NOT_NULL")
 				.addConstraintViolation();
 			return false;
 		}
@@ -21,7 +21,7 @@ public class PasswordValidator implements ConstraintValidator<ValidPassword, Str
 		// 정규식을 만족하지 않는 경우
 		if (!value.matches(PASSWORD_REGEX)) {
 			context.disableDefaultConstraintViolation();
-			context.buildConstraintViolationWithTemplate("비밀번호는 영문 8~16자, 특수문자 1개 이상 포함해야 합니다.")
+			context.buildConstraintViolationWithTemplate("INVALID_PASSWORD")
 				.addConstraintViolation();
 			return false;
 		}
