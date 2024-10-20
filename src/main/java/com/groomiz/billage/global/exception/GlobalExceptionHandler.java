@@ -144,9 +144,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		String firstErrorMessage = errors.getFirst().getDefaultMessage();
 
 		// 전화번호 형식 에러
-		MemberErrorCode invalidPhoneNumberErrorCode = MemberErrorCode.INVALID_PHONE_NUMBER;
-
-		if (firstErrorMessage.equals(invalidPhoneNumberErrorCode.toString())) {
+		if (firstErrorMessage.equals("INVALID_PHONE_NUMBER")) {
+			MemberErrorCode invalidPhoneNumberErrorCode = MemberErrorCode.INVALID_PHONE_NUMBER;
 			MemberException memberException = new MemberException(invalidPhoneNumberErrorCode);
 
 			ErrorReason reason = memberException.getErrorReason();
@@ -156,6 +155,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
 				.body(errorResponse);
 		}
+
 		// 예약 날짜가 과거인 경우
 		if (firstErrorMessage.equals("PAST_DATE")) {
 			ReservationErrorCode errorCode = ReservationErrorCode.PAST_DATE_RESERVATION;
@@ -192,6 +192,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.body(errorResponse);
 		}
 
+		// 인원이 최대 인원을 초과하는 경우
 		if (firstErrorMessage.equals("EXCEED_MAX_PARTICIPANTS")) {
 			ReservationErrorCode errorCode = ReservationErrorCode.EXCEED_MAX_PARTICIPANTS;
 			ReservationException reservationException = new ReservationException(errorCode);
@@ -202,6 +203,32 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
 				.body(errorResponse);
 		}
+
+		// 이메일 형식 잘못 입력한 경우
+		if (firstErrorMessage.equals("INVALID_EMAIL")) {
+			MemberErrorCode errorCode = MemberErrorCode.INVALID_EMAIL;
+			MemberException memberException = new MemberException(errorCode);
+
+			ErrorReason reason = memberException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		// 비밀번호 형식 잘못 입력한 경우
+		if (firstErrorMessage.equals("INVALID_PASSWORD")) {
+			MemberErrorCode errorCode = MemberErrorCode.INVALID_PASSWORD_FORMAT;
+			MemberException memberException = new MemberException(errorCode);
+
+			ErrorReason reason = memberException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+
 
 
 
