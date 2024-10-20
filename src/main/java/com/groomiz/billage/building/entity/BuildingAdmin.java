@@ -30,4 +30,9 @@ public class BuildingAdmin extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "building_id", nullable = false)
 	private Building building;
+
+	public BuildingAdmin(Member admin, Building building) {
+		this.admin = admin;
+		this.building = building;
+	}
 }

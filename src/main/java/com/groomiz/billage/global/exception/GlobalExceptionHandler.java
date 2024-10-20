@@ -1,5 +1,3 @@
-
-
 package com.groomiz.billage.global.exception;
 
 import java.io.IOException;
@@ -24,20 +22,27 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.ValueInstantiationException;
 import com.groomiz.billage.auth.document.LoginExceptionDocs;
 import com.groomiz.billage.auth.exception.AuthException;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.groomiz.billage.auth.document.LoginExceptionDocs;
 import com.groomiz.billage.global.dto.ErrorReason;
 import com.groomiz.billage.global.dto.ErrorResponse;
+import com.groomiz.billage.member.entity.College;
+import com.groomiz.billage.member.entity.Major;
 import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.exception.MemberException;
+import com.groomiz.billage.reservation.entity.ReservationPurpose;
+import com.groomiz.billage.reservation.entity.ReservationStatusType;
+import com.groomiz.billage.reservation.entity.ReservationType;
+import com.groomiz.billage.reservation.exception.AdminReservationErrorCode;
+import com.groomiz.billage.reservation.exception.AdminReservationException;
 import com.groomiz.billage.reservation.exception.ReservationErrorCode;
 import com.groomiz.billage.reservation.exception.ReservationException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
@@ -66,15 +71,51 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
 		String url = httpServletRequest.getRequestURL().toString();
 
+		// 존재하지 않는 enum 값 예외 처리
+		if (ex.getCause() instanceof ValueInstantiationException) {
+			Class<?> rawClass = ((ValueInstantiationException)ex.getCause()).getType().getRawClass();
+
+			BaseErrorCode errorCode = null;
+			GlobalCodeException exception = null;
+
+			if (rawClass.equals(ReservationPurpose.class)) {
+				errorCode = ReservationErrorCode.INVALID_RESERVATION_PURPOSE;
+				exception = new ReservationException((ReservationErrorCode)errorCode);
+			} else if (rawClass.equals(ReservationStatusType.class)) {
+				errorCode = ReservationErrorCode.INVALID_RESERVATION_STATUS_TYPE;
+				exception = new ReservationException((ReservationErrorCode)errorCode);
+			} else if (rawClass.equals(ReservationType.class)) {
+				errorCode = AdminReservationErrorCode.INVALID_RESERVATION_TYPE;
+				exception = new AdminReservationException((AdminReservationErrorCode)errorCode);
+			} else if (rawClass.equals(College.class)) {
+				errorCode = MemberErrorCode.INVALID_COLLEGE_ENUM;
+				exception = new MemberException((MemberErrorCode)errorCode);
+			} else if (rawClass.equals(Major.class)) {
+				errorCode = MemberErrorCode.INVALID_MAJOR_ENUM;
+				exception = new MemberException((MemberErrorCode)errorCode);
+			} else {
+				errorCode = GlobalErrorCode.INTERNAL_SERVER_ERROR;
+				exception = new GlobalCodeException(errorCode);
+			}
+
+			ErrorReason reason = exception.getErrorReason();
+			ErrorResponse errorResponse =
+				new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		// 날짜, 시간 예외 처리
 		if (ex.getCause().getCause() instanceof DateTimeParseException) {
 			String message = ex.getCause().getMessage();
 
 			ReservationErrorCode errorCode = null;
 
-			if (message.contains("LocalDate:")) { // LocalDate 형식 에러
+			if (message.contains("LocalDate:")) {
 				errorCode = ReservationErrorCode.INVALID_RESERVATION_DATE;
 			}
-			else if (message.contains("LocalTime:")) { // LocalTime 형식 에러
+			else if (message.contains("LocalTime:")) {
 				errorCode = ReservationErrorCode.INVALID_RESERVATION_TIME;
 			}
 			else {
@@ -115,6 +156,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
 			.body(errorResponse);
 	}
+
+	@ExceptionHandler(AdminReservationException.class)
+	public ResponseEntity<ErrorResponse> handleAdminReservationException(ReservationException ex, HttpServletRequest request) {
+
+		log.info("AdminReservationException: {}", ex.getMessage());
+		ErrorReason reason = ex.getErrorReason();
+		ErrorResponse errorResponse =
+			new ErrorResponse(ex.getErrorReason(), request.getRequestURL().toString());
+
+		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+			.body(errorResponse);
+	}
+
 	@ExceptionHandler(AuthException.class)
 	public ResponseEntity<ErrorResponse> handleAuthException(AuthException ex, HttpServletRequest request) {
 		ErrorReason reason = ex.getErrorCode().getErrorReason();
@@ -236,3 +290,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 			.body(errorResponse);
 	}
 }
+
+
+

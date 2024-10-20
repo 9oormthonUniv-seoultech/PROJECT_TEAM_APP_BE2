@@ -2,6 +2,11 @@ spring:
   profiles:
     active: dev
 
+  data:
+    redis:
+      cache:
+        fcm-ttl: 2592000000 # 30일
+
 server:
   port: 8080
 
@@ -14,4 +19,9 @@ springdoc:
     disable-swagger-default-url: true
     display-request-duration: true
     operations-sorter: alpha
+
+fcm:
+  key:
+    path: /firebase/billage-3a51a-firebase-adminsdk-b2r5m-29b2d39c20.json
+    scope: https://www.googleapis.com/auth/cloud-platform
 
