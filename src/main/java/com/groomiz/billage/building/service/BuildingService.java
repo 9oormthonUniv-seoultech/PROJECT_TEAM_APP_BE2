@@ -5,6 +5,7 @@ import java.time.LocalDate;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +37,15 @@ public class BuildingService {
 			.map(building -> new BuildingListResponse(
 				building.getId(),
 				building.getName(),
-				building.getNumber()
+				building.getNumber(),
+				generateFloors(building.getStartFloor(), building.getEndFloor())
 			))
+			.collect(Collectors.toList());
+	}
+
+	private List<Long> generateFloors(Long startFloor, Long endFloor) {
+		return LongStream.rangeClosed(startFloor, endFloor)
+			.boxed()
 			.collect(Collectors.toList());
 	}
 }

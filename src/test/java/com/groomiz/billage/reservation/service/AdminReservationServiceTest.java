@@ -154,6 +154,8 @@ class AdminReservationServiceTest {
 	private Building saveBuilding(String name) {
 		Building building = Building.builder()
 			.name(name)
+			.startFloor(1L)
+			.endFloor(3L)
 			.number("60")
 			.build();
 

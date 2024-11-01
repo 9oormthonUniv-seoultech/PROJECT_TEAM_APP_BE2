@@ -7,6 +7,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.groomiz.billage.building.entity.Building;
+import com.groomiz.billage.building.exception.BuildingErrorCode;
+import com.groomiz.billage.building.exception.BuildingException;
+import com.groomiz.billage.building.repository.BuildingRepository;
 import com.groomiz.billage.classroom.dto.response.ClassroomDetailResponse;
 import com.groomiz.billage.classroom.dto.ReservationTime;
 import com.groomiz.billage.classroom.dto.request.ClassroomListRequest;
@@ -25,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class ClassroomService {
 
 	private final ClassroomRepository classroomRepository;
+	private final BuildingRepository buildingRepository;
 	private final ReservationRepository reservationRepository;
 
 	@Transactional(readOnly = true)
@@ -38,6 +43,15 @@ public class ClassroomService {
 
 	@Transactional(readOnly = true)
 	public List<ClassroomListResponse> findAllClassroom(ClassroomListRequest request) {
+
+		// 건물 정보 조회
+		Building building = buildingRepository.findById(request.getBuildingId())
+			.orElseThrow(() -> new BuildingException(BuildingErrorCode.BUILDING_NOT_FOUND));
+
+		// 요청된 층이 건물의 층 범위를 벗어나는 경우 예외 발생
+		if (request.getFloor() < building.getStartFloor() || request.getFloor() > building.getEndFloor()) {
+			throw new BuildingException(BuildingErrorCode.FLOOR_NOT_FOUND);
+		}
 
 		List<Classroom> classrooms = classroomRepository.findByBuildingIdAndFloorAndCapacityGreaterThanEqual(
 			request.getBuildingId(), request.getFloor(), request.getHeadcount()
