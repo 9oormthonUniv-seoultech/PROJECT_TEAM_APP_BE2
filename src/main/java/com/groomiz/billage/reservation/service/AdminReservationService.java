@@ -23,9 +23,11 @@ import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
+import com.groomiz.billage.reservation.dto.ReservationSearchCond;
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
+import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse.ReservationInfo;
 import com.groomiz.billage.reservation.entity.Reservation;
 import com.groomiz.billage.reservation.entity.ReservationGroup;
 import com.groomiz.billage.reservation.entity.ReservationStatus;
@@ -338,36 +340,52 @@ public class AdminReservationService {
 	}
 
 	@Transactional(readOnly = true)
-	public AdminReservationStatusListResponse getReservationByStatus(ReservationStatusType status, String studentNumber) {
+	public AdminReservationStatusListResponse getReservationByStatus(ReservationStatusType status, int page, String studentNumber) {
 
 		Member admin = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-		List<Long> buildingIds = buildingAdminRepository.findAllBuildingIdByAdmin(admin);
-
-		if (buildingIds.isEmpty()) {
-			throw new AdminReservationException(AdminReservationErrorCode.BUILDING_ADMIN_NOT_FOUND);
-		}
-
-		List<Reservation> reservations = new ArrayList<>();
+		List<ReservationInfo> reservationInfos = new ArrayList<>();
+		ReservationSearchCond reservationSearchCond = null;
 
 		switch (status) {
 			case PENDING:
+				List<Long> buildingIds = buildingAdminRepository.findAllBuildingIdByAdmin(admin);
+
+				if (buildingIds.isEmpty()) {
+					return AdminReservationStatusListResponse.builder()
+						.status(status)
+						.reservations(reservationInfos)
+						.build();
+				}
+				reservationSearchCond = ReservationSearchCond.builder().buildingIds(buildingIds).build();
+				reservationSearchCond.setPage(page);
+
 				// 해당 admin이 관리하는 건물들의 대기 상태인 예약 모두 조회
-				reservations = reservationRepository.findPendingReservationsWithReservationStatusByBuildingIds(
-					buildingIds);
+				reservationInfos = reservationRepository.searchPendingReservationPageByBuilding(
+					reservationSearchCond).getContent();
 				break;
 			case APPROVED:
 				// 해당 admin이 승인한 예약 모두 조회
-				reservations = reservationRepository.findApprovedReservationsWithReservationStatusByAdmin(admin);
+				reservationSearchCond = ReservationSearchCond.builder().admin(admin).build();
+				reservationSearchCond.setPage(page);
+
+				reservationInfos = reservationRepository.searchApprovedReservationPageByAdmin(
+					reservationSearchCond).getContent();
 				break;
 			default:
 				// 해당 admin이 거절한 예약 + admin이 승인한 예약 중 학생 취소한 예약 + admin이 강제 취소(관리자 취소)한 예약 모두 조회
-				reservations = reservationRepository.findRejectedCanceledReservationsWithReservationStatusByAdmin(admin);
+				reservationSearchCond = ReservationSearchCond.builder().admin(admin).build();
+				reservationSearchCond.setPage(page);
+
+				reservationInfos = reservationRepository.searchRejectedAndCanceledReservationPageByAdmin(reservationSearchCond).getContent();
 				break;
 		}
 
-		return AdminReservationStatusListResponse.from(status, reservations);
+		return AdminReservationStatusListResponse.builder()
+			.status(status)
+			.reservations(reservationInfos)
+			.build();
 	}
 
 	private void checkReservationConflict(AdminReservationRequest request, LocalDate date) {
