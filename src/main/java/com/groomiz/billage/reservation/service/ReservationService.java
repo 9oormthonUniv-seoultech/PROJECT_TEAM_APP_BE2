@@ -45,21 +45,6 @@ public class ReservationService {
 	// 예약 생성
 	public Long reserveClassroom(ClassroomReservationRequest request, String studentNumber) {
 
-		// 최대 인원 초과 예외
-		if (request.getHeadcount() > 100) {
-			throw new ReservationException(ReservationErrorCode.EXCEED_MAX_PARTICIPANTS);
-		}
-
-		// 예약 날짜 과거 예외
-		if (request.getApplyDate().isBefore(LocalDate.now())) {
-			throw new ReservationException(ReservationErrorCode.PAST_DATE_RESERVATION);
-		}
-
-		// 예약 날짜 한달 이후 예외
-		if (request.getApplyDate().isAfter(LocalDate.now().plusMonths(1))) {
-			throw new ReservationException(ReservationErrorCode.FUTURE_DATE_LIMIT_EXCEEDED);
-		}
-
 		// 기타 목적 예외
 		if (request.getPurpose().equals(ReservationPurpose.OTHERS)
 			&& (request.getContents() == null || request.getContents().trim().isEmpty())) {

@@ -20,6 +20,7 @@ import com.groomiz.billage.classroom.service.ClassroomService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -32,9 +33,9 @@ public class ClassroomController {
 
 	@PostMapping
 	@Operation(summary = "강의실 목록 조회")
-	public ResponseEntity<List<ClassroomListResponse>> findAll(@RequestBody ClassroomListRequest request) {
+	public ResponseEntity<List<ClassroomListResponse>> findAll(@Valid @RequestBody ClassroomListRequest request) {
 
-		List<ClassroomListResponse> response = null;
+		List<ClassroomListResponse> response = classroomService.findAllClassroom(request);
 		return ResponseEntity.ok(response);
 	}
 
