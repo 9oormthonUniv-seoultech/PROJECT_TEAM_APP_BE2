@@ -7,7 +7,6 @@ import static com.groomiz.billage.member.exception.MemberErrorCode.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.auth.service.RedisService;

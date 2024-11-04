@@ -3,6 +3,9 @@ package com.groomiz.billage.classroom.repository;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -17,4 +20,6 @@ public interface ClassroomRepository extends JpaRepository<Classroom, Long> {
 		+ "AND r.applyDate = :date "
 		+ "AND rs.status in ('PENDING', 'APPROVED')")
 	Optional<Classroom> findClassroomByIdAndDate(Long classroomId, LocalDate date);
+
+	List<Classroom> findByBuildingIdAndFloorAndCapacityGreaterThanEqual(Long buildingId, Long floor, Integer capacity);
 }
