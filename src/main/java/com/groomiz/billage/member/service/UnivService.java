@@ -45,8 +45,7 @@ public class UnivService {
 
 	private AdminListResponse buildAdminListResponse(College college) {
 		// 단과대에 속하는 어드민 멤버 조회
-		List<Member> admins = memberRepository.findByCollegeAndIsAdmin(college, true)
-			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
+		List<Member> admins = memberRepository.findByCollegeAndIsAdmin(college, true);
 
 		// 각 멤버를 AdminInfo DTO로 변환
 		List<AdminListResponse.AdminInfo> adminInfoList = admins.stream()

@@ -55,7 +55,7 @@ public class ClassroomService {
 
 		List<Classroom> classrooms = classroomRepository.findByBuildingIdAndFloorAndCapacityGreaterThanEqual(
 			request.getBuildingId(), request.getFloor(), request.getHeadcount()
-		).orElseThrow(() -> new ClassroomException(ClassroomErrorCode.CLASSROOM_NOT_FOUND));
+		);
 
 		return classrooms.stream().map(classroom -> {
 			// 각 강의실의 예약 정보를 조회
