@@ -22,5 +22,5 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
 	@Query("SELECT DISTINCT b FROM Building b " +
 		"JOIN Classroom c ON c.building.id = b.id " +
 		"WHERE c.capacity >= :headcount")
-	Optional<List<Building>> findBuildingsByCapacity(@Param("headcount") Integer headcount);
+	List<Building> findBuildingsByCapacity(@Param("headcount") Integer headcount);
 }

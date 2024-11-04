@@ -28,9 +28,7 @@ public class BuildingService {
 	@Transactional(readOnly = true)
 	public List<BuildingListResponse> findAllBuildings(Integer count) {
 		// 예시: 건물 목록을 Building 엔티티에서 조회
-		List<Building> buildings = buildingRepository.findBuildingsByCapacity(count)
-			.orElseThrow(() -> new BuildingException(BuildingErrorCode.BUILDING_NOT_FOUND));
-
+		List<Building> buildings = buildingRepository.findBuildingsByCapacity(count);
 
 		// 조회된 Building 리스트를 BuildingListResponse로 변환
 		return buildings.stream()
