@@ -2,12 +2,17 @@ package com.groomiz.billage.reservation.repository;
 
 import org.springframework.data.domain.Page;
 
+import com.groomiz.billage.reservation.dto.AdminReservationSearchCond;
 import com.groomiz.billage.reservation.dto.ReservationSearchCond;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse.ReservationInfo;
+import com.groomiz.billage.reservation.dto.response.ReservationStatusListResponse;
 
 public interface ReservationRepositoryCustom {
 
-	Page<ReservationInfo> searchPendingReservationPageByBuilding(ReservationSearchCond reservationSearchCond);
-	Page<ReservationInfo> searchApprovedReservationPageByAdmin(ReservationSearchCond reservationSearchCond);
-	Page<ReservationInfo> searchRejectedAndCanceledReservationPageByAdmin(ReservationSearchCond reservationSearchCond);
+	Page<ReservationInfo> searchPendingReservationPageByBuilding(AdminReservationSearchCond adminReservationSearchCond);
+	Page<ReservationInfo> searchApprovedReservationPageByAdmin(AdminReservationSearchCond adminReservationSearchCond);
+	Page<ReservationInfo> searchRejectedAndCanceledReservationPageByAdmin(
+		AdminReservationSearchCond adminReservationSearchCond);
+	Page<ReservationStatusListResponse.ReservationInfo> searchUpcomingReservationPageByRequester(ReservationSearchCond reservationSearchCond);
+	Page<ReservationStatusListResponse.ReservationInfo> searchPastReservationPageByRequester(ReservationSearchCond reservationSearchCond);
 }

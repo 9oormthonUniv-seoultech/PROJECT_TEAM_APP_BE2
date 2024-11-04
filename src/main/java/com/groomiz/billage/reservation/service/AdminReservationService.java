@@ -8,10 +8,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.groomiz.billage.building.entity.Building;
 import com.groomiz.billage.building.repository.BuildingAdminRepository;
 import com.groomiz.billage.classroom.dto.ReservationTime;
 import com.groomiz.billage.classroom.entity.Classroom;
@@ -23,7 +25,7 @@ import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
-import com.groomiz.billage.reservation.dto.ReservationSearchCond;
+import com.groomiz.billage.reservation.dto.AdminReservationSearchCond;
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
@@ -345,46 +347,48 @@ public class AdminReservationService {
 		Member admin = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-		List<ReservationInfo> reservationInfos = new ArrayList<>();
-		ReservationSearchCond reservationSearchCond = null;
+		Page<ReservationInfo> reservationPage;
+		AdminReservationSearchCond adminReservationSearchCond;
 
 		switch (status) {
 			case PENDING:
-				List<Long> buildingIds = buildingAdminRepository.findAllBuildingIdByAdmin(admin);
+				List<Building> buildings = buildingAdminRepository.findAllBuildingByAdmin(admin);
 
-				if (buildingIds.isEmpty()) {
+				if (buildings.isEmpty()) {
 					return AdminReservationStatusListResponse.builder()
 						.status(status)
-						.reservations(reservationInfos)
+						.reservations(null)
 						.build();
 				}
-				reservationSearchCond = ReservationSearchCond.builder().buildingIds(buildingIds).build();
-				reservationSearchCond.setPage(page);
+				adminReservationSearchCond = AdminReservationSearchCond.builder().buildings(buildings).build();
+				adminReservationSearchCond.setPage(page);
 
 				// 해당 admin이 관리하는 건물들의 대기 상태인 예약 모두 조회
-				reservationInfos = reservationRepository.searchPendingReservationPageByBuilding(
-					reservationSearchCond).getContent();
+				reservationPage = reservationRepository.searchPendingReservationPageByBuilding(
+					adminReservationSearchCond);
 				break;
 			case APPROVED:
 				// 해당 admin이 승인한 예약 모두 조회
-				reservationSearchCond = ReservationSearchCond.builder().admin(admin).build();
-				reservationSearchCond.setPage(page);
+				adminReservationSearchCond = AdminReservationSearchCond.builder().admin(admin).build();
+				adminReservationSearchCond.setPage(page);
 
-				reservationInfos = reservationRepository.searchApprovedReservationPageByAdmin(
-					reservationSearchCond).getContent();
+				reservationPage = reservationRepository.searchApprovedReservationPageByAdmin(
+					adminReservationSearchCond);
 				break;
 			default:
 				// 해당 admin이 거절한 예약 + admin이 승인한 예약 중 학생 취소한 예약 + admin이 강제 취소(관리자 취소)한 예약 모두 조회
-				reservationSearchCond = ReservationSearchCond.builder().admin(admin).build();
-				reservationSearchCond.setPage(page);
+				adminReservationSearchCond = AdminReservationSearchCond.builder().admin(admin).build();
+				adminReservationSearchCond.setPage(page);
 
-				reservationInfos = reservationRepository.searchRejectedAndCanceledReservationPageByAdmin(reservationSearchCond).getContent();
+				reservationPage = reservationRepository.searchRejectedAndCanceledReservationPageByAdmin(
+					adminReservationSearchCond);
 				break;
 		}
 
 		return AdminReservationStatusListResponse.builder()
 			.status(status)
-			.reservations(reservationInfos)
+			.totalPages(reservationPage.getTotalPages())
+			.reservations(reservationPage.getContent())
 			.build();
 	}
 

@@ -17,7 +17,8 @@ import lombok.NoArgsConstructor;
 public class AdminReservationStatusListResponse {
 	@Schema(description = "예약 상태", example = "예약 대기")
 	private ReservationStatusType status;
-
+	@Schema(description = "전체 페이지 수", example = "3")
+	private int totalPages;
 	@Schema(description = "예약 목록")
 	private List<ReservationInfo> reservations;
 
@@ -89,11 +90,14 @@ public class AdminReservationStatusListResponse {
 	}
 
 	@Builder
-	public AdminReservationStatusListResponse(ReservationStatusType status, List<ReservationInfo> reservations) {
+
+	public AdminReservationStatusListResponse(ReservationStatusType status, int totalPages,
+		List<ReservationInfo> reservations) {
+
 		this.status = status;
+		this.totalPages = totalPages;
 		this.reservations = reservations;
 	}
-
 	// public static AdminReservationStatusListResponse from(ReservationStatusType status, List<Reservation> reservations) {
 	// 	return AdminReservationStatusListResponse.builder()
 	// 		.status(status)
