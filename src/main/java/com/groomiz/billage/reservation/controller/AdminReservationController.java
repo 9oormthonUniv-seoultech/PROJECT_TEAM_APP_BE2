@@ -48,12 +48,13 @@ public class AdminReservationController {
 	@ApiErrorExceptionsExample(AdminbyStatusExceptionDocs.class)
 	public ResponseEntity<AdminReservationStatusListResponse> getReservationsByStatus(
 		@Parameter(description = "예약 상태 (PENDING/APPROVED/REJECTED)", example = "APPROVED", required = true)
-		@RequestParam(required = true) String status,
+		@RequestParam String status,
+		@Parameter(description = "페이지 번호", example = "1", required = false)
+		@RequestParam(required = false, defaultValue = "1") int page,
 		@AuthenticationPrincipal CustomUserDetails user) {
-
 		ReservationStatusType type = ReservationStatusType.valueOf(status.toUpperCase());
 
-		AdminReservationStatusListResponse reservations = adminReservationService.getReservationByStatus(type,
+		AdminReservationStatusListResponse reservations = adminReservationService.getReservationByStatus(type, page,
 			user.getStudentNumber());
 		return ResponseEntity.ok(reservations);
 	}
