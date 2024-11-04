@@ -5,10 +5,12 @@ import java.util.List;
 import com.groomiz.billage.classroom.dto.ReservationTime;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Schema(description = "강의실 목록 조회 응답 DTO")
+@Builder
 public class ClassroomListResponse {
 
 	@Schema(description = "강의실 ID", example = "1")
