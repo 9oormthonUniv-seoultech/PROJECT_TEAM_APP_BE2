@@ -5,6 +5,7 @@ import static com.groomiz.billage.common.util.DateUtills.*;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
+import com.groomiz.billage.reservation.dto.ReservationSearchCond;
 import com.groomiz.billage.reservation.dto.request.ClassroomReservationRequest;
 import com.groomiz.billage.reservation.dto.response.ReservationStatusListResponse;
 import com.groomiz.billage.reservation.entity.Reservation;
@@ -145,13 +147,28 @@ public class ReservationService {
 	}
 
 	@Transactional(readOnly = true)
-	public ReservationStatusListResponse getAllReservationStatus(String studentNumber) {
+	public ReservationStatusListResponse getAllReservationStatus(boolean isPast, int page, String studentNumber) {
 
-		Member member = memberRepository.findByStudentNumber(studentNumber)
+		Member requester = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-		List<ReservationStatus> all = reservationStatusRepository.findAllFetchJoinReservationByRequester(member);
+		ReservationSearchCond reservationSearchCond = new ReservationSearchCond(requester);
+		reservationSearchCond.setPage(page);
 
-		return new ReservationStatusListResponse(all);
+		Page<ReservationStatusListResponse.ReservationInfo> reservationPage;
+
+		if (isPast) {
+			reservationPage = reservationRepository.searchPastReservationPageByRequester(
+				reservationSearchCond);
+		} else {
+			reservationPage = reservationRepository.searchUpcomingReservationPageByRequester(
+				reservationSearchCond);
+		}
+
+		return ReservationStatusListResponse.builder()
+			.totalReservations(reservationPage.getTotalElements())
+			.totalPages(reservationPage.getTotalPages())
+			.reservations(reservationPage.getContent())
+			.build();
 	}
 }
