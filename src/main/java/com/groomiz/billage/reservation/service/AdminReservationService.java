@@ -8,10 +8,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+import com.groomiz.billage.building.entity.Building;
 import com.groomiz.billage.building.repository.BuildingAdminRepository;
 import com.groomiz.billage.classroom.dto.ReservationTime;
 import com.groomiz.billage.classroom.entity.Classroom;
@@ -23,9 +25,11 @@ import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
+import com.groomiz.billage.reservation.dto.AdminReservationSearchCond;
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
+import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse.ReservationInfo;
 import com.groomiz.billage.reservation.entity.Reservation;
 import com.groomiz.billage.reservation.entity.ReservationGroup;
 import com.groomiz.billage.reservation.entity.ReservationStatus;
@@ -338,36 +342,54 @@ public class AdminReservationService {
 	}
 
 	@Transactional(readOnly = true)
-	public AdminReservationStatusListResponse getReservationByStatus(ReservationStatusType status, String studentNumber) {
+	public AdminReservationStatusListResponse getReservationByStatus(ReservationStatusType status, int page, String studentNumber) {
 
 		Member admin = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
-		List<Long> buildingIds = buildingAdminRepository.findAllBuildingIdByAdmin(admin);
-
-		if (buildingIds.isEmpty()) {
-			throw new AdminReservationException(AdminReservationErrorCode.BUILDING_ADMIN_NOT_FOUND);
-		}
-
-		List<Reservation> reservations = new ArrayList<>();
+		Page<ReservationInfo> reservationPage;
+		AdminReservationSearchCond adminReservationSearchCond;
 
 		switch (status) {
 			case PENDING:
+				List<Building> buildings = buildingAdminRepository.findAllBuildingByAdmin(admin);
+
+				if (buildings.isEmpty()) {
+					return AdminReservationStatusListResponse.builder()
+						.status(status)
+						.reservations(null)
+						.build();
+				}
+				adminReservationSearchCond = AdminReservationSearchCond.builder().buildings(buildings).build();
+				adminReservationSearchCond.setPage(page);
+
 				// 해당 admin이 관리하는 건물들의 대기 상태인 예약 모두 조회
-				reservations = reservationRepository.findPendingReservationsWithReservationStatusByBuildingIds(
-					buildingIds);
+				reservationPage = reservationRepository.searchPendingReservationPageByBuilding(
+					adminReservationSearchCond);
 				break;
 			case APPROVED:
 				// 해당 admin이 승인한 예약 모두 조회
-				reservations = reservationRepository.findApprovedReservationsWithReservationStatusByAdmin(admin);
+				adminReservationSearchCond = AdminReservationSearchCond.builder().admin(admin).build();
+				adminReservationSearchCond.setPage(page);
+
+				reservationPage = reservationRepository.searchApprovedReservationPageByAdmin(
+					adminReservationSearchCond);
 				break;
 			default:
 				// 해당 admin이 거절한 예약 + admin이 승인한 예약 중 학생 취소한 예약 + admin이 강제 취소(관리자 취소)한 예약 모두 조회
-				reservations = reservationRepository.findRejectedCanceledReservationsWithReservationStatusByAdmin(admin);
+				adminReservationSearchCond = AdminReservationSearchCond.builder().admin(admin).build();
+				adminReservationSearchCond.setPage(page);
+
+				reservationPage = reservationRepository.searchRejectedAndCanceledReservationPageByAdmin(
+					adminReservationSearchCond);
 				break;
 		}
 
-		return AdminReservationStatusListResponse.from(status, reservations);
+		return AdminReservationStatusListResponse.builder()
+			.status(status)
+			.totalPages(reservationPage.getTotalPages())
+			.reservations(reservationPage.getContent())
+			.build();
 	}
 
 	private void checkReservationConflict(AdminReservationRequest request, LocalDate date) {

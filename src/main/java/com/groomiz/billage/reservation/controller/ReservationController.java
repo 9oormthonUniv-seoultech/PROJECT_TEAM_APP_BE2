@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.groomiz.billage.auth.document.JwtExceptionDocs;
@@ -64,10 +65,13 @@ public class ReservationController {
 	@Operation(summary = "예약 현황 목록 조회")
 	@ApiErrorExceptionsExample(JwtExceptionDocs.class)
 	public ResponseEntity<ReservationStatusListResponse> getAllReservationStatus(
+		@RequestParam(required = true, defaultValue = "false") boolean isPast,
+		@RequestParam(required = false, defaultValue = "1") int page,
 		@AuthenticationPrincipal CustomUserDetails user
 	) {
 
 		ReservationStatusListResponse all = reservationService.getAllReservationStatus(
+			isPast, page,
 			user.getStudentNumber());
 		return ResponseEntity.ok(all);
 	}

@@ -8,13 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import com.groomiz.billage.classroom.dto.ReservationTime;
-import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.entity.Reservation;
 
 import io.lettuce.core.dynamic.annotation.Param;
 
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+public interface ReservationRepository extends JpaRepository<Reservation, Long>, ReservationRepositoryCustom {
 
 	@Query("SELECT new com.groomiz.billage.classroom.dto.ReservationTime(r.startTime, r.endTime) "
 		+ "FROM Reservation r "
@@ -31,32 +30,32 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 		+ "WHERE r.id = :reservationId")
 	Optional<AdminReservationResponse> findAdminReservationResponseById(@Param("reservationId") Long reservationId);
 
-	@Query("SELECT r "
-	+ "FROM Reservation r "
-	+ "JOIN FETCH r.reservationStatus rs "
-	+ "WHERE rs.status = 'PENDING'"
-	+ "AND r.classroom.building.id in :buildingIds")
-	List<Reservation> findPendingReservationsWithReservationStatusByBuildingIds(List<Long> buildingIds);
+	// @Query("SELECT r "
+	// + "FROM Reservation r "
+	// + "JOIN FETCH r.reservationStatus rs "
+	// + "WHERE rs.status = 'PENDING'"
+	// + "AND r.classroom.building.id in :buildingIds")
+	// List<Reservation> findPendingReservationsWithReservationStatusByBuildingIds(List<Long> buildingIds);
 
-	@Query("SELECT r "
-		+ "FROM Reservation r "
-		+ "JOIN FETCH r.reservationStatus rs "
-		+ "JOIN FETCH r.classroom c "
-		+ "JOIN FETCH c.building b "
-		+ "JOIN FETCH rs.requester m "
-		+ "WHERE rs.status = 'APPROVED'"
-		+ "AND rs.admin = :admin")
-	List<Reservation> findApprovedReservationsWithReservationStatusByAdmin(Member admin);
+	// @Query("SELECT r "
+	// 	+ "FROM Reservation r "
+	// 	+ "JOIN FETCH r.reservationStatus rs "
+	// 	+ "JOIN FETCH r.classroom c "
+	// 	+ "JOIN FETCH c.building b "
+	// 	+ "JOIN FETCH rs.requester m "
+	// 	+ "WHERE rs.status = 'APPROVED'"
+	// 	+ "AND rs.admin = :admin")
+	// List<Reservation> findApprovedReservationsWithReservationStatusByAdmin(Member admin);
 
-	@Query("SELECT r "
-		+ "FROM Reservation r "
-		+ "JOIN FETCH r.reservationStatus rs "
-		+ "JOIN FETCH r.classroom c "
-		+ "JOIN FETCH c.building b "
-		+ "JOIN FETCH rs.requester m "
-		+ "WHERE rs.status IN ('REJECTED', 'ADMIN_CANCELED', 'STUDENT_CANCELED') "
-		+ "AND rs.admin = :admin")
-	List<Reservation> findRejectedCanceledReservationsWithReservationStatusByAdmin(@Param("admin") Member admin);
+	// @Query("SELECT r "
+	// 	+ "FROM Reservation r "
+	// 	+ "JOIN FETCH r.reservationStatus rs "
+	// 	+ "JOIN FETCH r.classroom c "
+	// 	+ "JOIN FETCH c.building b "
+	// 	+ "JOIN FETCH rs.requester m "
+	// 	+ "WHERE rs.status IN ('REJECTED', 'ADMIN_CANCELED', 'STUDENT_CANCELED') "
+	// 	+ "AND rs.admin = :admin")
+	// List<Reservation> findRejectedCanceledReservationsWithReservationStatusByAdmin(@Param("admin") Member admin);
 
 	@Query("SELECT DISTINCT r "
 	+ "FROM Reservation r "
