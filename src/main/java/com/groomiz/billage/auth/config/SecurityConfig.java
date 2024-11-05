@@ -56,8 +56,10 @@ public class SecurityConfig {
 					"/api/v1/users/verify",
 					"/api/v1/users/check-email",
 					"/api/v1/users/check-nickname",
-					"api/v1/univ/**",
+				  "api/v1/univ/classroom/**",
 					"/images/**",
+					"api/v1/univ/**",
+					"/images/**"
 					"/swagger-ui/**",
 					"/v3/api-docs/**",
 					"/error",
