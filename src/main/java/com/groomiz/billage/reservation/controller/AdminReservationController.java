@@ -1,5 +1,6 @@
 package com.groomiz.billage.reservation.controller;
 
+import com.groomiz.billage.classroom.dto.response.AdminReservationReasonResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +18,10 @@ import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListRe
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admin/reservations")
@@ -39,12 +44,12 @@ public class AdminReservationController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PostMapping("/{id}/reject")
+	/*@PostMapping("/{id}/reject")
 	@Operation(summary = "예약 거절")
 	public ResponseEntity<Map<String, String>> rejectReservation(@PathVariable Long id,
 		@RequestBody(required = false) String rejectionReason) {
 		return ResponseEntity.ok(new AdminReservationReasonResponse("예약 거절 완료되었습니다.", rejectionReason));
-	}
+	}*/
 
 	@PostMapping
 	@Operation(summary = "예약 요청 처리")
