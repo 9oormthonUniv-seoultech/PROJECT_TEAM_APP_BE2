@@ -10,8 +10,6 @@ import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import com.groomiz.billage.auth.document.LoginExceptionDocs;
 import com.groomiz.billage.auth.service.RedisService;
-import com.groomiz.billage.member.exception.MemberErrorCode;
-import com.groomiz.billage.member.exception.MemberException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +27,7 @@ public class FCMService {
 		String token = redisService.getValues(key);
 
 		if (Objects.equals(token, "false")) {
-			throw new MemberException(MemberErrorCode.FCM_TOKEN_NOT_FOUND);
+			log.error("FCM 전송 실패");
 		}
 
 		Message message = Message.builder()
