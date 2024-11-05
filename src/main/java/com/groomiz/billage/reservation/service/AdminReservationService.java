@@ -88,7 +88,6 @@ public class AdminReservationService {
 				throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_CANCELED);
 		}
 
-
 		// 예약자 푸시 알림
 		Member requester = reservation.getReservationStatus().getRequester();
 
@@ -247,8 +246,7 @@ public class AdminReservationService {
 
 				if (with.isBefore(request.getStartDate())) {
 					continue;
-				}
-				else if (with.isAfter(request.getEndDate())) {
+				} else if (with.isAfter(request.getEndDate())) {
 					st = false;
 					break;
 				} else {
@@ -276,7 +274,6 @@ public class AdminReservationService {
 		reservationStatusRepository.saveAll(statuses);
 		reservationGroupRepository.save(group);
 	}
-
 
 	@Transactional(readOnly = true)
 	public AdminReservationResponse getReservation(Long reservationId) {
@@ -342,7 +339,8 @@ public class AdminReservationService {
 	}
 
 	@Transactional(readOnly = true)
-	public AdminReservationStatusListResponse getReservationByStatus(ReservationStatusType status, int page, String studentNumber) {
+	public AdminReservationStatusListResponse getReservationByStatus(ReservationStatusType status, int page,
+		String studentNumber) {
 
 		Member admin = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));

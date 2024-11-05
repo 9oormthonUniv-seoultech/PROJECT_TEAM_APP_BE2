@@ -2,6 +2,7 @@ package com.groomiz.billage.auth.service;
 
 import java.time.Duration;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +33,9 @@ public class AuthService {
 	private final JwtUtil jwtUtil;
 	private final MemberRepository memberRepository;
 
+	@Value("${spring.data.redis.cache.fcm-ttl}")
+	private Long fcmttl;
+
 	public void login(LoginRequest loginRequest, HttpServletResponse response) {
 		try {
 			// 로그인 인증 처리
@@ -46,6 +50,7 @@ public class AuthService {
 
 			// Redis에 RefreshToken 저장
 			redisService.setValues(username, refreshToken, Duration.ofMillis(86400000L));  // 1일 유효
+			redisService.setValues("FCM_" + username, loginRequest.getFCMToken(), Duration.ofMillis(fcmttl)); // 30일 유효
 
 			// AccessToken과 RefreshToken을 헤더에 추가
 			response.setHeader("Authorization", "Bearer " + accessToken);
