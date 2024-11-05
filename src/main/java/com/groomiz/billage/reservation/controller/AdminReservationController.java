@@ -122,7 +122,7 @@ public class AdminReservationController {
 	public ResponseEntity<StringResponseDto> cancleStudentReservation(
 		@Parameter(description = "예약 ID", example = "1")
 		@PathVariable("id") Long id,
-		@AuthenticationPrincipal CustomUserDetails user) {
+		@AuthenticationPrincipal CustomUserDetails user) throws FirebaseMessagingException {
 
 		adminReservationService.cancelStudentReservation(id, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("학생 예약 강제 취소 완료되었습니다."));

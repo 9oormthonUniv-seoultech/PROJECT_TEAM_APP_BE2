@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.groomiz.billage.auth.document.JwtExceptionDocs;
 import com.groomiz.billage.auth.dto.CustomUserDetails;
 import com.groomiz.billage.common.dto.StringResponseDto;
@@ -42,7 +43,7 @@ public class ReservationController {
 	@Operation(summary = "강의실 예약")
 	@ApiErrorExceptionsExample(ReservationExceptionDocs.class)
 	public ResponseEntity<StringResponseDto> reserveClassroom(@RequestBody @Valid ClassroomReservationRequest request
-		, @AuthenticationPrincipal CustomUserDetails user) {
+		, @AuthenticationPrincipal CustomUserDetails user) throws FirebaseMessagingException {
 
 		reservationService.reserveClassroom(request, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("강의실 예약 요청에 성공하였습니다."));
