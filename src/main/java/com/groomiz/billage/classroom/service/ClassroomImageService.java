@@ -28,9 +28,8 @@ public class ClassroomImageService {
         Classroom classroom = classroomRepository.findById(classroomId)
                 .orElseThrow(() -> new ClassroomException(ClassroomErrorCode.CLASSROOM_NOT_FOUND));
 
-        String fileName = UUID.randomUUID() + imageFile.getOriginalFilename();
         // 파일데이터와 파일명 넘겨서 S3에 저장
-        String imageUrl = s3Service.uploadFile(imageFile, fileName);
+        String imageUrl = s3Service.uploadFile(imageFile);
 
 
         ClassroomImage classroomImage = ClassroomImage.builder()
