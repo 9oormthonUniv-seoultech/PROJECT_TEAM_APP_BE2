@@ -1,10 +1,5 @@
 package com.groomiz.billage.reservation.controller;
 
-import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.groomiz.billage.auth.dto.CustomUserDetails;
@@ -28,7 +22,6 @@ import com.groomiz.billage.reservation.document.AdminReservationExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminSearchExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminbyStatusExceptionDocs;
 import com.groomiz.billage.reservation.dto.request.AdminRejectionRequest;
-
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
@@ -64,18 +57,18 @@ public class AdminReservationController {
 		AdminReservationStatusListResponse reservations = adminReservationService.getReservationByStatus(type, page,
 			user.getStudentNumber());
 		return ResponseEntity.ok(reservations);
+	}
 
-
+	@SuppressWarnings("checkstyle:MethodParamPad")
 	@PostMapping("/{id}/approve")
 	@Operation(summary = "예약 승인")
 	@ApiErrorExceptionsExample(AdminApproveRejectExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> approveReservation(
-		@PathVariable Long id,
+	public ResponseEntity<StringResponseDto> approveReservation(@Parameter(description = "예약 ID", example = "1")
+	@PathVariable Long id,
 		@AuthenticationPrincipal CustomUserDetails user) throws FirebaseMessagingException {
-
 		adminReservationService.approveReservation(id, user.getStudentNumber());
-
 		return ResponseEntity.ok(new StringResponseDto("예약 승인 완료되었습니다."));
+	}
 
 	@PostMapping("/{id}/reject")
 	@Operation(summary = "예약 거절")
@@ -83,9 +76,7 @@ public class AdminReservationController {
 	public ResponseEntity<AdminReservationReasonResponse> rejectReservation(@PathVariable Long id,
 		@RequestBody AdminRejectionRequest request,
 		@AuthenticationPrincipal CustomUserDetails user) throws FirebaseMessagingException {
-
 		adminReservationService.rejectReservation(id, request.getReason(), user.getStudentNumber());
-
 		AdminReservationReasonResponse response = new AdminReservationReasonResponse(
 			"예약 거절 완료되었습니다.", request.getReason());
 		return ResponseEntity.ok(response);
@@ -97,7 +88,6 @@ public class AdminReservationController {
 	public ResponseEntity<StringResponseDto> createReservation(
 		@RequestBody AdminReservationRequest request,
 		@AuthenticationPrincipal CustomUserDetails user) {
-
 		adminReservationService.reserveClassroom(request, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("예약 완료 하였습니다."));
 	}
@@ -108,7 +98,6 @@ public class AdminReservationController {
 	public ResponseEntity<AdminReservationResponse> getReservation(
 		@Parameter(description = "예약 ID", example = "1")
 		@PathVariable Long reservationId) {
-
 		AdminReservationResponse reservation = adminReservationService.getReservation(reservationId);
 		return ResponseEntity.ok(reservation);
 	}
@@ -137,8 +126,5 @@ public class AdminReservationController {
 
 		adminReservationService.cancelStudentReservation(id, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("학생 예약 강제 취소 완료되었습니다."));
-	public ResponseEntity<AdminReservationResponse> getReservation(@PathVariable Long id) {
-
-		return ResponseEntity.ok(null);
 	}
 }
