@@ -1,9 +1,11 @@
 package com.groomiz.billage.classroom.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,10 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.groomiz.billage.classroom.dto.request.ClassroomListRequest;
 import com.groomiz.billage.classroom.dto.response.ClassroomDetailResponse;
 import com.groomiz.billage.classroom.dto.response.ClassroomListResponse;
+import com.groomiz.billage.classroom.service.ClassroomService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -25,21 +29,25 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Classroom Controller", description = "[학생] 강의실 관련 API")
 public class ClassroomController {
 
+	private final ClassroomService classroomService;
+
 	@PostMapping
 	@Operation(summary = "강의실 목록 조회")
-	public ResponseEntity<List<ClassroomListResponse>> findAll(@RequestBody ClassroomListRequest request) {
+	public ResponseEntity<List<ClassroomListResponse>> findAll(@Valid @RequestBody ClassroomListRequest request) {
 
-		List<ClassroomListResponse> response = null;
+		List<ClassroomListResponse> response = classroomService.findAllClassroom(request);
 		return ResponseEntity.ok(response);
 	}
 
-	@GetMapping("/info")
+	@GetMapping("/info/{id}")
 	@Operation(summary = "강의실 상세 조회")
-	public ResponseEntity<ClassroomDetailResponse> findByClassroomId(
+	public ResponseEntity<ClassroomDetailResponse> findByClassroomIdAndDate(
 		@Parameter(description = "강의실 ID", example = "1")
-		@RequestParam("id") Long id) {
+		@PathVariable("id") Long id,
+		@Parameter(description = "날짜", example = "2024-11-03")
+		@RequestParam("date") LocalDate date) {
 
-		ClassroomDetailResponse response = new ClassroomDetailResponse();
-		return ResponseEntity.ok(response);
+		ClassroomDetailResponse classroom = classroomService.findClassroomByIdAndDate(id, date);
+		return ResponseEntity.ok(classroom);
 	}
 }

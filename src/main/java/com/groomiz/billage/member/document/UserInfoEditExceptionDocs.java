@@ -24,4 +24,8 @@ public class UserInfoEditExceptionDocs implements SwaggerExampleExceptions {
 	@ExplainError("전화번호 형식이 맞지 않는 경우 발생하는 오류입니다.")
 	public GlobalCodeException 전화번호_형식_오류 = new MemberException(MemberErrorCode.INVALID_PHONE_NUMBER);
 
+	@ExplainError("이메일 형식이 맞지 않는 경우 발생하는 오류입니다.")
+	public GlobalCodeException 이메일_형식_오류 = new MemberException(MemberErrorCode.INVALID_EMAIL);
+
+
 }
