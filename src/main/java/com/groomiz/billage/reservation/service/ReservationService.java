@@ -9,11 +9,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
+import com.groomiz.billage.building.repository.BuildingAdminRepository;
 import com.groomiz.billage.classroom.dto.ReservationTime;
 import com.groomiz.billage.classroom.entity.Classroom;
 import com.groomiz.billage.classroom.exception.ClassroomErrorCode;
 import com.groomiz.billage.classroom.exception.ClassroomException;
 import com.groomiz.billage.classroom.repository.ClassroomRepository;
+import com.groomiz.billage.fcm.service.FCMService;
 import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.exception.MemberErrorCode;
 import com.groomiz.billage.member.exception.MemberException;
@@ -43,9 +46,12 @@ public class ReservationService {
 	private final MemberRepository memberRepository;
 	private final ClassroomRepository classroomRepository;
 	private final ReservationStatusRepository reservationStatusRepository;
+	private final FCMService fcmService;
+	private final BuildingAdminRepository buildingAdminRepository;
 
 	// 예약 생성
-	public Long reserveClassroom(ClassroomReservationRequest request, String studentNumber) {
+	public Long reserveClassroom(ClassroomReservationRequest request, String studentNumber) throws
+		FirebaseMessagingException {
 
 		// 기타 목적 예외
 		if (request.getPurpose().equals(ReservationPurpose.OTHERS)
@@ -57,7 +63,7 @@ public class ReservationService {
 		if (request.getStartTime().isAfter(request.getEndTime())) {
 			throw new ReservationException(ReservationErrorCode.START_TIME_AFTER_END_TIME);
 		}
-		
+
 		// 중복 예약 예외
 		List<ReservationTime> reservations = reservationRepository.findPendingOrApprovedReservationsByDateAndClassroom(
 			request.getApplyDate(), request.getClassroomId());
@@ -97,6 +103,21 @@ public class ReservationService {
 		reservationStatusRepository.save(status);
 		Reservation savedReservation = reservationRepository.save(reservation);
 
+		// 해당 건물 관리하는 어드민 모두에게 알림
+		List<Member> admins = buildingAdminRepository.findAllAdminByBuilding(classroom.getBuilding());
+
+		String title = "예약 승인 요청";
+		String body = reservation.getApplyDate().toString() + " "
+			+ reservation.getStartTime().toString() + "-" + reservation.getEndTime().toString()
+			+ " 새로운 예약이 도착했습니다.";
+
+		admins.forEach(admin -> {
+			try {
+				fcmService.sendMessage(admin.getStudentNumber(), title, body);
+			} catch (FirebaseMessagingException e) {
+				throw new RuntimeException(e);
+			}
+		});
 		return savedReservation.getId();
 	}
 
