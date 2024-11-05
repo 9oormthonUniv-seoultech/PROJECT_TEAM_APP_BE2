@@ -9,6 +9,7 @@ import com.groomiz.billage.member.exception.MemberException;
 
 @ExceptionDoc
 public class StudentNumberExcptionDocs implements SwaggerExampleExceptions {
+
 	@ExplainError
-	public GlobalCodeException 학번_형식_오류 = new MemberException(MemberErrorCode.INVALID_STUDENT_ID);
+	public GlobalCodeException 학번_이미_존재 = new MemberException(MemberErrorCode.STUDENT_ID_ALREADY_REGISTERED);
 }

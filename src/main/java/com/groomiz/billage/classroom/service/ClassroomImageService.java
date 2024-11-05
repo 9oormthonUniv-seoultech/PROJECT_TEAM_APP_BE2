@@ -8,6 +8,7 @@ import com.groomiz.billage.classroom.exception.ClassroomException;
 import com.groomiz.billage.classroom.repository.ClassroomImageRepository;
 import com.groomiz.billage.classroom.repository.ClassroomRepository;
 import com.groomiz.billage.global.config.S3Config;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,13 @@ public class ClassroomImageService {
         // 파일데이터와 파일명 넘겨서 S3에 저장
 
 
+
         String imageUrl = s3Service.uploadFile(imageFile, fileName);
+
+
+        String imageUrl = s3Service.uploadFile(imageFile, fileName);
+
+
 
         ClassroomImage classroomImage = ClassroomImage.builder()
                 .classroom(classroom)

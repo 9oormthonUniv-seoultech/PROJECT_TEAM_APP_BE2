@@ -28,6 +28,12 @@ public enum AuthErrorCode implements BaseErrorCode {
 	@ExplainError("JWT 토큰이 만료된 경우 발생하는 오류입니다.")
 	TOKEN_EXPIRED(UNAUTHORIZED, "AUTH_401_3", "만료된 인증 토큰입니다."),
 
+	@ExplainError("인증 로직이 실패한 경우 발생하는 오류입니다.")
+	AUTHENTICATION_FAIL(UNAUTHORIZED, "AUTH_401_4", "인증에 실패하였습니다."),
+
+	@ExplainError("유효하지 않은 토큰 클레임입니다.")
+	INVALID_CLAIMS(BAD_REQUEST, "AUTH_401_4", "유효하지 않은 토큰 클레임입니다."),
+
 	@ExplainError("회원이 존재하지 않는 경우 발생하는 오류입니다.")
 	MEMBER_NOT_FOUND(NOT_FOUND, "AUTH_404_1", "해당 회원이 존재하지 않습니다."),
 

@@ -13,7 +13,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -40,4 +42,62 @@ public class ReservationStatus extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "requester_id", nullable = false)
 	private Member requester;
+
+	@OneToOne(mappedBy = "reservationStatus")
+	private Reservation reservation;
+
+	public ReservationStatus (Member requester) {
+		this.requester = requester;
+	}
+
+	@Builder
+	public ReservationStatus(ReservationStatusType status, Member requester) {
+		this.status = status;
+		this.admin = requester;
+		this.requester = requester;
+	}
+
+	public void updateStatus(ReservationStatusType status) {
+		this.status = status;
+	}
+
+	public void approve(Member admin) {
+		this.status = ReservationStatusType.APPROVED;
+		this.admin = admin;
+	}
+
+	public void reject(Member admin, String rejectionReason) {
+		this.status = ReservationStatusType.REJECTED;
+		this.rejectionReason = rejectionReason;
+		this.admin = admin;
+	}
+
+	public void cancelByStudent() {
+		this.status = ReservationStatusType.STUDENT_CANCELED;
+	}
+
+	public void cancelByAdmin(Member admin) {
+		this.status = ReservationStatusType.ADMIN_CANCELED;
+		this.admin = admin;
+	}
+
+	public boolean isApproved() {
+		return this.status == ReservationStatusType.APPROVED;
+	}
+
+	public boolean isPending() {
+		return this.status == ReservationStatusType.PENDING;
+	}
+
+	public boolean isRejected() {
+		return this.status == ReservationStatusType.REJECTED;
+	}
+
+	public boolean isCanceledByStudent() {
+		return this.status == ReservationStatusType.STUDENT_CANCELED;
+	}
+
+	public boolean isCanceledByAdmin() {
+		return this.status == ReservationStatusType.ADMIN_CANCELED;
+	}
 }

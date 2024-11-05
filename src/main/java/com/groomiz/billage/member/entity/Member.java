@@ -61,9 +61,6 @@ public class Member extends BaseEntity {
 	@Column(name = "student_email")
 	private String studentEmail;
 
-	@Column(name = "verification_code")
-	private Integer verificationCode;
-
 	@Builder
 	public Member(String username, String password, Role role, boolean isAdmin, boolean isValid, String studentNumber,
 		String phoneNumber, boolean agreedToTerms) {
@@ -75,5 +72,25 @@ public class Member extends BaseEntity {
 		this.studentNumber = studentNumber;
 		this.phoneNumber = phoneNumber;
 		this.agreedToTerms = agreedToTerms;
+	}
+
+	public void changePhoneNumber(String newPhoneNumber) {
+
+		if (!this.phoneNumber.equals(newPhoneNumber)) {
+			this.phoneNumber = newPhoneNumber;
+		}
+
+	}
+
+	public void changeEmail(String newEmail) {
+
+		if (!this.studentEmail.equals(newEmail)) {
+			this.studentEmail = newEmail;
+		}
+
+	}
+
+	public void changePassword(String newPassword) {
+		this.password = newPassword;
 	}
 }

@@ -2,6 +2,11 @@ spring:
   profiles:
     active: local
 
+  data:
+    redis:
+      cache:
+        fcm-ttl: 2592000000 # 30일
+
 server:
   port: 8080
 
@@ -14,4 +19,3 @@ springdoc:
     disable-swagger-default-url: true
     display-request-duration: true
     operations-sorter: alpha
-
