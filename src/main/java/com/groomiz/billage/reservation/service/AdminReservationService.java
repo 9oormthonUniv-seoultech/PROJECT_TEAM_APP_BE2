@@ -316,7 +316,7 @@ public class AdminReservationService {
 		}
 	}
 
-	public void cancelStudentReservation(Long id, String studentNumber) {
+	public void cancelStudentReservation(Long id, String studentNumber) throws FirebaseMessagingException {
 
 		Reservation reservation = reservationRepository.findById(id)
 			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
@@ -334,6 +334,16 @@ public class AdminReservationService {
 		if (reservation.getApplyDate().isBefore(LocalDate.now())) {
 			throw new ReservationException(ReservationErrorCode.PAST_DATE_RESERVATION);
 		}
+
+		// 예약자 푸시 알림
+		Member requester = reservation.getReservationStatus().getRequester();
+
+		String title = "예약 강제 취소";
+		String body = reservation.getApplyDate().toString() + " "
+			+ reservation.getStartTime().toString() + "-" + reservation.getEndTime().toString()
+			+ " 예약이 관리자에 의해 강제 취소되었습니다.";
+
+		fcmService.sendMessage(requester.getStudentNumber(), title, body);
 
 		reservation.getReservationStatus().cancelByAdmin(admin);
 	}

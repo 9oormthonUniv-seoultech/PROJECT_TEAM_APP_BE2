@@ -1,5 +1,6 @@
 package com.groomiz.billage.reservation.controller;
 
+import com.groomiz.billage.classroom.dto.response.AdminReservationReasonResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,6 +34,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 @Slf4j
 @RestController
@@ -122,7 +128,7 @@ public class AdminReservationController {
 	public ResponseEntity<StringResponseDto> cancleStudentReservation(
 		@Parameter(description = "예약 ID", example = "1")
 		@PathVariable("id") Long id,
-		@AuthenticationPrincipal CustomUserDetails user) {
+		@AuthenticationPrincipal CustomUserDetails user) throws FirebaseMessagingException {
 
 		adminReservationService.cancelStudentReservation(id, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("학생 예약 강제 취소 완료되었습니다."));
