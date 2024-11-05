@@ -1,5 +1,9 @@
 package com.groomiz.billage.auth.dto;
 
+import com.groomiz.billage.member.valid.ValidEmail;
+import com.groomiz.billage.member.valid.ValidPassword;
+import com.groomiz.billage.member.valid.ValidPhoneNumber;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,10 +23,12 @@ public class RegisterRequest {
 	private String studentNumber;
 
 	@NotNull
+	@ValidPassword
 	@Schema(description = "비밀번호", example = "password1234!")
 	private String password;
 
 	@NotNull
+	@ValidPhoneNumber
 	@Schema(description = "전화번호", example = "010-1234-5678")
 	private String phoneNumber;
 
@@ -34,6 +40,11 @@ public class RegisterRequest {
 	private String major;
 
 	@NotNull
+	@Schema(description = "약관동의", example = "true")
+	private boolean agreedToTerms;
+
+	@NotNull
+	@ValidEmail
 	@Schema(description = "이메일", example = "asdf1234@gmail.com")
 	private String studentEmail;
 

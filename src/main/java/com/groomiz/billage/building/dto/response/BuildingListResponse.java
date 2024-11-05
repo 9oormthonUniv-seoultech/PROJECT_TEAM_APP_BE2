@@ -1,5 +1,7 @@
 package com.groomiz.billage.building.dto.response;
 
+import java.util.List;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -13,5 +15,13 @@ public class BuildingListResponse {
 	private String buildingName;
 	@Schema(description = "건물 번호", example = "39")
 	private String buildingNumber;
+	@Schema(description = "층 리스트", example = "[1, 2, 3]")
+	private List<Long> floors;
 
+	public BuildingListResponse(Long buildingId, String buildingName, String buildingNumber, List<Long> floors) {
+		this.buildingId = buildingId;
+		this.buildingName = buildingName;
+		this.buildingNumber = buildingNumber;
+		this.floors = floors;
+	}
 }

@@ -5,6 +5,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.groomiz.billage.reservation.exception.ReservationErrorCode;
+import com.groomiz.billage.reservation.exception.ReservationException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -35,7 +37,7 @@ public enum ReservationPurpose {
 		ReservationPurpose purpose = NAME_TO_ENUM_MAP.get(name);
 
 		if (purpose == null) {
-			// TODO: 예외 처리
+			throw new ReservationException(ReservationErrorCode.INVALID_RESERVATION_PURPOSE);
 		}
 
 		return purpose;

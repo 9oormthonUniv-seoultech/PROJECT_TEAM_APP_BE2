@@ -1,5 +1,6 @@
-package com.groomiz.billage;
+package com.groomiz.billage.auth;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -15,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.groomiz.billage.auth.dto.LoginRequest;
 import com.groomiz.billage.auth.dto.RegisterRequest;
+import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.auth.jwt.JwtUtil;
 import com.groomiz.billage.member.service.MemberService;
 
@@ -37,7 +39,7 @@ public class AuthControllerTest {
 	@BeforeEach
 	public void setUp() {
 		RegisterRequest registerRequest = new RegisterRequest("홍길동", "20100000", "password1234!", "010-1234-5678",
-			"정보통신대학", "컴퓨터공학과", "asdf1234@gmail.com");
+			"정보통신대학", "컴퓨터공학과", true, "asdf1234@gmail.com");
 
 		if (!memberService.isExists(registerRequest.getStudentNumber())) {
 			memberService.register(registerRequest);
@@ -63,13 +65,32 @@ public class AuthControllerTest {
 	public void testExpiredToken() throws Exception {
 
 		// 만료된 Access Token을 사용한 요청 테스트
-		String expiredToken = jwtUtil.createJwt("AccessToken", "20100000", "ADMIN", 1L);
+		String expiredToken = jwtUtil.createJwt("AccessToken", "20100000", "ADMIN", 1L); // 1ms 유효한 토큰
 
+		// 짧은 시간 동안 토큰 만료를 기다림
 		Thread.sleep(1000);
 
-		mockMvc.perform(get("/api/admin")
-				.header("Authorization", "Bearer " + expiredToken))
-			.andExpect(status().isUnauthorized());
+		// AuthException이 발생하는지 확인
+		assertThrows(AuthException.class, () -> {
+			mockMvc.perform(get("/api/admin")
+					.header("Authorization", "Bearer " + expiredToken))
+				.andExpect(status().isUnauthorized()); // 만료된 토큰은 401 상태를 기대
+		});
 	}
+	@Test
+	@DisplayName("유효하지 않은 토큰입니다.")
+	public void testInvalidToken() throws Exception {
+
+		// 유효하지 않은 Access Token을 생성 (JWT 형식이 올바르지 않거나 변조된 토큰)
+		String invalidToken = "invalid.token.string"; // 형식이 잘못된 임의의 토큰
+
+		// AuthException이 발생하는지 확인
+		assertThrows(AuthException.class, () -> {
+			mockMvc.perform(get("/api/admin")
+					.header("Authorization", "Bearer " + invalidToken))
+				.andExpect(status().isUnauthorized()); // 유효하지 않은 토큰은 401 상태를 기대
+		});
+	}
+
 
 }
