@@ -65,6 +65,7 @@ public class SwaggerConfig {
 
 		return new OpenAPI()
 			.addServersItem(new Server().url("http://localhost:8080"))
+			.addServersItem(new Server().url("https://billage.duckdns.org"))
 			.components(new Components())
 			.info(info)
 			.addSecurityItem(securityRequirement)
