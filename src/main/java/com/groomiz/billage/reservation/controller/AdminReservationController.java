@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.groomiz.billage.auth.dto.CustomUserDetails;
 import com.groomiz.billage.classroom.dto.response.AdminReservationReasonResponse;
@@ -27,6 +28,7 @@ import com.groomiz.billage.reservation.document.AdminReservationExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminSearchExceptionDocs;
 import com.groomiz.billage.reservation.document.AdminbyStatusExceptionDocs;
 import com.groomiz.billage.reservation.dto.request.AdminRejectionRequest;
+
 import com.groomiz.billage.reservation.dto.request.AdminReservationRequest;
 import com.groomiz.billage.reservation.dto.response.AdminReservationResponse;
 import com.groomiz.billage.reservation.dto.response.AdminReservationStatusListResponse;
@@ -62,7 +64,7 @@ public class AdminReservationController {
 		AdminReservationStatusListResponse reservations = adminReservationService.getReservationByStatus(type, page,
 			user.getStudentNumber());
 		return ResponseEntity.ok(reservations);
-	}
+
 
 	@PostMapping("/{id}/approve")
 	@Operation(summary = "예약 승인")
@@ -74,7 +76,6 @@ public class AdminReservationController {
 		adminReservationService.approveReservation(id, user.getStudentNumber());
 
 		return ResponseEntity.ok(new StringResponseDto("예약 승인 완료되었습니다."));
-	}
 
 	@PostMapping("/{id}/reject")
 	@Operation(summary = "예약 거절")
@@ -101,7 +102,7 @@ public class AdminReservationController {
 		return ResponseEntity.ok(new StringResponseDto("예약 완료 하였습니다."));
 	}
 
-	@GetMapping("/{reservationId}")
+	@GetMapping("/{id}")
 	@Operation(summary = "예약 상세 조회")
 	@ApiErrorExceptionsExample(AdminSearchExceptionDocs.class)
 	public ResponseEntity<AdminReservationResponse> getReservation(
@@ -136,5 +137,8 @@ public class AdminReservationController {
 
 		adminReservationService.cancelStudentReservation(id, user.getStudentNumber());
 		return ResponseEntity.ok(new StringResponseDto("학생 예약 강제 취소 완료되었습니다."));
+	public ResponseEntity<AdminReservationResponse> getReservation(@PathVariable Long id) {
+
+		return ResponseEntity.ok(null);
 	}
 }
