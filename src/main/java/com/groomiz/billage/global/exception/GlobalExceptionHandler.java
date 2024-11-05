@@ -1,6 +1,9 @@
+
+
 package com.groomiz.billage.global.exception;
 
 import java.io.IOException;
+import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,43 +13,135 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.groomiz.billage.auth.document.LoginExceptionDocs;
+import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.global.dto.ErrorReason;
 import com.groomiz.billage.global.dto.ErrorResponse;
+import com.groomiz.billage.member.exception.MemberErrorCode;
+import com.groomiz.billage.member.exception.MemberException;
+import com.groomiz.billage.reservation.exception.AdminReservationException;
+import com.groomiz.billage.reservation.exception.ReservationErrorCode;
+import com.groomiz.billage.reservation.exception.ReservationException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+	public GlobalExceptionHandler(LoginExceptionDocs loginExceptionDocs) {
+	}
+
 	@Override
 	protected ResponseEntity<Object> handleExceptionInternal(
 		Exception ex, Object body, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-		ServletWebRequest servletWebRequest = (ServletWebRequest)request;
-		HttpServletRequest httpServletRequest = servletWebRequest.getRequest(); // 예외가 발생한 URL과 같은 요청에 대한 세부 정보를 추출
+		ServletWebRequest servletWebRequest = (ServletWebRequest) request;
+		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
 		String url = httpServletRequest.getRequestURL().toString();
 
-		HttpStatus httpStatus = (HttpStatus)status;
-		ErrorResponse errorResponse =
-			new ErrorResponse(httpStatus.value(), httpStatus.getReasonPhrase(),
-				ex.getMessage(),
-				url); // 사용자 정의 ErrorResponse 객체를 생성
+		HttpStatus httpStatus = (HttpStatus) status;
+		ErrorResponse errorResponse = new ErrorResponse(httpStatus.value(), httpStatus.getReasonPhrase(),
+			ex.getMessage(), url);
 		return super.handleExceptionInternal(ex, errorResponse, headers, status, request);
 	}
 
+	@Override
+	protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+		HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+		ServletWebRequest servletWebRequest = (ServletWebRequest)request;
+		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
+		String url = httpServletRequest.getRequestURL().toString();
+
+		if (ex.getCause().getCause() instanceof DateTimeParseException) {
+			String message = ex.getCause().getMessage();
+
+			ReservationErrorCode errorCode = null;
+
+			if (message.contains("LocalDate:")) {
+				errorCode = ReservationErrorCode.INVALID_RESERVATION_DATE;
+			}
+			else if (message.contains("LocalTime:")) {
+				errorCode = ReservationErrorCode.INVALID_RESERVATION_TIME;
+			}
+			else if (message.contains("DateValidator:")) {
+				errorCode = ReservationErrorCode.PAST_DATE_RESERVATION; // 새 에러 코드 추가
+			}
+			else {
+				return super.handleHttpMessageNotReadable(ex, headers, status, request);
+			}
+
+			ReservationException reservationException = new ReservationException(errorCode);
+
+			ErrorReason reason = reservationException.getErrorReason();
+			ErrorResponse errorResponse =
+				new ErrorResponse(reservationException.getErrorReason(), url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		return super.handleHttpMessageNotReadable(ex, headers, status, request);
+	}
+
+	@ExceptionHandler(MemberException.class)
+	public ResponseEntity<ErrorResponse> handleMemberException(MemberException ex, HttpServletRequest request) {
+
+		ErrorReason reason = ex.getErrorReason();
+		ErrorResponse errorResponse =
+			new ErrorResponse(ex.getErrorReason(), request.getRequestURL().toString());
+
+		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+			.body(errorResponse);
+	}
+
+	@ExceptionHandler(ReservationException.class)
+	public ResponseEntity<ErrorResponse> handleReservationException(ReservationException ex, HttpServletRequest request) {
+
+		ErrorReason reason = ex.getErrorReason();
+		ErrorResponse errorResponse =
+			new ErrorResponse(ex.getErrorReason(), request.getRequestURL().toString());
+
+		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+			.body(errorResponse);
+	}
+
+	@ExceptionHandler(AdminReservationException.class)
+	public ResponseEntity<ErrorResponse> handleAdminReservationException(ReservationException ex, HttpServletRequest request) {
+
+		log.info("AdminReservationException: {}", ex.getMessage());
+		ErrorReason reason = ex.getErrorReason();
+		ErrorResponse errorResponse =
+			new ErrorResponse(ex.getErrorReason(), request.getRequestURL().toString());
+
+		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+			.body(errorResponse);
+	}
+
+	@ExceptionHandler(AuthException.class)
+	public ResponseEntity<ErrorResponse> handleAuthException(AuthException ex, HttpServletRequest request) {
+		ErrorReason reason = ex.getErrorCode().getErrorReason();
+		ErrorResponse errorResponse =
+			new ErrorResponse(ex.getErrorCode().getErrorReason(), request.getRequestURL().toString());
+
+		return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+			.body(errorResponse);
+	}
+
 	//주로 요청 본문이 유효성 검사를 통과하지 못할 때 발생합니다 (예: @Valid 어노테이션 사용 시) MethodArgumentNotValidException 예외를 처리하는 메서드
-	@SneakyThrows // 메서드 선언부에 Throws 를 정의하지 않고도, 검사 된 예외를 Throw 할 수 있도록 하는 Lombok 에서 제공하는 어노테이션입
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(
 		MethodArgumentNotValidException ex,
@@ -59,13 +154,109 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		HttpServletRequest httpServletRequest = servletWebRequest.getRequest();
 		String url = httpServletRequest.getRequestURL().toString();
 
+		String firstErrorMessage = errors.getFirst().getDefaultMessage();
+
+		// 전화번호 형식 에러
+		if (firstErrorMessage.equals("INVALID_PHONE_NUMBER")) {
+			MemberErrorCode invalidPhoneNumberErrorCode = MemberErrorCode.INVALID_PHONE_NUMBER;
+			MemberException memberException = new MemberException(invalidPhoneNumberErrorCode);
+
+			ErrorReason reason = memberException.getErrorReason();
+			ErrorResponse errorResponse =
+				new ErrorResponse(memberException.getErrorReason(), url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		// 예약 날짜가 과거인 경우
+		if (firstErrorMessage.equals("PAST_DATE")) {
+			ReservationErrorCode errorCode = ReservationErrorCode.PAST_DATE_RESERVATION;
+			ReservationException reservationException = new ReservationException(errorCode);
+
+			ErrorReason reason = reservationException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		// 예약 날짜가 한 달 이후인 경우
+		if (firstErrorMessage.equals("FUTURE_DATE")) {
+			ReservationErrorCode errorCode = ReservationErrorCode.FUTURE_DATE_LIMIT_EXCEEDED;
+			ReservationException reservationException = new ReservationException(errorCode);
+
+			ErrorReason reason = reservationException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		// 인원이 음수인 경우
+		if (firstErrorMessage.equals("NEGATIVE_PARTICIPANTS")) {
+			ReservationErrorCode errorCode = ReservationErrorCode.NEGATIVE_PARTICIPANTS;
+			ReservationException reservationException = new ReservationException(errorCode);
+
+			ErrorReason reason = reservationException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		// 인원이 최대 인원을 초과하는 경우
+		if (firstErrorMessage.equals("EXCEED_MAX_PARTICIPANTS")) {
+			ReservationErrorCode errorCode = ReservationErrorCode.EXCEED_MAX_PARTICIPANTS;
+			ReservationException reservationException = new ReservationException(errorCode);
+
+			ErrorReason reason = reservationException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		// 이메일 형식 잘못 입력한 경우
+		if (firstErrorMessage.equals("INVALID_EMAIL")) {
+			MemberErrorCode errorCode = MemberErrorCode.INVALID_EMAIL;
+			MemberException memberException = new MemberException(errorCode);
+
+			ErrorReason reason = memberException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+		// 비밀번호 형식 잘못 입력한 경우
+		if (firstErrorMessage.equals("INVALID_PASSWORD")) {
+			MemberErrorCode errorCode = MemberErrorCode.INVALID_PASSWORD_FORMAT;
+			MemberException memberException = new MemberException(errorCode);
+
+			ErrorReason reason = memberException.getErrorReason();
+			ErrorResponse errorResponse = new ErrorResponse(reason, url);
+
+			return ResponseEntity.status(HttpStatus.valueOf(reason.getStatus()))
+				.body(errorResponse);
+		}
+
+
+
+
+
 		Map<String, Object> fieldAndErrorMessages =
 			errors.stream()
 				.collect(
 					Collectors.toMap(
 						FieldError::getField, FieldError::getDefaultMessage));
 
-		String errorsToJsonString = new ObjectMapper().writeValueAsString(fieldAndErrorMessages);
+		String errorsToJsonString = null;
+		try {
+			errorsToJsonString = new ObjectMapper().writeValueAsString(fieldAndErrorMessages);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 
 		HttpStatus httpStatus = (HttpStatus)status;
 		ErrorResponse errorResponse =
@@ -108,56 +299,40 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 				.status(400)
 				.reason(bindingErrors.toString())
 				.build();
+
 		ErrorResponse errorResponse =
 			new ErrorResponse(errorReason, request.getRequestURL().toString());
 		return ResponseEntity.status(HttpStatus.valueOf(errorReason.getStatus()))
 			.body(errorResponse);
-	}
-
-	@ExceptionHandler(GlobalCodeException.class)
-	public ResponseEntity<ErrorResponse> globalCodeExceptionHandler(
-		GlobalCodeException ex, HttpServletRequest request) {
-		BaseErrorCode code = ex.getErrorCode();
-		ErrorReason errorReason = code.getErrorReason();
-		ErrorResponse errorResponse =
-			new ErrorResponse(errorReason, request.getRequestURL().toString());
-		return ResponseEntity.status(HttpStatus.valueOf(errorReason.getStatus()))
-			.body(errorResponse);
-	}
-
-	@ExceptionHandler(GlobalDynamicException.class)
-	public ResponseEntity<ErrorResponse> globalDynamicExceptionHandler(
-		GlobalDynamicException ex, HttpServletRequest request) {
-		ErrorResponse errorResponse =
-			new ErrorResponse(
-				ex.getStatus(),
-				ex.getCode(),
-				ex.getReason(),
-				request.getRequestURL().toString());
-		return ResponseEntity.status(HttpStatus.valueOf(ex.getStatus())).body(errorResponse);
 	}
 
 	//TODO: 이 경우 디코에 알림 가도록 구성해도 좋겠다.
 	@ExceptionHandler(Exception.class)
-	protected ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request)
-		throws IOException {
-		ServletWebRequest servletWebRequest = (ServletWebRequest)request;
-		HttpServletRequest httpServletRequest = servletWebRequest.getRequest(); // 예외가 발생한 URL과 같은 요청에 대한 세부 정보를 추출
+	protected ResponseEntity<ErrorResponse> handleException(Exception ex, HttpServletRequest request) throws IOException {
+		HttpServletRequest httpServletRequest;
+
+		// RequestContextHolder를 통해 HttpServletRequest를 안전하게 가져옵니다.
+		if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes) {
+			httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		} else {
+			// 만약 RequestContextHolder가 ServletRequestAttributes의 인스턴스가 아닌 경우
+			// 기본 HttpServletRequest 객체를 사용합니다.
+			httpServletRequest = request;
+		}
+
 		String url = httpServletRequest.getRequestURL().toString();
 
 		log.error("INTERNAL_SERVER_ERROR", ex);
 		GlobalErrorCode internalServerError = GlobalErrorCode.INTERNAL_SERVER_ERROR;
-		ErrorResponse errorResponse =
-			new ErrorResponse(
-				internalServerError.getStatus(),
-				internalServerError.getCode(),
-				internalServerError.getReason(),
-				url);
+		ErrorResponse errorResponse = new ErrorResponse(
+			internalServerError.getStatus(),
+			internalServerError.getCode(),
+			internalServerError.getReason(),
+			url
+		);
 
 		return ResponseEntity.status(HttpStatus.valueOf(internalServerError.getStatus()))
 			.body(errorResponse);
 	}
+
 }
-
-
-

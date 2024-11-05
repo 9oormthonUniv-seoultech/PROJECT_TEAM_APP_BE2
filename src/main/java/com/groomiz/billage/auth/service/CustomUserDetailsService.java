@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.groomiz.billage.auth.dto.CustomUserDetails;
 import com.groomiz.billage.member.entity.Member;
+import com.groomiz.billage.member.exception.MemberErrorCode;
+import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
 
 @Service
@@ -22,7 +24,8 @@ public class CustomUserDetailsService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String studentNumber) throws UsernameNotFoundException {
 
-		Member member = memberRepository.findByStudentNumber(studentNumber);
+		Member member = memberRepository.findByStudentNumber(studentNumber)
+			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));
 
 		if (member != null) {
 

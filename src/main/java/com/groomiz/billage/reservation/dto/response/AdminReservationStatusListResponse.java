@@ -4,21 +4,26 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.groomiz.billage.reservation.entity.ReservationStatusType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Data
 @Schema(description = "예약 상태별 조회 응답 DTO")
 public class AdminReservationStatusListResponse {
-	@Schema(description = "예약 상태", example = "pending")
-	private String status;
-
+	@Schema(description = "예약 상태", example = "예약 대기")
+	private ReservationStatusType status;
+	@Schema(description = "전체 페이지 수", example = "3")
+	private int totalPages;
 	@Schema(description = "예약 목록")
 	private List<ReservationInfo> reservations;
 
-	@Data
+	@Getter
+	@NoArgsConstructor
 	@Schema(description = "예약 정보 DTO")
 	public static class ReservationInfo {
 		@Schema(description = "예약 ID", example = "1")
@@ -46,9 +51,59 @@ public class AdminReservationStatusListResponse {
 		private String classroomName;
 
 		@Schema(description = "학생 이름", example = "홍길동")
-		private String memberName;
+		private String studentName;
 
-		@Schema(description = "학생 ID", example = "20201234")
-		private String studentId;
+		@Schema(description = "학번", example = "20201234")
+		private String studentNumber;
+
+		@Builder
+		public ReservationInfo(Long reservationId, LocalDate date, LocalTime startTime, LocalTime endTime,
+			Integer headcount,
+			String buildingName, Long floor, String classroomName, String studentName, String studentNumber) {
+			this.reservationId = reservationId;
+			this.date = date;
+			this.startTime = startTime;
+			this.endTime = endTime;
+			this.headcount = headcount;
+			this.buildingName = buildingName;
+			this.floor = floor;
+			this.classroomName = classroomName;
+			this.studentName = studentName;
+			this.studentNumber = studentNumber;
+		}
+
+		// public static ReservationInfo from(Reservation reservation) {
+		// 	return ReservationInfo.builder()
+		// 		.reservationId(reservation.getId())
+		// 		.date(reservation.getApplyDate())
+		// 		.startTime(reservation.getStartTime())
+		// 		.endTime(reservation.getEndTime())
+		// 		.headcount(reservation.getHeadcount())
+		// 		.buildingName(reservation.getClassroom().getBuilding().getName())
+		// 		.floor(reservation.getClassroom().getFloor())
+		// 		.classroomName(reservation.getClassroom().getName())
+		// 		.studentName(reservation.getReservationStatus().getRequester().getUsername())
+		// 		.studentNumber(reservation.getReservationStatus().getRequester().getStudentNumber())
+		// 		.build();
+		//
+		// }
 	}
+
+	@Builder
+
+	public AdminReservationStatusListResponse(ReservationStatusType status, int totalPages,
+		List<ReservationInfo> reservations) {
+
+		this.status = status;
+		this.totalPages = totalPages;
+		this.reservations = reservations;
+	}
+	// public static AdminReservationStatusListResponse from(ReservationStatusType status, List<Reservation> reservations) {
+	// 	return AdminReservationStatusListResponse.builder()
+	// 		.status(status)
+	// 		.reservations(reservations.stream()
+	// 			.map(ReservationInfo::from)
+	// 			.toList())
+	// 		.build();
+	// }
 }
