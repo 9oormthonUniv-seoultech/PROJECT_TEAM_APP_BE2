@@ -24,4 +24,5 @@ public interface ClassroomRepository extends JpaRepository<Classroom, Long> {
 	Optional<Classroom> findClassroomById(Long classroomId);
 
 	List<Classroom> findClassroomByBuildingIdAndFloorAndCapacityGreaterThanEqual(Long buildingId, Long floor, Integer capacity);
+
 }

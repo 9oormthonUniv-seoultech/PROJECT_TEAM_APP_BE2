@@ -14,6 +14,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.firebase.messaging.FirebaseMessagingException;
+
 import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.building.entity.Building;
 import com.groomiz.billage.building.entity.BuildingAdmin;
@@ -61,6 +62,7 @@ class AdminReservationServiceTest {
 
 	@BeforeEach
 	public void setUp() throws FirebaseMessagingException {
+
 		register("admin", Role.ADMIN, "1");
 		register("student", Role.STUDENT, "2");
 
@@ -118,6 +120,7 @@ class AdminReservationServiceTest {
 		AdminReservationStatusListResponse rejectedAndCanceled = adminReservationService.getReservationByStatus(
 			ReservationStatusType.REJECTED, 1, adminStudentNumber);
 
+
 	    //then
 		Assertions.assertAll(
 			() -> {
@@ -130,6 +133,7 @@ class AdminReservationServiceTest {
 
 	private Long reserveClassroom(Classroom classroom, Member student, LocalDate applyDate, LocalTime startTime, LocalTime endTime) throws
 		FirebaseMessagingException {
+
 		String phoneNumber = "010-1234-5678";
 
 		ClassroomReservationRequest request = ClassroomReservationRequest.builder()

@@ -52,6 +52,7 @@ public class AuthControllerTest {
 	public void testLoginSuccess() throws Exception {
 		LoginRequest loginRequest = new LoginRequest("20100000", "password1234!", "dlG5jjy4SvicNcWvENgF91:APA91bHSERS39latr_mu0jh1A");
 
+
 		mockMvc.perform(post("/api/v1/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(loginRequest)))

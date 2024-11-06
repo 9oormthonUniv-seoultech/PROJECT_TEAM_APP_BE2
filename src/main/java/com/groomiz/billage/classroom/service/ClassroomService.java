@@ -20,6 +20,7 @@ import com.groomiz.billage.classroom.exception.ClassroomErrorCode;
 import com.groomiz.billage.classroom.exception.ClassroomException;
 import com.groomiz.billage.classroom.repository.ClassroomRepository;
 import com.groomiz.billage.reservation.entity.Reservation;
+
 import com.groomiz.billage.reservation.repository.ReservationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class ClassroomService {
 			List.of(classroomId), date);
 
 		return ClassroomDetailResponse.from(classroom, reservationsByClassroomIdsAndDate);
+
 	}
 
 	@Transactional(readOnly = true)
@@ -58,6 +60,7 @@ public class ClassroomService {
 		}
 
 		List<Classroom> classrooms = classroomRepository.findClassroomByBuildingIdAndFloorAndCapacityGreaterThanEqual(
+
 			request.getBuildingId(), request.getFloor(), request.getHeadcount()
 		);
 

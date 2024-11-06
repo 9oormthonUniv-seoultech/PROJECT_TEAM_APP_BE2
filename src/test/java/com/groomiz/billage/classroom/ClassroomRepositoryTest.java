@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -86,6 +87,7 @@ class ClassroomRepositoryTest {
 	@DisplayName("ClassroomRepository: 강의실 수용인원 이상 강의실 조회")
 	void findClassroomByCapacity() {
 		List<Classroom> classrooms = classroomRepository.findByBuildingIdAndFloorAndCapacityGreaterThanEqual(building2.getId(), 3L, 30);
+
 		assertThat(classrooms).hasSize(2);
 		assertThat(classrooms.get(0).getName()).isEqualTo("컴퓨터공학과 실습실");
 		assertThat(classrooms.get(1).getName()).isEqualTo("컴퓨터공학과 강의실");
