@@ -26,12 +26,19 @@ jobs:
         run: |
           cd ./src/main/resources
           echo "${{ secrets.SECRET_PROPERTIES }}" > ./application-prod.yml
-      - name: Make FCM JSON
+      - name: create firebase-admin.json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: FirebaseAdminSDK.json
+          json: ${{ secrets.AWS_FCM_JSON }}
+
+      - name: MOVE FCM JSON
         run: |
+          mv firebase-admin.json ./src/main/resources
           cd ./src/main/resources
           mkdir -p firebase
-          cd firebase
-          echo "${{ secrets.AWS_FCM_JSON }}" > ./FirebaseAdminSDK.json
+          mv FirebaseAdminSDK.json ./firebase
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
