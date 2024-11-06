@@ -52,7 +52,7 @@ public class UserControllerTest {
 	@DisplayName("로그인 성공")
 	public void testLoginSuccess() throws Exception {
 		// 로그인 요청 생성
-		LoginRequest loginRequest = new LoginRequest("20100000", "password1234!");
+		LoginRequest loginRequest = new LoginRequest("20100000", "password1234!", "dlG5jjy4SvicNcWvENgF91:APA91bHSERS39latr_mu0jh1A");
 
 		mockMvc.perform(post("/api/v1/users/login")
 				.contentType(MediaType.APPLICATION_JSON)
@@ -66,7 +66,7 @@ public class UserControllerTest {
 	@DisplayName("로그인 실패 - 잘못된 비밀번호")
 	public void testLoginFailure() throws Exception {
 		// 잘못된 비밀번호로 로그인 요청
-		LoginRequest loginRequest = new LoginRequest("20100000", "wrongpassword!");
+		LoginRequest loginRequest = new LoginRequest("20100000", "wrongpassword!", "dlG5jjy4SvicNcWvENgF91:APA91bHSERS39latr_mu0jh1A");
 
 		// AuthException 발생하는지 확인
 		mockMvc.perform(post("/api/v1/users/login")
@@ -80,7 +80,7 @@ public class UserControllerTest {
 	@DisplayName("로그인 실패 - 잘못된 아이디")
 	public void testLoginFailureWithInvalidUserId() throws Exception {
 		// 존재하지 않는 아이디로 로그인 요청
-		LoginRequest loginRequest = new LoginRequest("99999999", "password1234!");
+		LoginRequest loginRequest = new LoginRequest("99999999", "password1234!", "dlG5jjy4SvicNcWvENgF91:APA91bHSERS39latr_mu0jh1A");
 
 		// 아이디가 틀렸을 때 AuthException 발생하는지 확인
 		mockMvc.perform(post("/api/v1/users/login")

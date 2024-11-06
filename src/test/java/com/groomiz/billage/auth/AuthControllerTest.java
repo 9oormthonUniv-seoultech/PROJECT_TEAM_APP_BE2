@@ -50,7 +50,7 @@ public class AuthControllerTest {
 	@Test
 	@DisplayName("로그인 성공하였습니다.")
 	public void testLoginSuccess() throws Exception {
-		LoginRequest loginRequest = new LoginRequest("20100000", "password1234!");
+		LoginRequest loginRequest = new LoginRequest("20100000", "password1234!", "dlG5jjy4SvicNcWvENgF91:APA91bHSERS39latr_mu0jh1A");
 
 		mockMvc.perform(post("/api/v1/users/login")
 				.contentType(MediaType.APPLICATION_JSON)

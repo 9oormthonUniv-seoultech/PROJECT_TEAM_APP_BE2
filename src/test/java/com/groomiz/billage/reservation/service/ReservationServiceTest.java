@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
 import com.groomiz.billage.building.entity.Building;
 import com.groomiz.billage.building.repository.BuildingRepository;
 import com.groomiz.billage.classroom.entity.Classroom;
@@ -150,7 +151,8 @@ class ReservationServiceTest {
 			.isInstanceOf(ReservationException.class);
 	}
 
-	private Long reserveClassroom(Classroom classroom, Member student, LocalDate applyDate, LocalTime startTime, LocalTime endTime) {
+	private Long reserveClassroom(Classroom classroom, Member student, LocalDate applyDate, LocalTime startTime, LocalTime endTime) throws
+		FirebaseMessagingException {
 		String phoneNumber = "010-1234-5678";
 
 		ClassroomReservationRequest request = ClassroomReservationRequest.builder()
