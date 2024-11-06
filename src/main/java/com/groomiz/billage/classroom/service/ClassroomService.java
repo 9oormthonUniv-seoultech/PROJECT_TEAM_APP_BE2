@@ -57,7 +57,7 @@ public class ClassroomService {
 			throw new BuildingException(BuildingErrorCode.FLOOR_NOT_FOUND);
 		}
 
-		List<Classroom> classrooms = classroomRepository.findByBuildingIdAndFloorAndCapacityGreaterThanEqual(
+		List<Classroom> classrooms = classroomRepository.findClassroomByBuildingIdAndFloorAndCapacityGreaterThanEqual(
 			request.getBuildingId(), request.getFloor(), request.getHeadcount()
 		);
 
