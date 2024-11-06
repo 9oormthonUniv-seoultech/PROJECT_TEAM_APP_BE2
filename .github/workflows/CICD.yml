@@ -35,7 +35,7 @@ jobs:
 
       - name: MOVE FCM JSON
         run: |
-          mv firebase-admin.json src/main/resources/
+          mv FirebaseAdminSDK.json src/main/resources/
           cd ./src/main/resources
           mkdir -p firebase
           mv FirebaseAdminSDK.json firebase/
