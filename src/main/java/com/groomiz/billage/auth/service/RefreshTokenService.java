@@ -2,15 +2,14 @@ package com.groomiz.billage.auth.service;
 
 import java.time.Duration;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.groomiz.billage.auth.dto.LoginResponse;
+import com.groomiz.billage.auth.exception.AuthErrorCode;
+import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.auth.jwt.JwtUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,19 +19,21 @@ public class RefreshTokenService {
 	private final JwtUtil jwtUtil;
 	private final RedisService redisService;
 
-	public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+	public LoginResponse reissue(String refreshToken) {
 
-		// 헤더에서 Bearer 형식의 RefreshToken 가져오기
-		String refreshToken = extractToken(request.getHeader("RefreshToken"));
-		if (refreshToken == null) {
-			return new ResponseEntity<>("Refresh token is null or not in the correct format", HttpStatus.BAD_REQUEST);
+		// RefreshToken이 존재하지 않거나 형식이 올바르지 않은 경우 예외 처리
+		if (refreshToken == null || !refreshToken.startsWith("Bearer ")) {
+			throw new AuthException(AuthErrorCode.TOKEN_NOT_FOUND);
 		}
+
+		// Bearer 부분 제거
+		refreshToken = refreshToken.substring(7);
 
 		// RefreshToken이 만료되었는지 확인
 		try {
 			jwtUtil.isExpired(refreshToken);
 		} catch (ExpiredJwtException e) {
-			return new ResponseEntity<>("Refresh token expired", HttpStatus.BAD_REQUEST);
+			throw new AuthException(AuthErrorCode.TOKEN_EXPIRED);
 		}
 
 		String studentNumber = jwtUtil.getStudentNumber(refreshToken);
@@ -40,7 +41,7 @@ public class RefreshTokenService {
 
 		// Redis에 저장된 토큰과 비교하여 유효성 검증
 		if (!refreshToken.equals(storedToken)) {
-			return new ResponseEntity<>("Invalid refresh token", HttpStatus.BAD_REQUEST);
+			throw new AuthException(AuthErrorCode.INVALID_TOKEN);
 		}
 
 		// 새로운 AccessToken 및 RefreshToken 생성
@@ -52,18 +53,7 @@ public class RefreshTokenService {
 		redisService.deleteValues(studentNumber);
 		redisService.setValues(studentNumber, newRefreshToken, Duration.ofDays(1));
 
-		// 새로운 토큰을 헤더에 Bearer 형식으로 추가
-		response.setHeader("Authorization", "Bearer " + newAccessToken);
-		response.setHeader("RefreshToken", "Bearer " + newRefreshToken);
-
-		return new ResponseEntity<>(HttpStatus.OK);
-	}
-
-	// Bearer 토큰 형식에서 토큰만 추출하는 메서드
-	private String extractToken(String header) {
-		if (header != null && header.startsWith("Bearer ")) {
-			return header.substring(7);
-		}
-		return null;
+		// 새로운 AccessToken과 RefreshToken을 담은 LoginResponse 반환
+		return new LoginResponse("Bearer " + newAccessToken, "Bearer " + newRefreshToken);
 	}
 }
