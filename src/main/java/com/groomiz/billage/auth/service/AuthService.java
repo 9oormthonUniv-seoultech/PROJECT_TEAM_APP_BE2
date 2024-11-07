@@ -11,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import com.groomiz.billage.auth.dto.LoginRequest;
+import com.groomiz.billage.auth.dto.LoginResponse;
 import com.groomiz.billage.auth.exception.AuthErrorCode;
 import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.auth.jwt.JwtTokenProvider;
@@ -36,7 +37,7 @@ public class AuthService {
 	@Value("${spring.data.redis.cache.fcm-ttl}")
 	private Long fcmttl;
 
-	public void login(LoginRequest loginRequest, HttpServletResponse response) {
+	public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 		try {
 			// 로그인 인증 처리
 			Authentication authentication = authenticate(loginRequest);
@@ -52,9 +53,8 @@ public class AuthService {
 			redisService.setValues(username, refreshToken, Duration.ofMillis(86400000L));  // 1일 유효
 			redisService.setValues("FCM_" + username, loginRequest.getFCMToken(), Duration.ofMillis(fcmttl)); // 30일 유효
 
-			// AccessToken과 RefreshToken을 헤더에 추가
-			response.setHeader("Authorization", "Bearer " + accessToken);
-			response.setHeader("RefreshToken", "Bearer " + refreshToken);
+			LoginResponse loginResponse = new LoginResponse("Bearer " + accessToken, "Bearer " + refreshToken);
+			return loginResponse;
 
 		} catch (BadCredentialsException e) {
 			// 비밀번호가 틀린 경우 AuthException 던지기
