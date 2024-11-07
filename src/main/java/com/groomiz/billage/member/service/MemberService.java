@@ -45,7 +45,7 @@ public class MemberService {
 			.phoneNumber(registerRequest.getPhoneNumber())
 			.role(Role.STUDENT)
 			.studentNumber(registerRequest.getStudentNumber())
-			.isAdmin(true)
+			.isAdmin(false)
 			.agreedToTerms(registerRequest.isAgreedToTerms())
 			.college(College.fromName(registerRequest.getCollege()))
 			.major(Major.fromNameAndCollege(registerRequest.getMajor(), registerRequest.getCollege()))
