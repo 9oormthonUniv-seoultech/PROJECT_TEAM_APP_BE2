@@ -51,9 +51,11 @@ public class MemberController {
 	@PutMapping("/info")
 	@Operation(summary = "회원 정보 수정")
 	@ApiErrorExceptionsExample(UserInfoEditExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> updateInfo(@RequestBody @Valid MemberInfoRequest memberInfoRequest, @AuthenticationPrincipal CustomUserDetails user) {
+	public ResponseEntity<StringResponseDto> updateInfo(@RequestBody @Valid MemberInfoRequest memberInfoRequest,
+		@AuthenticationPrincipal CustomUserDetails user) {
 
-		memberService.updateMemberInfo(memberInfoRequest.getEmail(), memberInfoRequest.getPhoneNumber(), user.getUsername());
+		memberService.updateMemberInfo(memberInfoRequest.getEmail(), memberInfoRequest.getPhoneNumber(),
+			user.getUsername());
 
 		return ResponseEntity.ok(new StringResponseDto("회원 정보가 성공적으로 수정되었습니다."));
 	}
@@ -72,9 +74,11 @@ public class MemberController {
 	@PutMapping("/password")
 	@Operation(summary = "비밀번호 수정")
 	@ApiErrorExceptionsExample(UserPasswordExceptionDocs.class)
-	public ResponseEntity<StringResponseDto> updatePassword(@RequestBody @Valid PasswordRequest passwordRequest, @AuthenticationPrincipal CustomUserDetails user) {
+	public ResponseEntity<StringResponseDto> updatePassword(@RequestBody @Valid PasswordRequest passwordRequest,
+		@AuthenticationPrincipal CustomUserDetails user) {
 
-		memberService.updatePassword(passwordRequest.getOldPassword(), passwordRequest.getNewPassword(), user.getUsername());
+		memberService.updatePassword(passwordRequest.getOldPassword(), passwordRequest.getNewPassword(),
+			user.getUsername());
 
 		return ResponseEntity.ok(new StringResponseDto("비밀번호가 성공적으로 수정되었습니다."));
 	}
@@ -83,7 +87,7 @@ public class MemberController {
 	@Operation(summary = "FCM 토큰 저장")
 	public ResponseEntity<StringResponseDto> saveFcmToken(
 		@Schema(description = "FCM 토큰", example = "dlG5jjy4SvicNcWvENgF91:APA91bHSERS39latr_mu0jh1A")
-		@RequestHeader("FCM-Token") String token,
+		@RequestHeader("FCMToken") String token,
 		@AuthenticationPrincipal CustomUserDetails user) {
 
 		memberService.saveFCMToken(token, user.getStudentNumber());

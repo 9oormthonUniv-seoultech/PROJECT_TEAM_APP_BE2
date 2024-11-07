@@ -1,9 +1,10 @@
 package com.groomiz.billage.member.service;
 
-import java.time.Duration;
-import org.springframework.beans.factory.annotation.Value;
 import static com.groomiz.billage.member.exception.MemberErrorCode.*;
 
+import java.time.Duration;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import com.groomiz.billage.member.entity.Member;
 import com.groomiz.billage.member.entity.Role;
 import com.groomiz.billage.member.exception.MemberException;
 import com.groomiz.billage.member.repository.MemberRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class MemberService {
 	private final RedisService redisService;
 
 	@Value("${spring.data.redis.cache.fcm-ttl}")
-	private Long ttl;
+	private Long fcmttl;
 
 	public void register(RegisterRequest registerRequest) {
 		String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
@@ -41,9 +43,9 @@ public class MemberService {
 			.username(registerRequest.getName())
 			.password("{bcrypt}" + encodedPassword)
 			.phoneNumber(registerRequest.getPhoneNumber())
-			.role(Role.ADMIN)
+			.role(Role.STUDENT)
 			.studentNumber(registerRequest.getStudentNumber())
-			.isAdmin(true)
+			.isAdmin(false)
 			.agreedToTerms(registerRequest.isAgreedToTerms())
 			.college(College.fromName(registerRequest.getCollege()))
 			.major(Major.fromNameAndCollege(registerRequest.getMajor(), registerRequest.getCollege()))
@@ -121,6 +123,6 @@ public class MemberService {
 
 	public void saveFCMToken(String token, String studentNumber) {
 		String key = "FCM_" + studentNumber;
-		redisService.setValues(key, token, Duration.ofMillis(ttl));
+		redisService.setValues(key, token, Duration.ofMillis(fcmttl));
 	}
 }

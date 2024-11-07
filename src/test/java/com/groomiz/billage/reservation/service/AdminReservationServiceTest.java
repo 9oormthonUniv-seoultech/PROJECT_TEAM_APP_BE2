@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.firebase.messaging.FirebaseMessagingException;
+
 import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.building.entity.Building;
 import com.groomiz.billage.building.entity.BuildingAdmin;
@@ -59,7 +61,8 @@ class AdminReservationServiceTest {
 	private BuildingAdminRepository buildingAdminRepository;
 
 	@BeforeEach
-	public void setUp() {
+	public void setUp() throws FirebaseMessagingException {
+
 		register("admin", Role.ADMIN, "1");
 		register("student", Role.STUDENT, "2");
 
@@ -111,11 +114,12 @@ class AdminReservationServiceTest {
 
 	    //when
 		AdminReservationStatusListResponse pending = adminReservationService.getReservationByStatus(
-			ReservationStatusType.PENDING, adminStudentNumber);
+			ReservationStatusType.PENDING, 1, adminStudentNumber);
 		AdminReservationStatusListResponse approved = adminReservationService.getReservationByStatus(
-			ReservationStatusType.APPROVED, adminStudentNumber);
+			ReservationStatusType.APPROVED, 1, adminStudentNumber);
 		AdminReservationStatusListResponse rejectedAndCanceled = adminReservationService.getReservationByStatus(
-			ReservationStatusType.REJECTED, adminStudentNumber);
+			ReservationStatusType.REJECTED, 1, adminStudentNumber);
+
 
 	    //then
 		Assertions.assertAll(
@@ -127,7 +131,9 @@ class AdminReservationServiceTest {
 		);
 	}
 
-	private Long reserveClassroom(Classroom classroom, Member student, LocalDate applyDate, LocalTime startTime, LocalTime endTime) {
+	private Long reserveClassroom(Classroom classroom, Member student, LocalDate applyDate, LocalTime startTime, LocalTime endTime) throws
+		FirebaseMessagingException {
+
 		String phoneNumber = "010-1234-5678";
 
 		ClassroomReservationRequest request = ClassroomReservationRequest.builder()

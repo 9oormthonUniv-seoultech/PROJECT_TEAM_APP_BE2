@@ -2,6 +2,7 @@ package com.groomiz.billage.auth.service;
 
 import java.time.Duration;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -10,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import com.groomiz.billage.auth.dto.LoginRequest;
+import com.groomiz.billage.auth.dto.LoginResponse;
 import com.groomiz.billage.auth.exception.AuthErrorCode;
 import com.groomiz.billage.auth.exception.AuthException;
 import com.groomiz.billage.auth.jwt.JwtTokenProvider;
@@ -32,7 +34,10 @@ public class AuthService {
 	private final JwtUtil jwtUtil;
 	private final MemberRepository memberRepository;
 
-	public void login(LoginRequest loginRequest, HttpServletResponse response) {
+	@Value("${spring.data.redis.cache.fcm-ttl}")
+	private Long fcmttl;
+
+	public LoginResponse login(LoginRequest loginRequest, HttpServletResponse response) {
 		try {
 			// 로그인 인증 처리
 			Authentication authentication = authenticate(loginRequest);
@@ -46,10 +51,10 @@ public class AuthService {
 
 			// Redis에 RefreshToken 저장
 			redisService.setValues(username, refreshToken, Duration.ofMillis(86400000L));  // 1일 유효
+			redisService.setValues("FCM_" + username, loginRequest.getFCMToken(), Duration.ofMillis(fcmttl)); // 30일 유효
 
-			// AccessToken과 RefreshToken을 헤더에 추가
-			response.setHeader("Authorization", "Bearer " + accessToken);
-			response.setHeader("RefreshToken", "Bearer " + refreshToken);
+			LoginResponse loginResponse = new LoginResponse("Bearer " + accessToken, "Bearer " + refreshToken);
+			return loginResponse;
 
 		} catch (BadCredentialsException e) {
 			// 비밀번호가 틀린 경우 AuthException 던지기

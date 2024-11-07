@@ -21,5 +21,8 @@ public interface ClassroomRepository extends JpaRepository<Classroom, Long> {
 		+ "AND rs.status in ('PENDING', 'APPROVED')")
 	Optional<Classroom> findClassroomByIdAndDate(Long classroomId, LocalDate date);
 
-	List<Classroom> findByBuildingIdAndFloorAndCapacityGreaterThanEqual(Long buildingId, Long floor, Integer capacity);
+	Optional<Classroom> findClassroomById(Long classroomId);
+
+	List<Classroom> findClassroomByBuildingIdAndFloorAndCapacityGreaterThanEqual(Long buildingId, Long floor, Integer capacity);
+
 }

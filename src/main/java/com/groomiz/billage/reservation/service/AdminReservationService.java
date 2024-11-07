@@ -88,7 +88,6 @@ public class AdminReservationService {
 				throw new ReservationException(ReservationErrorCode.RESERVATION_ALREADY_CANCELED);
 		}
 
-
 		// 예약자 푸시 알림
 		Member requester = reservation.getReservationStatus().getRequester();
 
@@ -247,8 +246,7 @@ public class AdminReservationService {
 
 				if (with.isBefore(request.getStartDate())) {
 					continue;
-				}
-				else if (with.isAfter(request.getEndDate())) {
+				} else if (with.isAfter(request.getEndDate())) {
 					st = false;
 					break;
 				} else {
@@ -276,7 +274,6 @@ public class AdminReservationService {
 		reservationStatusRepository.saveAll(statuses);
 		reservationGroupRepository.save(group);
 	}
-
 
 	@Transactional(readOnly = true)
 	public AdminReservationResponse getReservation(Long reservationId) {
@@ -319,7 +316,7 @@ public class AdminReservationService {
 		}
 	}
 
-	public void cancelStudentReservation(Long id, String studentNumber) {
+	public void cancelStudentReservation(Long id, String studentNumber) throws FirebaseMessagingException {
 
 		Reservation reservation = reservationRepository.findById(id)
 			.orElseThrow(() -> new ReservationException(ReservationErrorCode.RESERVATION_NOT_FOUND));
@@ -338,11 +335,22 @@ public class AdminReservationService {
 			throw new ReservationException(ReservationErrorCode.PAST_DATE_RESERVATION);
 		}
 
+		// 예약자 푸시 알림
+		Member requester = reservation.getReservationStatus().getRequester();
+
+		String title = "예약 강제 취소";
+		String body = reservation.getApplyDate().toString() + " "
+			+ reservation.getStartTime().toString() + "-" + reservation.getEndTime().toString()
+			+ " 예약이 관리자에 의해 강제 취소되었습니다.";
+
+		fcmService.sendMessage(requester.getStudentNumber(), title, body);
+
 		reservation.getReservationStatus().cancelByAdmin(admin);
 	}
 
 	@Transactional(readOnly = true)
-	public AdminReservationStatusListResponse getReservationByStatus(ReservationStatusType status, int page, String studentNumber) {
+	public AdminReservationStatusListResponse getReservationByStatus(ReservationStatusType status, int page,
+		String studentNumber) {
 
 		Member admin = memberRepository.findByStudentNumber(studentNumber)
 			.orElseThrow(() -> new MemberException(MemberErrorCode.MEMBER_NOT_FOUND));

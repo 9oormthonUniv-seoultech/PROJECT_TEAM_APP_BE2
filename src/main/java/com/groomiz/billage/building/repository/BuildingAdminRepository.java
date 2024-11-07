@@ -13,4 +13,7 @@ public interface BuildingAdminRepository extends JpaRepository<BuildingAdmin, Lo
 
 	@Query("SELECT ba.building FROM BuildingAdmin ba WHERE ba.admin = :admin")
 	List<Building> findAllBuildingByAdmin(Member admin);
+
+	@Query("SELECT ba.admin FROM BuildingAdmin ba WHERE ba.building = :building")
+	List<Member> findAllAdminByBuilding(Building building);
 }

@@ -43,10 +43,10 @@ public class ClassroomDetailResponse {
 		this.reservationTimes = reservationTimes;
 	}
 
-	public static ClassroomDetailResponse from(Classroom classroom) {
-		
+	// 강의실 정보와 예약 정보를 외부에서 주입받아 ClassroomDetailResponse 생성
+	public static ClassroomDetailResponse from(Classroom classroom, List<Reservation> reservations) {
+
 		List<ClassroomImage> images = classroom.getImages();
-		List<Reservation> reservations = classroom.getReservations();
 
 		return ClassroomDetailResponse.builder()
 			.classroomId(classroom.getId())
@@ -64,5 +64,4 @@ public class ClassroomDetailResponse {
 			)
 			.build();
 	}
-	
 }

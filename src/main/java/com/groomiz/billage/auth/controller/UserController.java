@@ -17,6 +17,7 @@ import com.groomiz.billage.auth.document.RegisterExceptionDocs;
 import com.groomiz.billage.auth.document.StudentNumberExcptionDocs;
 import com.groomiz.billage.auth.document.VerifyEmailException;
 import com.groomiz.billage.auth.dto.LoginRequest;
+import com.groomiz.billage.auth.dto.LoginResponse;
 import com.groomiz.billage.auth.dto.RegisterRequest;
 import com.groomiz.billage.auth.service.AuthService;
 import com.groomiz.billage.auth.service.UnivCertService;
@@ -51,10 +52,9 @@ public class UserController {
 	@ApiErrorExceptionsExample(LoginExceptionDocs.class)
 	public ResponseEntity<?> login(@RequestBody @Valid LoginRequest loginRequest, HttpServletResponse response) {
 
-		authService.login(loginRequest, response);
+		LoginResponse login = authService.login(loginRequest, response);
 
-		return ResponseEntity.ok(new StringResponseDto("로그인 성공하였습니다."));
-
+		return ResponseEntity.ok(login);
 	}
 
 	@PostMapping("/logout")
