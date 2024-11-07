@@ -43,7 +43,7 @@ public class MemberService {
 			.username(registerRequest.getName())
 			.password("{bcrypt}" + encodedPassword)
 			.phoneNumber(registerRequest.getPhoneNumber())
-			.role(Role.ADMIN)
+			.role(Role.STUDENT)
 			.studentNumber(registerRequest.getStudentNumber())
 			.isAdmin(true)
 			.agreedToTerms(registerRequest.isAgreedToTerms())

@@ -19,6 +19,8 @@ import com.groomiz.billage.classroom.entity.Classroom;
 import com.groomiz.billage.classroom.exception.ClassroomErrorCode;
 import com.groomiz.billage.classroom.exception.ClassroomException;
 import com.groomiz.billage.classroom.repository.ClassroomRepository;
+import com.groomiz.billage.reservation.entity.Reservation;
+
 import com.groomiz.billage.reservation.repository.ReservationRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -35,10 +37,14 @@ public class ClassroomService {
 	@Transactional(readOnly = true)
 	public ClassroomDetailResponse findClassroomByIdAndDate(Long classroomId, LocalDate date) {
 
-		Classroom classroom = classroomRepository.findClassroomByIdAndDate(classroomId, date)
+		Classroom classroom = classroomRepository.findClassroomById(classroomId)
 			.orElseThrow(() -> new ClassroomException(ClassroomErrorCode.CLASSROOM_NOT_FOUND));
 
-		return ClassroomDetailResponse.from(classroom);
+		List<Reservation> reservationsByClassroomIdsAndDate = reservationRepository.findReservationsByClassroomIdsAndDate(
+			List.of(classroomId), date);
+
+		return ClassroomDetailResponse.from(classroom, reservationsByClassroomIdsAndDate);
+
 	}
 
 	@Transactional(readOnly = true)
@@ -53,7 +59,8 @@ public class ClassroomService {
 			throw new BuildingException(BuildingErrorCode.FLOOR_NOT_FOUND);
 		}
 
-		List<Classroom> classrooms = classroomRepository.findByBuildingIdAndFloorAndCapacityGreaterThanEqual(
+		List<Classroom> classrooms = classroomRepository.findClassroomByBuildingIdAndFloorAndCapacityGreaterThanEqual(
+
 			request.getBuildingId(), request.getFloor(), request.getHeadcount()
 		);
 
