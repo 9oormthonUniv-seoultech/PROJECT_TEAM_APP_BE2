@@ -74,7 +74,8 @@ class BuildingRepositoryTest {
 	@DisplayName("BuildingRepository: 수용 가능한 건물 조회")
 	void findBuildingsByCapacity() {
 		// 인원 50명 기준으로 조회 (창학관은 제외되고 미래관만 조회되어야 함)
-		List<Building> buildings = buildingRepository.findBuildingsByCapacity(50).orElseThrow();
+		List<Building> buildings = buildingRepository.findBuildingsByCapacity(50);
+
 		assertThat(buildings).hasSize(1);
 		assertThat(buildings.get(0).getName()).isEqualTo("미래관");
 	}

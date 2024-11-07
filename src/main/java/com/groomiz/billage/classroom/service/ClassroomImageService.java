@@ -38,11 +38,6 @@ public class ClassroomImageService {
 
         String imageUrl = s3Service.uploadFile(imageFile, fileName);
 
-
-        String imageUrl = s3Service.uploadFile(imageFile, fileName);
-
-
-
         ClassroomImage classroomImage = ClassroomImage.builder()
                 .classroom(classroom)
                 .imageUrl(imageUrl)
